@@ -16,7 +16,7 @@ This should start a react app on your machine. This run on the 3000 port of the 
 
 **Back-End setup**
 
-For the backend, we need to keep a node.js api running thta listens on a certain port. Our code listens to port 4000 of local host by default. You need to navigate to the repository root folder and you can get the api running by the following command:
+For the backend, we need to keep a node.js api running thta listens on a certain port. Our code listens to port 5000 of local host by default. You need to navigate to the repository root folder and you can get the api running by the following command:
 
 ``` node cs320.js```
 
