@@ -1,0 +1,26 @@
+{
+  "name": "cs320spring2021",
+  "version": "1.0.0",
+  "description": "package for Kudos CS320 project",
+  "main": "cs320.js",
+  "dependencies": {
+    "body-parser": "^1.19.0",
+    "cors": "^2.8.5",
+    "express": "^4.17.1",
+    "mongodb": "^3.6.4"
+  },
+  "devDependencies": {},
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/askulkarni2021/CS320Spring2021.git"
+  },
+  "author": "",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/askulkarni2021/CS320Spring2021/issues"
+  },
+  "homepage": "https://github.com/askulkarni2021/CS320Spring2021#readme"
+}
