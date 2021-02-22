@@ -27,9 +27,11 @@ kudo : {
 	from : {type: String, explaination : "This is the user that is giving the kudo"},
 	to : {type: String, explaination : "This is the user that is recieving the kudo"},
 	kudo : {type : String,  explaination : "The actual text of the kudo"},
+	reson:
 }
-
 */
+
+
 const port = process.env.PORT || 5000;
 
 app.listen(port, () => console.log(`Listening on port ${port}`));
