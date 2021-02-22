@@ -28,8 +28,9 @@ class App extends Component {
     // });
   }
   triggerAPIResponse = (data) => {
+    console.log(data)
     this.state.status = data;
-    if (this.state.status=== false){
+    if (this.state.status.found=== false){
       console.log("Wrong login attempt");
     }
     else{
