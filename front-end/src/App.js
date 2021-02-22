@@ -1,11 +1,12 @@
 import React, { Component } from 'react';
 import './App.css';
-import Form from 'react-bootstrap/Form';
-import Col from 'react-bootstrap/Col';
-import Container from 'react-bootstrap/Container';
-import Row from 'react-bootstrap/Row';
-import Button from 'react-bootstrap/Button';
-import 'bootstrap/dist/css/bootstrap.css';
+// import Form from 'react-bootstrap/Form';
+// import Col from 'react-bootstrap/Col';
+// import Container from 'react-bootstrap/Container';
+// import Row from 'react-bootstrap/Row';
+// import Button from 'react-bootstrap/Button';
+// import 'bootstrap/dist/css/bootstrap.css';
+import { Container, Typography } from '@material-ui/core'
 
 class App extends Component {
 
@@ -70,44 +71,50 @@ class App extends Component {
 
     return (
       <Container>
-        <div>
-          <h1 className="title">Welcome to Kudos</h1>
-        </div>
-        <div className="content">
-          <Form>
-            <Form.Row>
-              <Form.Group as={Col}>
-                <Form.Label>Username:</Form.Label>
-                <Form.Control
-                  type="text"
-                  placeholder="email"
-                  name="username"
-                  onChange={this.handleChange} />
-              </Form.Group>
-            <Form.Group as={Col}>
-                <Form.Label>Password</Form.Label>
-                <Form.Control
-                  type="text"
-                  placeholder="password"
-                  name="password"
-                  onChange={this.handleChange} />
-              </Form.Group>
-              
-            </Form.Row>
-            <Row>
-              <Col>
-                <Button
-                  block
-                  variant="success"
-                  disabled={isLoading}
-                  onClick={!isLoading ? this.handlePredictClick : null}>
-                  { isLoading ? 'Logging In' : 'Login' }
-                </Button>
-              </Col>
-            </Row>
-          </Form>
-        </div>
+        <Typography variant="h1">Welcome to Kuds</Typography>
+        <form>
+          
+        </form>
       </Container>
+      // <Container>
+      //   <div>
+      //     <h1 className="title">Welcome to Kudos</h1>
+      //   </div>
+      //   <div className="content">
+      //     <Form>
+      //       <Form.Row>
+      //         <Form.Group as={Col}>
+      //           <Form.Label>Username:</Form.Label>
+      //           <Form.Control
+      //             type="text"
+      //             placeholder="email"
+      //             name="username"
+      //             onChange={this.handleChange} />
+      //         </Form.Group>
+      //       <Form.Group as={Col}>
+      //           <Form.Label>Password</Form.Label>
+      //           <Form.Control
+      //             type="text"
+      //             placeholder="password"
+      //             name="password"
+      //             onChange={this.handleChange} />
+      //         </Form.Group>
+              
+      //       </Form.Row>
+      //       <Row>
+      //         <Col>
+      //           <Button
+      //             block
+      //             variant="success"
+      //             disabled={isLoading}
+      //             onClick={!isLoading ? this.handlePredictClick : null}>
+      //             { isLoading ? 'Logging In' : 'Login' }
+      //           </Button>
+      //         </Col>
+      //       </Row>
+      //     </Form>
+      //   </div>
+      // </Container>
     );
   }
 }
