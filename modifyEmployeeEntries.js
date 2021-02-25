@@ -1,7 +1,6 @@
-/* The purpose of this is to add an "incoming" and "outgoing" list to each employee entry.
- * This will make it much faster to display incoming and outgoing kudos on the profile page.
- * hopefully soon we will modify this script so that
- * it can take any arbitrary database name as input, not just outback tech*/
+/* The purpose of this is to initalize an "incoming" and "outgoing" list to each employee entry.
+ * For each company added, the script only needs to be ran once, but running it more than once shouldnt hurt anything :) 
+ * Hopefully soon this script can be modified to take in any company that is in the db as input, and operate on that instead of just outback-tech */
 const MongoClient = require('mongodb').MongoClient;
 const assert = require('assert');
 
@@ -26,6 +25,3 @@ client.connect(err => {
 	}
 	initializePersonalKudos();
 });
-
-// testing strategy: run this script, then modify some of the arrays that were created.
-// run this script again, and make sure the arrays werent modified

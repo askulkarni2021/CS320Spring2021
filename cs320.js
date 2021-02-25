@@ -90,21 +90,19 @@ app.post('/api/add_kudo', (req, res) => {
 		const add_kudo = async (query) => {
 			const db = client.db("outback-tech");
 			const kudos = db.collection("Kudos");
-			// don't use a callback function, because we want the result to be returned, not passed into the callback function!
+			// don't use a callback function, because we want the result to be returned, not passed into the callback function
 			let resultDoc = await kudos.insertOne(query);
 			res.send(`${true}`,);
 			return resultDoc;
 		}
-		// the "to" and "from" field of the req.body would either need to be empid or emails, because first/last name is not unique!
-		// then just try to insert the object id of the kudo just recently inserted into the list associated with the to / from entries
 		let resultDoc = add_kudo(req.body)
 		// this has been tested and should work. see the collection on mongodb to see the incoming and outgoing lists populated for employee 3 and 5
-		// (those are the entries i tested on)
-		resultDoc.then(val => {
+		// (those are the entries I tested on)
+		resultDoc.then(addedKudo => {
 			// NOTE: to and from are strings, not ints
 			let to = req.body.to;
 			let from = req.body.from;
-			kudoID = val.insertedId;
+			kudoID = addedKudo.insertedId;
 			const db = client.db("outback-tech");
 			const employeesCollection = db.collection("Employees Database");
 			const updateGiverAndRecipient = async () => {
@@ -119,9 +117,6 @@ app.post('/api/add_kudo', (req, res) => {
 			}
 			updateGiverAndRecipient();
 		});
-		// FIRST ID: 60381d... which is correctly in 5's outgoing list, and 3's incoming list
-		// second test passed! running modifyEmployeeEntries doesnt mess with existing lists!
-		// AND third test also passed! it correctly appens the kudos to existing incoming/outgoing lists!
 	});
 });
 
