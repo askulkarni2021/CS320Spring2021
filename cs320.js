@@ -80,23 +80,48 @@ app.post('/api/verify', (req, res) => {
 });
 
 app.post('/api/add_kudo', (req, res) => {
-	console.log(req.body);
+	//console.log(req.body);
 	const uri = "mongodb+srv://user:cs320team1@cs320.t0mlm.mongodb.net/outback-tech?retryWrites=true&w=majority";
 	const client = new MongoClient(uri, { useNewUrlParser: true, useUnifiedTopology: true });
 
   	client.connect(err => {
-	assert.equal(err, null);
-	
-	const add_kudo = async (query) => {
-		const db = client.db("outback-tech");
-		const kudos = db.collection("Kudos");
-		kudos.insertOne(query, function(err, res) {
-		    if (err) throw err;
+		assert.equal(err, null);
+		
+		const add_kudo = async (query) => {
+			const db = client.db("outback-tech");
+			const kudos = db.collection("Kudos");
+			// don't use a callback function, because we want the result to be returned, not passed into the callback function!
+			let resultDoc = await kudos.insertOne(query);
+			res.send(`${true}`,);
+			return resultDoc;
+		}
+		// the "to" and "from" field of the req.body would either need to be empid or emails, because first/last name is not unique!
+		// then just try to insert the object id of the kudo just recently inserted into the list associated with the to / from entries
+		let resultDoc = add_kudo(req.body)
+		// this has been tested and should work. see the collection on mongodb to see the incoming and outgoing lists populated for employee 3 and 5
+		// (those are the entries i tested on)
+		resultDoc.then(val => {
+			// NOTE: to and from are strings, not ints
+			let to = req.body.to;
+			let from = req.body.from;
+			kudoID = val.insertedId;
+			const db = client.db("outback-tech");
+			const employeesCollection = db.collection("Employees Database");
+			const updateGiverAndRecipient = async () => {
+				await employeesCollection.updateOne(
+					{ "employeeId": parseInt(to) }, // get the employee that is recieving the kudo
+					{ $push: { incoming : kudoID} } // want to push the kudo to the recipients incoming list
+				);
+				await employeesCollection.updateOne(
+					{ "employeeId": parseInt(from) }, // get the employdd that is giving the kudo
+					{ $push: { outgoing : kudoID} }   // and push the kudo to their outgoing list
+				);
+			}
+			updateGiverAndRecipient();
 		});
-		res.send(`${true}`,);
-	}
-	
-	add_kudo(req.body)
+		// FIRST ID: 60381d... which is correctly in 5's outgoing list, and 3's incoming list
+		// second test passed! running modifyEmployeeEntries doesnt mess with existing lists!
+		// AND third test also passed! it correctly appens the kudos to existing incoming/outgoing lists!
 	});
 });
 
