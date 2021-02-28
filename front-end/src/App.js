@@ -1,120 +1,61 @@
-import React, { Component } from 'react';
+import React, { Component, useState } from 'react';
 import './App.css';
-// import Form from 'react-bootstrap/Form';
-// import Col from 'react-bootstrap/Col';
-// import Container from 'react-bootstrap/Container';
-// import Row from 'react-bootstrap/Row';
-// import Button from 'react-bootstrap/Button';
-// import 'bootstrap/dist/css/bootstrap.css';
-import { Container, Typography } from '@material-ui/core'
+import Login from './pages/Login';
+import Home from './pages/Home';
+import { Route } from 'react-router-dom'
+import { createMuiTheme, CssBaseline, Fab, ThemeProvider } from '@material-ui/core';
+import Brightness2Icon from '@material-ui/icons/Brightness2';
+import Brightness7Icon from '@material-ui/icons/Brightness7';
+import {
+  blue,
+  orange,
+} from "@material-ui/core/colors";
 
 class App extends Component {
-
   constructor(props) {
     super(props);
     this.state = {
-      isLoading: false,
-      username:"",
-      password:"",
-      status:false
+      darkState: localStorage.getItem('darkState') || false,
+      palleteType: localStorage.getItem('palleteType') || 'light',
+      mainPrimary: localStorage.getItem('mainPrimary') || blue[500],
     };
   }
-
-  handleChange = (event) => {
-    const value = event.target.value;
-    const name = event.target.name;
-    this.state[name] = value;
-    // this.setState({
-    //   formData
-    // });
-  }
-  triggerAPIResponse = (data) => {
-    console.log(data)
-    this.state.status = data;
-    if (this.state.status.found=== false){
-      console.log("Wrong login attempt");
-    }
-    else{
-      console.log("Login Succesfull")
-    }
-  }
-  handlePredictClick = (event) => {
-    console.log(this.state.username)
-    let email = this.state.username;
-    let password = this.state.password;
-    const formData = {email,password};
-    this.setState({ isLoading: true });
-    // debugger;
-    // debugger;
-    fetch('http://localhost:5000/api/verify',
-      {
-        method: 'POST',
-        headers: {
-          "Accept": "application/json",
-          "Content-Type": "application/json"
-        },
-        body: JSON.stringify(formData)
-      })
-      .then(response => response.json()).then(data => {
-        this.triggerAPIResponse(data);
-        // this.setState({
-        //   result: JSON.stringify(data),
-        //   isLoading: false
-        // });
-       });
-  }
+  
+  handleThemeChange = () => {
+    this.setState({darkState: !this.state.darkState}, () => {
+      const palleteType = this.state.darkState ? "dark" : "light";
+      const mainPrimary = this.state.darkState ? orange[500] : blue[500];
+      localStorage.setItem('darkState', this.state.darkState);
+      this.setState({palleteType: palleteType, mainPrimary: mainPrimary}, () => {
+        localStorage.setItem('palleteType', this.state.palleteType);
+        localStorage.setItem('mainPrimary', this.state.mainPrimary);
+      });
+    });
+  };
 
   render() {
-    const isLoading = this.state.isLoading;
-    const result = this.state.result;
-
+    const theme = createMuiTheme({
+      palette: {
+        type: this.state.palleteType,
+        primary: {
+          main: this.state.mainPrimary
+        },
+      }
+    })
 
     return (
-      <Container>
-        <Typography variant="h1">Welcome to Kuds</Typography>
-        <form>
-          
-        </form>
-      </Container>
-      // <Container>
-      //   <div>
-      //     <h1 className="title">Welcome to Kudos</h1>
-      //   </div>
-      //   <div className="content">
-      //     <Form>
-      //       <Form.Row>
-      //         <Form.Group as={Col}>
-      //           <Form.Label>Username:</Form.Label>
-      //           <Form.Control
-      //             type="text"
-      //             placeholder="email"
-      //             name="username"
-      //             onChange={this.handleChange} />
-      //         </Form.Group>
-      //       <Form.Group as={Col}>
-      //           <Form.Label>Password</Form.Label>
-      //           <Form.Control
-      //             type="text"
-      //             placeholder="password"
-      //             name="password"
-      //             onChange={this.handleChange} />
-      //         </Form.Group>
-              
-      //       </Form.Row>
-      //       <Row>
-      //         <Col>
-      //           <Button
-      //             block
-      //             variant="success"
-      //             disabled={isLoading}
-      //             onClick={!isLoading ? this.handlePredictClick : null}>
-      //             { isLoading ? 'Logging In' : 'Login' }
-      //           </Button>
-      //         </Col>
-      //       </Row>
-      //     </Form>
-      //   </div>
-      // </Container>
+      <ThemeProvider theme={theme}>
+        <CssBaseline/>
+        <Fab color="primary" 
+          aria-label="change theme" 
+          onClick={() => this.handleThemeChange()}
+          style={{position: 'absolute', right: '0', bottom: '0', margin: '20px'}}
+        >
+          {this.state.darkState ? <Brightness7Icon/> : <Brightness2Icon/>}
+        </Fab>
+        <Route exact path="/" component = { Login }/>
+        <Route exact path="/home" component = { Home }/>
+      </ThemeProvider>
     );
   }
 }
