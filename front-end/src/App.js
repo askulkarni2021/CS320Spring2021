@@ -17,7 +17,7 @@ class App extends Component {
     this.state = {
       darkState: localStorage.getItem('darkState') || false,
       palleteType: localStorage.getItem('palleteType') || 'light',
-      mainPrimary: localStorage.getItem('mainPrimary') || blue[500],
+      mainPrimary: localStorage.getItem('mainPrimary') || blue[200],
     };
   }
   
