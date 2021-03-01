@@ -11,13 +11,24 @@ function Login() {
     showPass: false,
   })
 
- const refreshPage = ()=>{
-     window.location.reload();
+  const refreshPage = ()=>{
+    window.location.reload();
   }
+
   function handleSubmit() {
     const email = values.user;
     const pass = values.pass;
-    const formData = {email, pass};
+
+    let company = email.split('@')[1].split('.')[0]
+    const companies = {
+      'starshipentertainment': 'starship-entertainment',
+      'outbacktechnology': 'outback-tech',
+      'greenlifeconsulting': 'greenlife-consulting'
+    }
+    const uri = companies[company]
+    console.log(uri);
+    const formData = {email, pass, uri};
+
     console.log(formData)
     fetch('http://localhost:5000/api/verify',
       {
@@ -29,9 +40,15 @@ function Login() {
         body: JSON.stringify(formData)
       })
       .then(response => response.json()).then(data => {
+        console.log(data)
         if(data.found) {
+           //do stuff with data.uid
+           //do stuff with data.employees (map of employee name and uid)
+           //do stuff with company
             window.location = '/home';
         } else {
+            //login error, display error message
+            //do not refresh
             refreshPage();
         }
        });
