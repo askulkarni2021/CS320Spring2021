@@ -4,14 +4,15 @@
   "private": true,
   "dependencies": {
     "@material-ui/core": "^4.11.3",
+    "@material-ui/icons": "^4.11.2",
     "ag-grid-community": "^23.2.1",
     "ag-grid-react": "^23.2.1",
-    "bootstrap": "^4.3.1",
     "chart.js": "^2.9.3",
     "react": "^16.8.6",
     "react-bootstrap": "^1.0.0-beta.6",
     "react-chartjs-2": "^2.9.0",
     "react-dom": "^16.8.6",
+    "react-router-dom": "^5.2.0",
     "react-scripts": "2.1.8",
     "recharts": "^1.8.5"
   },
