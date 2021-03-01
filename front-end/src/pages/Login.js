@@ -11,6 +11,9 @@ function Login() {
     showPass: false,
   })
 
+ const refreshPage = ()=>{
+     window.location.reload();
+  }
   function handleSubmit() {
     const email = values.user;
     const pass = values.pass;
@@ -26,10 +29,10 @@ function Login() {
         body: JSON.stringify(formData)
       })
       .then(response => response.json()).then(data => {
-        if(data) {
+        if(data.found) {
             window.location = '/home';
         } else {
-            console.log(data);
+            refreshPage();
         }
        });
   }
@@ -50,7 +53,7 @@ function Login() {
     <Grid container direction="column" justify="center" alignItems="center" style={{ minHeight: '100vh'}}>
       <Grid item xs={12} sm={6} md={3} style={{padding: '10px', width: '80%'}}>
           <Typography variant="h3">
-            <Emoji symbol="🙌"/> 
+            <Emoji symbol="🙌 "/> 
             Kudos
           </Typography>
           <form onSubmit={(e) => {e.preventDefault(); handleSubmit()}} style={{display: 'flex', flexDirection: 'column'}}>

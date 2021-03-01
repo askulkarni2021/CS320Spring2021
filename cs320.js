@@ -69,8 +69,9 @@ app.post('/api/verify', (req, res) => {
 			await employees.then(value  => {
 				value.forEach(function(element){
 				  if(element.email === query.email){
-				    found = element.password===query.pass;}
-				    res.send({found:found, uid:element.employeeId});
+				    if(element.password===query.pass){
+				    res.send({found:true, uid:element.employeeId});
+				}}
 				})
 			});
 			res.send({found:found});
