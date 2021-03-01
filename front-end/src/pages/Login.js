@@ -1,24 +1,36 @@
-import React, { useState } from 'react';
+import React, { Component } from 'react';
 import { Button, Grid, TextField, Typography, FormControl, InputLabel,
 OutlinedInput, InputAdornment, IconButton } from '@material-ui/core'
 import { Visibility, VisibilityOff } from '@material-ui/icons'
 import Emoji from '../components/Emoji'
 
-function Login() {
-  const [values, setValues] = useState({
-    user: '',
-    pass: '',
-    showPass: false,
-  })
-
-  const refreshPage = ()=>{
-    window.location.reload();
+class Login extends Component {
+  constructor(props) {
+    super(props);
+    this.state = {
+        user: '',
+        pass: '',
+        showPass: false,
+        invalidLogin: false,
+    }
   }
 
-  function handleSubmit() {
-    const email = values.user;
-    const pass = values.pass;
+  handleChange = (prop) => (event) => {
+    this.setState({ [prop]: event.target.value });
+    this.setState({invalidLogin: false})
+  };
 
+  handleClickShowPassword = () => {
+    this.setState({ showPassword: !this.state.showPassword });
+  };
+
+  handleMouseDownPassword = (event) => {
+    event.preventDefault();
+  };
+  
+  handleSubmit() {
+    const email = this.state.user;
+    const pass = this.state.pass
     let company = email.split('@')[1].split('.')[0]
     const companies = {
       'starshipentertainment': 'starship-entertainment',
@@ -26,9 +38,7 @@ function Login() {
       'greenlifeconsulting': 'greenlife-consulting'
     }
     const uri = companies[company]
-    console.log(uri);
-    const formData = {email, pass, uri};
-
+    const formData = {email, pass}; // add uri when backend up-to-date
     console.log(formData)
     fetch('http://localhost:5000/api/verify',
       {
@@ -40,79 +50,70 @@ function Login() {
         body: JSON.stringify(formData)
       })
       .then(response => response.json()).then(data => {
-        console.log(data)
         if(data.found) {
-           //do stuff with data.uid
-           //do stuff with data.employees (map of employee name and uid)
-           //do stuff with company
-            window.location = '/home';
+            //do stuff with data.uid
+            //do stuff with data.employees (map of employee name and uid)
+            //do stuff with company
+            this.props.getDataFromLogin(data);
         } else {
-            //login error, display error message
-            //do not refresh
-            refreshPage();
+            this.setState({invalidLogin: true})
         }
-       });
+      });
   }
 
-  const handleChange = (prop) => (event) => {
-    setValues({ ...values, [prop]: event.target.value });
-  };
-
-  const handleClickShowPassword = () => {
-    setValues({ ...values, showPassword: !values.showPassword });
-  };
-
-  const handleMouseDownPassword = (event) => {
-    event.preventDefault();
-  };
-
-  return (
-    <Grid container direction="column" justify="center" alignItems="center" style={{ minHeight: '100vh'}}>
-      <Grid item xs={12} sm={6} md={3} style={{padding: '10px', width: '80%'}}>
-          <Typography variant="h3">
-            <Emoji symbol="🙌 "/> 
-            Kudos
-          </Typography>
-          <form onSubmit={(e) => {e.preventDefault(); handleSubmit()}} style={{display: 'flex', flexDirection: 'column'}}>
-            <TextField label="username"
-              variant="outlined"
-              margin="normal"
-              value={values.user}
-              fullWidth
-              onChange={handleChange('user')}
-            />
-            <FormControl variant="outlined">
-              <InputLabel htmlFor="outlined-adornment-password">
-                Password
-              </InputLabel>
-              <OutlinedInput
-                id="outlined-adornment-password"
-                type={values.showPassword ? "text" : "password"}
-                value={values.pass}
-                onChange={handleChange("pass")}
-                endAdornment={
-                  <InputAdornment position="end">
-                    <IconButton
-                      aria-label="toggle password visibility"
-                      onClick={handleClickShowPassword}
-                      onMouseDown={handleMouseDownPassword}
-                      edge="end"
-                    >
-                      {values.showPassword ? <Visibility /> : <VisibilityOff />}
-                    </IconButton>
-                  </InputAdornment>
-                }
-                labelWidth={70}
+  render() {
+    return (
+      <Grid container direction="column" justify="center" alignItems="center" style={{ minHeight: '100vh'}}>
+        <Grid item xs={12} sm={6} md={3} style={{padding: '10px', width: '80%'}}>
+            <Typography variant="h3">
+              <Emoji symbol="🙌"/> 
+              Kudos
+            </Typography>
+            <form onSubmit={(e) => {e.preventDefault(); this.handleSubmit();}} style={{display: 'flex', flexDirection: 'column'}}>
+              <TextField label="username"
+                error={this.state.invalidLogin}
+                variant="outlined"
+                margin="normal"
+                value={this.state.user}
+                fullWidth
+                onChange={this.handleChange('user')}
               />
-            </FormControl>
-            <div style={{height: 20}}/>
-            <Button type="submit" variant="contained" color="primary" style={{maxWidth: '150px'}}>
-              Log In
-            </Button>
-          </form>
+              <FormControl variant="outlined" error={this.state.invalidLogin}>
+                <InputLabel htmlFor="outlined-adornment-password">
+                  Password
+                </InputLabel>
+                <OutlinedInput
+                  id="outlined-adornment-password"
+                  type={this.state.showPassword ? "text" : "password"}
+                  value={this.state.pass}
+                  onChange={this.handleChange("pass")}
+                  endAdornment={
+                    <InputAdornment position="end">
+                      <IconButton
+                        aria-label="toggle password visibility"
+                        onClick={() => this.handleClickShowPassword()}
+                        onMouseDown={(e) => this.handleMouseDownPassword(e)}
+                        edge="end"
+                      >
+                        {this.state.showPassword ? <Visibility /> : <VisibilityOff />}
+                      </IconButton>
+                    </InputAdornment>
+                  }
+                  labelWidth={70}
+                />
+              </FormControl>
+              <div style={{height: 20}}/>
+              <Grid container justify="space-between" alignItems="center">
+                <Button type="submit" variant="contained" color="primary" style={{maxWidth: '150px'}} disabled={this.state.invalidLogin} fullWidth>
+                  Log In
+                </Button>
+                {this.state.invalidLogin ? <Typography variant="caption" display="block" color="error"> username or password is incorrect </Typography> : null}
+              </Grid>
+            </form>
+        </Grid>
       </Grid>
-    </Grid>
-  );
+    );
+  }
 }
 
 export default Login;
