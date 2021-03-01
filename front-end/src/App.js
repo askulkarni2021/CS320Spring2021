@@ -1,4 +1,4 @@
-import React, { Component, useState } from 'react';
+import React, { Component } from 'react';
 import './App.css';
 import Login from './pages/Login';
 import Home from './pages/Home';
@@ -15,9 +15,15 @@ class App extends Component {
   constructor(props) {
     super(props);
     this.state = {
+      // THEME
       darkState: localStorage.getItem('darkState') || false,
       palleteType: localStorage.getItem('palleteType') || 'light',
       mainPrimary: localStorage.getItem('mainPrimary') || blue[500],
+
+      // USER INFO
+      uid: '',
+      employees: {},
+      uri: '',
     };
   }
   
@@ -32,6 +38,17 @@ class App extends Component {
       });
     });
   };
+
+  getDataFromLogin(data) {
+    console.log('data', data);
+    // right now only receiving uid, once backend hooks up
+    // everything else, can setState for the other fields
+    // setState asynchronous, so make sure the state is set
+    // before window change
+    this.setState({ uid: data.uid }, () => {
+      window.location = "/home";
+    });
+  }
 
   render() {
     const theme = createMuiTheme({
@@ -53,8 +70,13 @@ class App extends Component {
         >
           {this.state.darkState ? <Brightness7Icon/> : <Brightness2Icon/>}
         </Fab>
-        <Route exact path="/" component = { Login }/>
-        <Route exact path="/home" component = { Home }/>
+        <Route exact path="/" render={(props) => (
+          <Login {...props} getDataFromLogin={this.getDataFromLogin.bind(this)}/>
+        )}/>
+        <Route exact path="/home" render={(props) => (
+          // similar to how uid is passed in, the other data would be as well
+          <Home {...props} uid={this.state.uid}/>
+        )}/>
       </ThemeProvider>
     );
   }
