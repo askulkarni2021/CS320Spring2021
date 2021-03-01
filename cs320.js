@@ -93,31 +93,31 @@ app.post('/api/add_kudo', (req, res) => {
 			const kudos = db.collection("Kudos");
 			// don't use a callback function, because we want the result to be returned, not passed into the callback function
 			let resultDoc = await kudos.insertOne(query);
-			res.send(`${true}`,);
-			return resultDoc;
-		}
-		let resultDoc = add_kudo(req.body)
-		// this has been tested and should work. see the collection on mongodb to see the incoming and outgoing lists populated for employee 3 and 5
-		// (those are the entries I tested on)
-		resultDoc.then(addedKudo => {
-			// NOTE: to and from are strings, not ints
-			let to = req.body.to;
-			let from = req.body.from;
-			kudoID = addedKudo.insertedId;
-			const db = client.db("outback-tech");
-			const employeesCollection = db.collection("Employees Database");
-			const updateGiverAndRecipient = async () => {
-				await employeesCollection.updateOne(
-					{ "employeeId": parseInt(to) }, // get the employee that is recieving the kudo
-					{ $push: { incoming : kudoID} } // want to push the kudo to the recipients incoming list
-				);
-				await employeesCollection.updateOne(
-					{ "employeeId": parseInt(from) }, // get the employdd that is giving the kudo
-					{ $push: { outgoing : kudoID} }   // and push the kudo to their outgoing list
-				);
-			}
-			updateGiverAndRecipient();
-		});
+			//resultDoc.then(addedKudo => {
+			addToIncomingAndOutgoing = (addedKudo) => {
+				// NOTE: to and from are strings, not ints
+				let to = req.body.to;
+				let from = req.body.from;
+				kudoID = addedKudo.insertedId;
+				const db = client.db("outback-tech");
+				const employeesCollection = db.collection("Employees Database");
+				const updateGiverAndRecipient = async () => {
+					await employeesCollection.updateOne(
+						{ "employeeId": parseInt(to) }, // get the employee that is recieving the kudo
+						{ $push: { incoming : kudoID} } // want to push the kudo to the recipients incoming list
+					);
+					await employeesCollection.updateOne(
+						{ "employeeId": parseInt(from) }, // get the employdd that is giving the kudo
+						{ $push: { outgoing : kudoID} }   // and push the kudo to their outgoing list
+					);
+				}
+				updateGiverAndRecipient();
+				//return resultDoc;
+			};
+			addToIncomingAndOutgoing(resultDoc);
+			res.send(true); 
+		};
+		add_kudo(req.body);
 	});
 });
 
