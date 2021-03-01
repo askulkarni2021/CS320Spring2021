@@ -26,7 +26,7 @@ function Login() {
         body: JSON.stringify(formData)
       })
       .then(response => response.json()).then(data => {
-        if(!data) {
+        if(data) {
             window.location = '/home';
         } else {
             console.log(data);
