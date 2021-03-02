@@ -47,7 +47,7 @@ class App extends Component {
     // setState asynchronous, so make sure the state is set
     // before window change
     this.setState({ uid: data.uid }, () => {
-      window.location = "/home";
+      //window.location = "/home";
     });
   }
 

@@ -70,11 +70,11 @@ app.post('/api/verify', (req, res) => {
 			value.forEach(function(element){
 				employee = element.firstName+" "+element.lastName;
 				id = element.employeeId;
-				emp[employee]=id;
-
+				position = element.positionTitle
+				const data = {id:id, position:position}
+				emp[employee]=data;
 			})
 		});
-			console.log(emp);
 			await employees.then(value  => {
 				value.forEach(function(element){
 				  if(element.email === query.email){
