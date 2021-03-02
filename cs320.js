@@ -124,6 +124,7 @@ app.post('/api/add_kudo', (req, res) => {
 
 app.post('/api/profile_incoming', (req, res) => {
 	console.log(req.body);
+	const companyName = req.body.uri;
 	const uri = "mongodb+srv://user:cs320team1@cs320.t0mlm.mongodb.net/" + companyName + "?retryWrites=true&w=majority";
 	const client = new MongoClient(uri, { useNewUrlParser: true, useUnifiedTopology: true });
 
