@@ -65,11 +65,21 @@ app.post('/api/verify', (req, res) => {
 
 		const verify = async (employees,query) => {
 			found = false;
+			const emp = {};
+			await employees.then(value  => {
+			value.forEach(function(element){
+				employee = element.firstName+" "+element.lastName;
+				id = element.employeeId;
+				position = element.positionTitle
+				const data = {id:id, position:position}
+				emp[employee]=data;
+			})
+		});
 			await employees.then(value  => {
 				value.forEach(function(element){
 				  if(element.email === query.email){
 				    if(element.password===query.pass){
-				    res.send({found:true, uid:element.employeeId});
+				    res.send({found:true, uid:element.employeeId, employees:emp});
 				}}
 				})
 			});
