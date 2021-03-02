@@ -39,8 +39,6 @@ app.listen(port, () => console.log(`Listening on port ${port}`));
 // 	//correct password = rodriguezka
 // 	query = {email:"Kaitlin_Rodriguez@outbacktechnology.com", password:"rodriguezka"}
 
-const uri = "mongodb+srv://user:cs320team1@cs320.t0mlm.mongodb.net/outback-tech?retryWrites=true&w=majority";
-const client = new MongoClient(uri, { useNewUrlParser: true, useUnifiedTopology: true });
 
 
 app.use(bodyParser.json());
@@ -48,12 +46,13 @@ app.use(bodyParser.urlencoded({ extended: true }));
 
 app.post('/api/verify', (req, res) => {
 	console.log(req.body);
-	const uri = "mongodb+srv://user:cs320team1@cs320.t0mlm.mongodb.net/outback-tech?retryWrites=true&w=majority";
+	const companyName = req.body.uri;
+	const uri = "mongodb+srv://user:cs320team1@cs320.t0mlm.mongodb.net/" + companyName + "?retryWrites=true&w=majority";
 	const client = new MongoClient(uri, { useNewUrlParser: true, useUnifiedTopology: true });
 
   	client.connect(err => {
 		assert.equal(err, null);
-		const db = client.db("outback-tech");
+		const db = client.db(companyName);
 		const employeesCollection = db.collection("Employees Database");
 		const findItems = async () => { 
 			const employees = await employeesCollection.find({}).toArray();
@@ -74,6 +73,9 @@ app.post('/api/verify', (req, res) => {
 				}}
 				})
 			});
+			/* TODO: this is being printed when the user is correctly verified, which indicates that another request is being
+			 * sent even if one was sent before. this causes a warning to output on the backend. not a huge priority, but can be fixed easily */
+			//console.log("test");
 			res.send({found:found});
 		}
 		verify(employees,req.body)
@@ -81,25 +83,24 @@ app.post('/api/verify', (req, res) => {
 });
 
 app.post('/api/add_kudo', (req, res) => {
-	//console.log(req.body);
-	const uri = "mongodb+srv://user:cs320team1@cs320.t0mlm.mongodb.net/outback-tech?retryWrites=true&w=majority";
+	console.log(req.body);
+	const companyName = req.body.uri;
+	const uri = "mongodb+srv://user:cs320team1@cs320.t0mlm.mongodb.net/" + companyName + "?retryWrites=true&w=majority";
 	const client = new MongoClient(uri, { useNewUrlParser: true, useUnifiedTopology: true });
 
   	client.connect(err => {
 		assert.equal(err, null);
 		
 		const add_kudo = async (query) => {
-			const db = client.db("outback-tech");
+			const db = client.db(companyName);
 			const kudos = db.collection("Kudos");
-			// don't use a callback function, because we want the result to be returned, not passed into the callback function
-			let resultDoc = await kudos.insertOne(query);
-			//resultDoc.then(addedKudo => {
+			// dont insert the whole query because otherwise the company name would be inserted in each kudo, which is unnecessary
+			let resultDoc = await kudos.insertOne({from: query.from, to: query.to, kudo: query.kudo});
 			addToIncomingAndOutgoing = (addedKudo) => {
 				// NOTE: to and from are strings, not ints
 				let to = req.body.to;
 				let from = req.body.from;
 				kudoID = addedKudo.insertedId;
-				const db = client.db("outback-tech");
 				const employeesCollection = db.collection("Employees Database");
 				const updateGiverAndRecipient = async () => {
 					await employeesCollection.updateOne(
@@ -112,9 +113,9 @@ app.post('/api/add_kudo', (req, res) => {
 					);
 				}
 				updateGiverAndRecipient();
-				//return resultDoc;
 			};
 			addToIncomingAndOutgoing(resultDoc);
+			// TODO: later on, we need to send better information here, like if the rockstar of the month has been updated
 			res.send(true); 
 		};
 		add_kudo(req.body);
@@ -123,12 +124,13 @@ app.post('/api/add_kudo', (req, res) => {
 
 app.post('/api/profile_incoming', (req, res) => {
 	console.log(req.body);
-	const uri = "mongodb+srv://user:cs320team1@cs320.t0mlm.mongodb.net/outback-tech?retryWrites=true&w=majority";
+	const companyName = req.body.uri;
+	const uri = "mongodb+srv://user:cs320team1@cs320.t0mlm.mongodb.net/" + companyName + "?retryWrites=true&w=majority";
 	const client = new MongoClient(uri, { useNewUrlParser: true, useUnifiedTopology: true });
 
   	client.connect(err => {
 	assert.equal(err, null);
-	const db = client.db("outback-tech");
+	const db = client.db(companyName);
 	const employeesCollection = db.collection("Employees Database");
 	const findEmployees = async () => { 
 		const employees = await employeesCollection.find({}).toArray();

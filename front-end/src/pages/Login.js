@@ -38,7 +38,7 @@ class Login extends Component {
       'greenlifeconsulting': 'greenlife-consulting'
     }
     const uri = companies[company]
-    const formData = {email, pass}; // add uri when backend up-to-date
+    const formData = {email, pass, uri}; 
     console.log(formData)
     fetch('http://localhost:5000/api/verify',
       {
