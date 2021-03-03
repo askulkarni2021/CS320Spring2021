@@ -140,7 +140,7 @@ app.post('/api/all_kudos', (req, res) => {
 		const kudos = findKudos();
 		const find_all = async (kudos) => { 
 			await kudos.then(value  => {
-				res.send(value);
+				res.send(value.reverse());
 			});
 		};
 		find_all(kudos);
