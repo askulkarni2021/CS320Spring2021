@@ -179,4 +179,28 @@ app.post('/api/profile_incoming', (req, res) => {
 	});
 });
 
+//Expects the company name(as uri field of the incoming query) and returns all kudos within that company as an array
+app.post('/api/all_kudos', (req, res) => {
+	console.log(req.body);
+	const companyName = req.body.uri;
+	const uri = "mongodb+srv://user:cs320team1@cs320.t0mlm.mongodb.net/" + companyName + "?retryWrites=true&w=majority";
+	const client = new MongoClient(uri, { useNewUrlParser: true, useUnifiedTopology: true });
 
+  	client.connect(err => {
+		assert.equal(err, null);
+		const db = client.db(companyName);
+		const kudosCollection = db.collection("Kudos");	
+		const findKudos = async () => { 
+			const kudos = await kudosCollection.find({}).toArray();
+			return kudos;
+		};
+		const kudos = findKudos();
+		const find_all = async (kudos) => { 
+			await kudos.then(value  => {
+				console.log(value);
+				res.send(value);
+			});
+		};
+		find_all(kudos);
+ 	});
+ });
