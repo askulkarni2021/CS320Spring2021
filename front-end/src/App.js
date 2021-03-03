@@ -45,9 +45,8 @@ class App extends Component {
     // setState asynchronous, so make sure the state is set
     // before window change
     this.setState({ data: data, uri: uri }, () => {
-      console.log(this.state);
-      console.log('change to home');
-      console.log(this.props);
+      localStorage.setItem('data', data);
+      localStorage.setItem('uri', uri)
       this.props.history.push('/home');
     });
   }

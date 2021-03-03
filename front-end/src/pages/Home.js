@@ -46,13 +46,12 @@ class Home extends Component {
 
   componentDidMount(){
       this.getKudos();
-      console.log('home did mount', this.props)
       const companies = {
         'starship-entertainment': 'Starship Entertainment',
         'outback-tech': 'Outback Technology',
         'greenlife-consulting': 'Greenlife Consulting'
       }
-      this.setState({ company: companies[this.props.uri]});
+      this.setState({ company: companies[localStorage.getItem('uri')]});
   }
 
   // componentDidUpdate(){
@@ -64,9 +63,8 @@ class Home extends Component {
   // }
   
   getKudos() {
-    const uri = this.props.uri
+    const uri = localStorage.getItem('uri')
     const formData = {uri}; 
-    console.log(formData);
     fetch('http://localhost:5000/api/data/uid_map_name',
       {
         method: 'POST',
@@ -103,7 +101,7 @@ class Home extends Component {
       return(
         <Grid
         item
-        style={{width: '20%', margin: '10px'}}
+        style={{width: '600px', margin: '10px'}}
         key={key}>
         <Card className={useStyles.root} key={key}>
           <CardContent>
@@ -135,10 +133,8 @@ class Home extends Component {
         <Grid
           container
           direction="column"
-          justify="center"
-          alignItems="center"
-          style={{ minHeight: "100vh" }}
-          
+          justify="flex-start"
+          alignItems="center"          
         >
           {this.state.kudos && this.state.employees[5] ? this.state.kudos.map((kudo, index) => {
               // console.log(this.state.employees[kudo.from].name)
