@@ -105,7 +105,7 @@ class Home extends Component {
         <Grid
         item
         spacing={10}
-        style={{maxWidth: '20%', margin: '10px'}}>
+        style={{width: '20%', margin: '10px'}}>
         <Card className={useStyles.root}>
           <CardContent>
             <Typography
