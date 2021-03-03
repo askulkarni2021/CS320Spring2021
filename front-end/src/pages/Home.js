@@ -104,7 +104,8 @@ class Home extends Component {
       return(
         <Grid
         item
-        spacing={10}>
+        spacing={10}
+        style={{maxWidth: '20%', margin: '10px'}}>
         <Card className={useStyles.root}>
           <CardContent>
             <Typography
@@ -119,7 +120,7 @@ class Home extends Component {
             </Typography>
           </CardContent>
           <CardActions>
-            <Button size="small" color="secondary">Team Player</Button>
+            <Button size="small" variant="contained" color="secondary">Team Player</Button>
           </CardActions>
         </Card>
         </Grid>
