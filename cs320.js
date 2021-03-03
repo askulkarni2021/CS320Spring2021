@@ -44,6 +44,8 @@ app.listen(port, () => console.log(`Listening on port ${port}`));
 app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({ extended: true }));
 
+
+//Login Pages Endpoints
 app.post('/api/verify', (req, res) => {
 	console.log(req.body);
 	const companyName = req.body.uri;
@@ -56,7 +58,6 @@ app.post('/api/verify', (req, res) => {
 		const employeesCollection = db.collection("Employees Database");
 		const findItems = async () => { 
 			const employees = await employeesCollection.find({}).toArray();
-			//console.log(employees);
 			client.close();
 			return employees;
 		};
@@ -65,33 +66,21 @@ app.post('/api/verify', (req, res) => {
 
 		const verify = async (employees,query) => {
 			found = false;
-			const emp = {};
-			await employees.then(value  => {
-			value.forEach(function(element){
-				employee = element.firstName+" "+element.lastName;
-				id = element.employeeId;
-				position = element.positionTitle
-				const data = {id:id, position:position}
-				emp[employee]=data;
-			})
-		});
 			await employees.then(value  => {
 				value.forEach(function(element){
 				  if(element.email === query.email){
 				    if(element.password===query.pass){
-				    res.send({found:true, uid:element.employeeId, employees:emp});
+				    res.send({found:true, uid:element.employeeId});
 				}}
 				})
 			});
-			/* TODO: this is being printed when the user is correctly verified, which indicates that another request is being
-			 * sent even if one was sent before. this causes a warning to output on the backend. not a huge priority, but can be fixed easily */
-			//console.log("test");
 			res.send({found:found});
 		}
 		verify(employees,req.body)
 	});
 });
 
+//Home Pages Endpoints
 app.post('/api/add_kudo', (req, res) => {
 	console.log(req.body);
 	const companyName = req.body.uri;
@@ -131,6 +120,35 @@ app.post('/api/add_kudo', (req, res) => {
 		add_kudo(req.body);
 	});
 });
+
+
+//Expects the company name(as uri field of the incoming query) and returns all kudos within that company as an array
+app.post('/api/all_kudos', (req, res) => {
+	console.log(req.body);
+	const companyName = req.body.uri;
+	const uri = "mongodb+srv://user:cs320team1@cs320.t0mlm.mongodb.net/" + companyName + "?retryWrites=true&w=majority";
+	const client = new MongoClient(uri, { useNewUrlParser: true, useUnifiedTopology: true });
+
+  	client.connect(err => {
+		assert.equal(err, null);
+		const db = client.db(companyName);
+		const kudosCollection = db.collection("Kudos");	
+		const findKudos = async () => { 
+			const kudos = await kudosCollection.find({}).toArray();
+			return kudos;
+		};
+		const kudos = findKudos();
+		const find_all = async (kudos) => { 
+			await kudos.then(value  => {
+				console.log(value);
+				res.send(value);
+			});
+		};
+		find_all(kudos);
+ 	});
+ });
+
+//Profle page Endpoints
 
 app.post('/api/profile_incoming', (req, res) => {
 	console.log(req.body);
@@ -179,8 +197,9 @@ app.post('/api/profile_incoming', (req, res) => {
 	});
 });
 
-//Expects the company name(as uri field of the incoming query) and returns all kudos within that company as an array
-app.post('/api/all_kudos', (req, res) => {
+
+// Data Sending Endpoints
+app.post('/api/data/name_map_uid', (req, res) => {
 	console.log(req.body);
 	const companyName = req.body.uri;
 	const uri = "mongodb+srv://user:cs320team1@cs320.t0mlm.mongodb.net/" + companyName + "?retryWrites=true&w=majority";
@@ -189,18 +208,64 @@ app.post('/api/all_kudos', (req, res) => {
   	client.connect(err => {
 		assert.equal(err, null);
 		const db = client.db(companyName);
-		const kudosCollection = db.collection("Kudos");	
-		const findKudos = async () => { 
-			const kudos = await kudosCollection.find({}).toArray();
-			return kudos;
+		const employeesCollection = db.collection("Employees Database");
+		const findItems = async () => { 
+			const employees = await employeesCollection.find({}).toArray();
+			//console.log(employees);
+			client.close();
+			return employees;
 		};
-		const kudos = findKudos();
-		const find_all = async (kudos) => { 
-			await kudos.then(value  => {
-				console.log(value);
-				res.send(value);
-			});
+
+		const employees = findItems();
+
+		const send_data = async (employees,query) => {
+			const emp = {};
+			await employees.then(value  => {
+			value.forEach(function(element){
+				employee = element.firstName+" "+element.lastName;
+				id = element.employeeId;
+				position = element.positionTitle
+				const data = {id:id, position:position}
+				emp[employee]=data;
+			})
+			res.send(emp);
+		});
 		};
-		find_all(kudos);
- 	});
- });
+		send_data(employees);
+	});
+  });
+app.post('/api/data/uid_map_name', (req, res) => {
+	console.log(req.body);
+	const companyName = req.body.uri;
+	const uri = "mongodb+srv://user:cs320team1@cs320.t0mlm.mongodb.net/" + companyName + "?retryWrites=true&w=majority";
+	const client = new MongoClient(uri, { useNewUrlParser: true, useUnifiedTopology: true });
+
+  	client.connect(err => {
+		assert.equal(err, null);
+		const db = client.db(companyName);
+		const employeesCollection = db.collection("Employees Database");
+		const findItems = async () => { 
+			const employees = await employeesCollection.find({}).toArray();
+			//console.log(employees);
+			client.close();
+			return employees;
+		};
+
+		const employees = findItems();
+
+		const send_data = async (employees,query) => {
+			const emp = {};
+			await employees.then(value  => {
+			value.forEach(function(element){
+				employee = element.firstName+" "+element.lastName;
+				id = element.employeeId;
+				position = element.positionTitle
+				const data = {name:employee, position:position}
+				emp[id]=data;
+			})
+			res.send(emp);
+		});
+		};
+		send_data(employees);
+	});
+  });
