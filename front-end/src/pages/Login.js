@@ -54,7 +54,7 @@ class Login extends Component {
             //do stuff with data.uid
             //do stuff with data.employees (map of employee name and uid)
             //do stuff with company
-            this.props.getDataFromLogin(data);
+            this.props.setDataFromLogin(data, uri);
         } else {
             this.setState({invalidLogin: true})
         }
