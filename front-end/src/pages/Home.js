@@ -13,11 +13,12 @@ import {
   CardContent,
   CardActions
 } from "@material-ui/core";
-import { makeStyles } from '@material-ui/core/styles';
+import { withStyles } from '@material-ui/core/styles';
+import Navbar from '../components/Navbar';
 
-const useStyles = makeStyles({
+const styles = theme =>({
     root: {
-      minWidth: 1000,
+      display: 'flex',
     },
     bullet: {
       display: 'inline-block',
@@ -29,6 +30,11 @@ const useStyles = makeStyles({
     },
     pos: {
       marginBottom: 12,
+    },
+    content: {
+        flexGrow: 1,
+        backgroundColor: theme.palette.background.default,
+        padding: theme.spacing(3),
     },
   });
   
@@ -103,10 +109,10 @@ class Home extends Component {
         item
         style={{width: '600px', margin: '10px'}}
         key={key}>
-        <Card className={useStyles.root} key={key}>
+        <Card className={styles.root} key={key}>
           <CardContent>
             <Typography
-              className={useStyles.title}
+              className={styles.title}
               color="textSecondary"
               gutterBottom
             >
@@ -125,28 +131,31 @@ class Home extends Component {
   }
 
   render() {
-    
+    const { classes, theme } = this.props;
 
     return (
-      <div>
-        <Typography variant="h4" style={{margin: '20px'}}> {this.state.company} </Typography>
-        <Grid
-          container
-          direction="column"
-          justify="flex-start"
-          alignItems="center"          
-        >
-          {this.state.kudos && this.state.employees[5] ? this.state.kudos.map((kudo, index) => {
-              // console.log(this.state.employees[kudo.from].name)
-              return this.kudo_(this.state.employees[kudo.to].name, this.state.employees[kudo.from].name, kudo.kudo, index)
-              //console.log(kudo.from);
-              //console.log(this.state.employees[1].name)
-              //console.log(this.state.employees[kudo.from])
-          }) : 'loading'  }
-        </Grid>
+      <div className={classes.root}>
+        <Navbar></Navbar>
+        <div className={classes.content}>
+            <Typography variant="h4" style={{margin: '20px'}}> {this.state.company} </Typography>
+            <Grid
+            container
+            direction="column"
+            justify="flex-start"
+            alignItems="center"          
+            >
+            {this.state.kudos && this.state.employees[5] ? this.state.kudos.map((kudo, index) => {
+                // console.log(this.state.employees[kudo.from].name)
+                return this.kudo_(this.state.employees[kudo.to].name, this.state.employees[kudo.from].name, kudo.kudo, index)
+                //console.log(kudo.from);
+                //console.log(this.state.employees[1].name)
+                //console.log(this.state.employees[kudo.from])
+            }) : 'loading'  }
+            </Grid>
+        </div>
       </div>
     );
   }
 }
 
-export default Home;
+export default withStyles(styles, { withTheme: true })(Home);
