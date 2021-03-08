@@ -3,6 +3,7 @@ import { Button, Grid, TextField, Typography, FormControl, InputLabel,
 OutlinedInput, InputAdornment, IconButton } from '@material-ui/core'
 import { Visibility, VisibilityOff } from '@material-ui/icons'
 import Emoji from '../components/Emoji'
+import logo from '../kudos_logo.png'
 
 class Login extends Component {
   constructor(props) {
@@ -65,10 +66,7 @@ class Login extends Component {
     return (
       <Grid container direction="column" justify="center" alignItems="center" style={{ minHeight: '100vh'}}>
         <Grid item xs={12} sm={6} md={3} style={{padding: '10px', width: '80%'}}>
-            <Typography variant="h3">
-              <Emoji symbol="🙌"/> 
-              Kudos
-            </Typography>
+            <img className="img-responsive" src={logo} alt="logo"/>
             <form onSubmit={(e) => {e.preventDefault(); this.handleSubmit();}} style={{display: 'flex', flexDirection: 'column'}}>
               <TextField label="username"
                 error={this.state.invalidLogin}
