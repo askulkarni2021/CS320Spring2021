@@ -1,4 +1,4 @@
-import React, { Component, useState } from 'react';
+import React, { Component } from 'react';
 import './App.css';
 import Login from './pages/Login';
 import Home from './pages/Home';
@@ -15,9 +15,15 @@ class App extends Component {
   constructor(props) {
     super(props);
     this.state = {
+      // THEME
       darkState: localStorage.getItem('darkState') || false,
       palleteType: localStorage.getItem('palleteType') || 'light',
-      mainPrimary: localStorage.getItem('mainPrimary') || blue[500],
+
+      mainPrimary: localStorage.getItem('mainPrimary') || blue[200],
+
+      // USER INFO
+      data: {},
+      uri: '',
     };
   }
   
@@ -32,6 +38,18 @@ class App extends Component {
       });
     });
   };
+
+  setDataFromLogin(data, uri) {
+    // right now only receiving uid, once backend hooks up
+    // everything else, can setState for the other fields
+    // setState asynchronous, so make sure the state is set
+    // before window change
+    this.setState({ data: data, uri: uri }, () => {
+      localStorage.setItem('data', data);
+      localStorage.setItem('uri', uri)
+      this.props.history.push('/home');
+    });
+  }
 
   render() {
     const theme = createMuiTheme({
@@ -49,12 +67,17 @@ class App extends Component {
         <Fab color="primary" 
           aria-label="change theme" 
           onClick={() => this.handleThemeChange()}
-          style={{position: 'absolute', right: '0', bottom: '0', margin: '20px'}}
+          style={{position: 'fixed', top: 'auto', right: 20, bottom: 20, left: 'auto'}}
         >
           {this.state.darkState ? <Brightness7Icon/> : <Brightness2Icon/>}
         </Fab>
-        <Route exact path="/" component = { Login }/>
-        <Route exact path="/home" component = { Home }/>
+        <Route exact path="/" render={(props) => (
+          <Login {...props} setDataFromLogin={this.setDataFromLogin.bind(this)}/>
+        )}/>
+        <Route exact path="/home" render={() => (
+          // similar to how uid is passed in, the other data would be as well
+          <Home data={this.state.data} uri={this.state.uri}/>
+        )}/>
       </ThemeProvider>
     );
   }

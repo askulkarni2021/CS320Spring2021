@@ -14,9 +14,6 @@ import MenuList from '@material-ui/core/MenuList';
 const drawerWidth = 250;
 
 const useStyles = makeStyles((theme) => ({
-  root: {
-    display: 'flex',
-  },
   drawer: {
     width: drawerWidth,
     flexShrink: 0,
@@ -24,18 +21,13 @@ const useStyles = makeStyles((theme) => ({
   drawerPaper: {
     width: drawerWidth,
   },
-  content: {
-    flexGrow: 1,
-    backgroundColor: theme.palette.background.default,
-    padding: theme.spacing(3),
-  },
 }));
 
 export default function Navbar() {
   const classes = useStyles();
 
   return (
-    <div className={classes.root}>
+    <div>
       <CssBaseline />
       <Drawer
         className={classes.drawer}
