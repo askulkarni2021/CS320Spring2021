@@ -175,22 +175,47 @@ app.post('/api/profile_incoming', (req, res) => {
 			return employees;
 		};
 		const kudosCollection = db.collection("Kudos");	
-		const findKudos = async () => { 
-			const kudos = await kudosCollection.find({}).toArray();
-			return kudos;
-		};
+		
 		
 		const employees = findEmployees();
-		const kudos = findKudos();
+		var temp_incoming = []; // try
 
 		const find_incoming = async (employees) => { 
 			await employees.then(value  => {
 				console.log(value);
+				//adding incoming kudos
+				// value.forEach(function (e) {
+				// 	for (let i in e.incoming){
+				// 		console.log(e.incoming[i]);
+				// 		temp_incoming.push(e.incoming[i])}
+				// 	}
+				// );
+				//testing with uid:7, so I had to use outgoing instead of incoming kudos
+				console.log("I'm in");
+				value.forEach(function (e) {
+					for (let i in e.outgoing){
+						console.log(e.outgoing[i]);
+						temp_incoming.push(e.outgoing[i])}
+					}
+				);
+				//Testing by printing out array
+				console.log(temp_incoming);
 				});
 		}
 
 		find_incoming(employees);
-
+		const findKudos = async () => { 
+			const kudos = await kudosCollection.find({from: '5'}).toArray();
+			console.log("I'm in 2");
+			return kudos;
+		};
+		const kudos = findKudos();
+		const find_incoming_kudos = async (kudos) => { 
+			await kudos.then(value  => {
+				console.log(value);
+				});
+		}
+		find_incoming_kudos(kudos);
 		});
 });
 
