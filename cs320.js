@@ -233,6 +233,7 @@ app.post('/api/data/name_map_uid', (req, res) => {
 		send_data(employees);
 	});
   });
+
 app.post('/api/data/uid_map_name', (req, res) => {
 	console.log(req.body);
 	const companyName = req.body.uri;
@@ -268,3 +269,27 @@ app.post('/api/data/uid_map_name', (req, res) => {
 		send_data(employees);
 	});
   });
+
+// endpoint for all the outgoing kudos from an employee. 
+// expects {uri: companyname, uid: employeeID}
+// returns an array of outgoing kuods
+app.post('/api/outgoingKudos', (req, res) => { 
+	console.log(req.body);
+	const companyName = req.body.uri;
+	const uri = "mongodb+srv://user:cs320team1@cs320.t0mlm.mongodb.net/" + companyName + "?retryWrites=true&w=majority";
+	const client = new MongoClient(uri, { useNewUrlParser: true, useUnifiedTopology: true });
+	const employeeId = req.body.uid
+	client.connect(err => {
+		assert.equal(err, null);
+		const db = client.db(companyName);
+		const Kudos = db.collection("Kudos");
+
+		const findKudos = async () => {
+			const kudos = await Kudos.find({from: employeeId}).toArray(); //find kudos with field 'from' that is the same as employeeID
+			//console.log(kudos);
+			res.send(kudos);
+			return kudos;
+		};
+		findKudos();
+	});
+});
