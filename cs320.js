@@ -1,4 +1,6 @@
 const MongoClient = require('mongodb').MongoClient;
+const ObjectId = require('mongodb').ObjectID;
+
 const assert = require('assert');
 
 const express = require('express');
@@ -182,31 +184,30 @@ app.post('/api/profile_incoming', (req, res) => {
 
 		const find_incoming = async (employees) => { 
 			await employees.then(value  => {
-				console.log(value);
 				//adding incoming kudos
-				// value.forEach(function (e) {
-				// 	for (let i in e.incoming){
-				// 		console.log(e.incoming[i]);
-				// 		temp_incoming.push(e.incoming[i])}
-				// 	}
-				// );
-				//testing with uid:7, so I had to use outgoing instead of incoming kudos
-				console.log("I'm in");
 				value.forEach(function (e) {
-					for (let i in e.outgoing){
-						console.log(e.outgoing[i]);
-						temp_incoming.push(e.outgoing[i])}
+					for (let i in e.incoming){
+						console.log(e.incoming[i]);
+						temp_incoming.push(e.incoming[i])}
 					}
 				);
-				//Testing by printing out array
-				console.log(temp_incoming);
+				// //testing with uid:7, so I had to use outgoing instead of incoming kudos
+				// console.log("I'm in");
+				// value.forEach(function (e) {
+				// 	for (let i in e.outgoing){
+				// 		console.log(e.outgoing[i]);
+				// 		temp_incoming.push(e.outgoing[i])}
+				// 	}
+				// );
+				// //Testing by printing out array
+				// console.log(temp_incoming);
 				});
 		}
 
 		find_incoming(employees);
 		const findKudos = async () => { 
-			const kudos = await kudosCollection.find({from: '5'}).toArray();
-			console.log("I'm in 2");
+			//cannot find by a list of ObjectId, so use from instead
+			const kudos = await kudosCollection.find({"from": req.body.uid.toString()}).toArray();
 			return kudos;
 		};
 		const kudos = findKudos();
