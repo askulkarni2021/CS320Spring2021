@@ -10,6 +10,7 @@ import Box from '@material-ui/core/Box';
 import Grid from '@material-ui/core/Grid';
 import MenuItem from '@material-ui/core/MenuItem';
 import MenuList from '@material-ui/core/MenuList';
+import { Route, Link } from 'react-router-dom'
 
 const drawerWidth = 250;
 
@@ -49,9 +50,9 @@ export default function Navbar() {
             <Box textAlign="center" m={1} fontSize={15}>Software Engineer</Box>
             <MenuList>
                 <Grid container spacing={0} direction="column" alignItems="center" justify="center">
-                    <MenuItem><Emoji symbol="🏠"/> Home</MenuItem>
-                    <MenuItem><Emoji symbol="😺"/> Profile</MenuItem>
-                    <MenuItem><Emoji symbol="🌊"/>Logout</MenuItem>
+                    <MenuItem component={Link} to={'/home'}><Emoji symbol="🏠"/> Home</MenuItem>
+                    <MenuItem component={Link} to={'/profile'}><Emoji symbol="😺"/> Profile</MenuItem>
+                    <MenuItem component={Link} to={'/'}><Emoji symbol="🌊"/>Logout</MenuItem>
                 </Grid>
             </MenuList>
             <Grid container spacing={0} direction="column" alignItems="center" justify="center">
