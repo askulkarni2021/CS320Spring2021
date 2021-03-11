@@ -32,6 +32,7 @@ kudo : {
 */
 
 
+
 const port = process.env.PORT || 5000;
 
 app.listen(port, () => console.log(`Listening on port ${port}`));
@@ -43,6 +44,7 @@ app.listen(port, () => console.log(`Listening on port ${port}`));
 
 app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({ extended: true }));
+
 
 
 //Login Pages Endpoints
@@ -267,4 +269,14 @@ app.post('/api/data/uid_map_name', (req, res) => {
 		};
 		send_data(employees);
 	});
-  });
+});
+
+var month = 2;
+// request consists of the month for which the rockstar is desired
+app.post('/api/test_get_rockstar', (req, res) => {
+	console.log("before request: " + month);
+	month = req.body.month;
+	console.log("after request: " + month);
+	res.send({serverMonth: month});
+	//currentMonth = new Date().getMonth();
+});
