@@ -1,4 +1,6 @@
 const MongoClient = require('mongodb').MongoClient;
+const ObjectId = require('mongodb').ObjectID;
+
 const assert = require('assert');
 
 const express = require('express');
@@ -29,6 +31,15 @@ kudo : {
 	kudo : {type : String,  explaination : "The actual text of the kudo"},
 	reson:
 }
+
+Rockstar of the month (user flow):
+
+Having 2 endpoint using and an additional database for storing information abour the 
+previos ROM employee. Using timestamp to see if it is the first of the month 
+and then exploit a variable called kudosForThisMonth which needs to be set to 0 
+on the first after aking the max of the previous month and storing it in the 
+ROM database
+
 */
 
 
@@ -40,14 +51,11 @@ app.listen(port, () => console.log(`Listening on port ${port}`));
 // 	//correct password = rodriguezka
 // 	query = {email:"Kaitlin_Rodriguez@outbacktechnology.com", password:"rodriguezka"}
 
-
-
 app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({ extended: true }));
 
-
-
 //Login Pages Endpoints
+
 app.post('/api/verify', (req, res) => {
 	console.log(req.body);
 	const companyName = req.body.uri;
@@ -151,6 +159,10 @@ app.post('/api/all_kudos', (req, res) => {
 
 //Profle page Endpoints
 
+
+//Expects - {uri , uid(of user)}
+//Returns - An array of all inccoming kudos for this user!
+
 app.post('/api/profile_incoming', (req, res) => {
 	console.log(req.body);
 	const companyName = req.body.uri;
@@ -158,44 +170,92 @@ app.post('/api/profile_incoming', (req, res) => {
 	const client = new MongoClient(uri, { useNewUrlParser: true, useUnifiedTopology: true });
 
   	client.connect(err => {
-	assert.equal(err, null);
-	const db = client.db(companyName);
-	const employeesCollection = db.collection("Employees Database");
-	const findEmployees = async () => { 
-		const employees = await employeesCollection.find({}).toArray();
-			//console.log(employees);
-		return employees;
-	};
-	const kudosCollection = db.collection("Kudos");	
-	const findKudos = async () => { 
-		const kudos = await kudosCollection.find({}).toArray();
-			//console.log(employees);
-		return kudos;
-	};
-	const employees = findEmployees();
-	const kudos = findKudos();
-
-	const find_incoming = async (employees,kudos,user) => { 
-		var employee;
-		await employees.then(value  => {
-			value.forEach(function(element){
-				if(element.email === user.email){
-				 	employee = element;
-				}
-			})
-		});
-		await kudos.then(value  => {
-			const incoming_kudos = [];
-			value.forEach(function(element){
-			//Need to work on this part, need help. Cant access the employee variable
-				
-			})
-			console.log(incoming_kudos);
-		});
+		assert.equal(err, null);
+		const db = client.db(companyName);
+		const employeesCollection = db.collection("Employees Database");
+		const findEmployees = async () => { 
+			const employees = await employeesCollection.find({'employeeId':req.body.uid}).toArray();
+			return employees;
+		};
+		const kudosCollection = db.collection("Kudos");	
 		
-	}
-	find_incoming(employees,kudos,req.body);
-	});
+		
+		const employees = findEmployees();
+		var temp_incoming = []; // try
+
+		const find_incoming = async (employees) => { 
+			await employees.then(value  => {
+				//adding incoming kudos
+				value.forEach(function (e) {
+					for (let i in e.incoming){
+						console.log(e.incoming[i]);
+						temp_incoming.push(e.incoming[i])}
+					}
+				);
+				// //testing with uid:7, so I had to use outgoing instead of incoming kudos
+				// console.log("I'm in");
+				// value.forEach(function (e) {
+				// 	for (let i in e.outgoing){
+				// 		console.log(e.outgoing[i]);
+				// 		temp_incoming.push(e.outgoing[i])}
+				// 	}
+				// );
+				// //Testing by printing out array
+				// console.log(temp_incoming);
+				});
+		}
+
+		find_incoming(employees);
+		const findKudos = async () => { 
+			//cannot find by a list of ObjectId, so use from instead
+			const kudos = await kudosCollection.find({"from": req.body.uid.toString()}).toArray();
+			return kudos;
+		};
+		const kudos = findKudos();
+		const find_incoming_kudos = async (kudos) => { 
+			await kudos.then(value  => {
+				console.log(value);
+				});
+		}
+		find_incoming_kudos(kudos);
+		});
+});
+
+//Expects - {uri , uid(of user)}
+//Returns - An array of all outgoing kudos for this user!
+
+app.post('/api/profile_outcoming', (req, res) => {
+	console.log(req.body);
+	const companyName = req.body.uri;
+	const uri = "mongodb+srv://user:cs320team1@cs320.t0mlm.mongodb.net/" + companyName + "?retryWrites=true&w=majority";
+	const client = new MongoClient(uri, { useNewUrlParser: true, useUnifiedTopology: true });
+
+  	client.connect(err => {
+		assert.equal(err, null);
+		const db = client.db(companyName);
+		const employeesCollection = db.collection("Employees Database");
+		const findEmployees = async () => { 
+			const employees = await employeesCollection.find({'employeeId':req.body.uid}).toArray();
+			return employees;
+		};
+		const kudosCollection = db.collection("Kudos");	
+		const findKudos = async () => { 
+			const kudos = await kudosCollection.find({}).toArray();
+			return kudos;
+		};
+		
+		const employees = findEmployees();
+		const kudos = findKudos();
+
+		const find_outgoing = async (employees) => { 
+			await employees.then(value  => {
+				console.log(value);
+				});
+		}
+
+		find_outgoing(employees);
+
+		});
 });
 
 
@@ -235,6 +295,7 @@ app.post('/api/data/name_map_uid', (req, res) => {
 		send_data(employees);
 	});
   });
+
 app.post('/api/data/uid_map_name', (req, res) => {
 	console.log(req.body);
 	const companyName = req.body.uri;
