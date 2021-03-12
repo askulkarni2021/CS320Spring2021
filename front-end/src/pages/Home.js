@@ -36,7 +36,7 @@ export default function Home(props) {
   const styles = useStyles();
 
   useEffect(() => {
-    console.log('useeffect ran');
+
     getKudos();
     const companies = {
       'starship-entertainment': 'Starship Entertainment',
@@ -88,7 +88,7 @@ export default function Home(props) {
           alignItems="center"          
           >
           {kudos && employees[5] ? kudos.map((kudo, index) => {
-              return <Kudo to={employees[kudo.to].name} from={employees[kudo.from].name} message={kudo.kudo} index={index}/>
+              return <Kudo to={employees[kudo.to].name} from={employees[kudo.from].name} message={kudo.kudo} key={index}/>
           }) : 'loading'  }
           </Grid>
       </div>

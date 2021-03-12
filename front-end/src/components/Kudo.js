@@ -15,11 +15,10 @@ export default function Kudo(props) {
     const styles = useStyles;
 
     return(
-      <Grid
-      item
-      style={{width: '600px', margin: '10px'}}
-      key={props.index}>
-        <Card className={styles.root} key={props.index}>
+        <Grid
+        item
+        style={{width: '600px', margin: '10px'}}>
+        <Card className={styles.root}>
             <CardContent>
             <Typography
                 className={styles.title}
@@ -36,6 +35,6 @@ export default function Kudo(props) {
                 <Button size="small" variant="contained" color="secondary">Team Player</Button>
             </CardActions>
         </Card>
-      </Grid>
+        </Grid>
     )
 }
