@@ -154,8 +154,8 @@ app.post('/api/all_kudos', (req, res) => {
  	});
  });
 
-//Profle page Endpoints
 
+//Profle page Endpoints
 
 //Expects - {uri , uid(of user)}
 //Returns - An array of all inccoming kudos for this user!
@@ -218,45 +218,33 @@ app.post('/api/profile_incoming', (req, res) => {
 		});
 });
 
-//Expects - {uri , uid(of user)}
+
+//Expects - {uri , uid(of user as a string)}
 //Returns - An array of all outgoing kudos for this user!
 
-app.post('/api/profile_outcoming', (req, res) => {
+app.post('/api/profile_outgoing', (req, res) => { 
 	console.log(req.body);
 	const companyName = req.body.uri;
 	const uri = "mongodb+srv://user:cs320team1@cs320.t0mlm.mongodb.net/" + companyName + "?retryWrites=true&w=majority";
 	const client = new MongoClient(uri, { useNewUrlParser: true, useUnifiedTopology: true });
-
-  	client.connect(err => {
+	const employeeId = req.body.uid
+	client.connect(err => {
 		assert.equal(err, null);
 		const db = client.db(companyName);
-		const employeesCollection = db.collection("Employees Database");
-		const findEmployees = async () => { 
-			const employees = await employeesCollection.find({'employeeId':req.body.uid}).toArray();
-			return employees;
-		};
-		const kudosCollection = db.collection("Kudos");	
-		const findKudos = async () => { 
-			const kudos = await kudosCollection.find({}).toArray();
+		const Kudos = db.collection("Kudos");
+
+		const findKudos = async () => {
+			const kudos = await Kudos.find({from: employeeId}).toArray(); //find kudos with field 'from' that is the same as employeeID
+			console.log(kudos);
+			res.send(kudos);
 			return kudos;
 		};
-		
-		const employees = findEmployees();
-		const kudos = findKudos();
-
-		const find_outgoing = async (employees) => { 
-			await employees.then(value  => {
-				console.log(value);
-				});
-		}
-
-		find_outgoing(employees);
-
-		});
+		findKudos()
+	});
 });
 
-
 // Data Sending Endpoints
+
 app.post('/api/data/name_map_uid', (req, res) => {
 	console.log(req.body);
 	const companyName = req.body.uri;
@@ -267,14 +255,8 @@ app.post('/api/data/name_map_uid', (req, res) => {
 		assert.equal(err, null);
 		const db = client.db(companyName);
 		const employeesCollection = db.collection("Employees Database");
-		const findItems = async () => { 
-			const employees = await employeesCollection.find({}).toArray();
-			//console.log(employees);
-			client.close();
-			return employees;
-		};
 
-		const employees = findItems();
+		const employees = findEmployees(employeesCollection);
 
 		const send_data = async (employees,query) => {
 			const emp = {};
@@ -303,14 +285,8 @@ app.post('/api/data/uid_map_name', (req, res) => {
 		assert.equal(err, null);
 		const db = client.db(companyName);
 		const employeesCollection = db.collection("Employees Database");
-		const findItems = async () => { 
-			const employees = await employeesCollection.find({}).toArray();
-			//console.log(employees);
-			client.close();
-			return employees;
-		};
 
-		const employees = findItems();
+		const employees = findEmployees(employeesCollection);
 
 		const send_data = async (employees,query) => {
 			const emp = {};
