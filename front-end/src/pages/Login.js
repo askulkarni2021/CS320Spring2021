@@ -2,7 +2,6 @@ import React, { Component } from 'react';
 import { Button, Grid, TextField, Typography, FormControl, InputLabel,
 OutlinedInput, InputAdornment, IconButton } from '@material-ui/core'
 import { Visibility, VisibilityOff } from '@material-ui/icons'
-import Emoji from '../components/Emoji'
 import logo from '../kudos_logo.png'
 
 class Login extends Component {
