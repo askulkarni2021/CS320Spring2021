@@ -53,6 +53,14 @@ app.listen(port, () => console.log(`Listening on port ${port}`));
 app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({ extended: true }));
 
+const findEmployees = async (employeesCollection) => { 
+	const employees = await employeesCollection.find({}).toArray();
+	return employees;
+};
+const findKudos = async (kudosCollection,filter_query) => { 
+	const kudos = await kudosCollection.find(filter_query).toArray();
+	return kudos;
+};
 //Login Pages Endpoints
 
 app.post('/api/verify', (req, res) => {
@@ -65,13 +73,7 @@ app.post('/api/verify', (req, res) => {
 		assert.equal(err, null);
 		const db = client.db(companyName);
 		const employeesCollection = db.collection("Employees Database");
-		const findItems = async () => { 
-			const employees = await employeesCollection.find({}).toArray();
-			client.close();
-			return employees;
-		};
-
-		const employees = findItems();
+		const employees = findEmployees(employeesCollection);
 
 		const verify = async (employees,query) => {
 			found = false;
@@ -142,11 +144,7 @@ app.post('/api/all_kudos', (req, res) => {
 		assert.equal(err, null);
 		const db = client.db(companyName);
 		const kudosCollection = db.collection("Kudos");	
-		const findKudos = async () => { 
-			const kudos = await kudosCollection.find({}).toArray();
-			return kudos;
-		};
-		const kudos = findKudos();
+		const kudos = findKudos(kudosCollection,{});
 		const find_all = async (kudos) => { 
 			await kudos.then(value  => {
 				res.send(value.reverse());
