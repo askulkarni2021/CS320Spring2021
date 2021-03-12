@@ -33,7 +33,7 @@ export default function Home(props) {
   const [company, setCompany] = useState('');
   const [employees, setEmployees] = useState({});
   const [kudos, setKudos] = useState([]);
-  const styles = useStyles();
+  const classes = useStyles();
 
   useEffect(() => {
 
@@ -77,9 +77,9 @@ export default function Home(props) {
   }
 
   return (
-    <div className={styles.root}>
+    <div className={classes.root}>
       <Navbar/>
-      <div className={styles.content}>
+      <div className={classes.content}>
           <Typography variant="h4" style={{margin: '20px'}}> {company} </Typography>
           <Grid
           container

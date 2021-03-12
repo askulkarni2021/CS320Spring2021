@@ -12,16 +12,16 @@ const useStyles = makeStyles({
 });
 
 export default function Kudo(props) {
-    const styles = useStyles;
+    const classes = useStyles;
 
     return(
         <Grid
         item
         style={{width: '600px', margin: '10px'}}>
-        <Card className={styles.root}>
+        <Card className={classes.root}>
             <CardContent>
             <Typography
-                className={styles.title}
+                className={classes.title}
                 color="textSecondary"
                 gutterBottom
             >
