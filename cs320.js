@@ -333,6 +333,18 @@ app.post('/api/data/uid_map_name', (req, res) => {
 });
 
 var month = 2;
+/* So each employee needs a field called numKudos, which is reset on the first of every month
+ * This end point should take an employeeId, and company name in the request.
+ * Get the current date. 
+ * If it is the first of the month, and rockstar hasnt yet been updated, we need to update rockstar of the month 
+ * Checking if it is the first of the month is easy. In order to check if rockstar of the month has yet been updated,
+ * we need to store the rockstar of the month in each company's meta collection (this is the data which contains name, company ID, and values)
+ * ROM entry is a JSON which has employeeId, and the month for which that employee is ROM. 
+ * If it is the first of the month, and the month in the ROM entry for the company meta collection is LAST month, 
+ * then the current ROM has to be updated. Updating it should be straight forward. 
+ * After updating the ROM for the company, set the numKudos counter for each employee back to 0.
+ * After exiting that whole if block, fall through out of the if stmt (no else)
+ * In this place, just get the current ROM for the company requested. */
 // request consists of the month for which the rockstar is desired
 app.post('/api/test_get_rockstar', (req, res) => {
 	console.log("before request: " + month);
