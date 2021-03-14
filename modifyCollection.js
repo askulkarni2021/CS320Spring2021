@@ -12,31 +12,15 @@ const uri = "mongodb+srv://user:cs320team1@cs320.t0mlm.mongodb.net/outback-tech?
 const client = new MongoClient(uri, { useNewUrlParser: true, useUnifiedTopology: true });
 
 client.connect(err => {
-	console.log(process.argv);
+	const args = process.argv.slice(2);
+	console.log(args);
+	const company = args[0];
+	const collection = args[1];
 	assert.equal(err, null);
-	const db = client.db("outback-tech");
-	const employeesCollection = db.collection("Employees Database");
-	/*const modifyEntries = async () => {
+	const db = client.db(company);
+	const kudos = db.collection(collection);
+	const modifyKudos = async () => {
 		// ************ ONLY CHANGE THINGS BETWEEN THESE CURLY BRACES *************** 
-		// mongodb docs explain whats going on here pretty well: https://docs.mongodb.com/manual/reference/method/db.collection.updateMany/
-		await employeesCollection.updateMany(
-			{'isAdmin': {$exists : false}}, 
-			{ $set : 
-				{
-					"idAdmin": false,
-				}
-			}
-		);
-		// now we want to update CEO to have admin role
-		await employeesCollection.updateOne(
-			{'position': 'CEO'},
-			{ $set : 
-				{
-					"idAdmin": true,
-				}
-			}
-		);
-		client.close();
 	}
-	modifyEntries();*/
+	modifyKudos();
 });
