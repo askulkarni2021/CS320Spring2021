@@ -306,24 +306,47 @@ app.post('/api/data/uid_map_name', (req, res) => {
 	});
 });
 
-var month = 2;
+//var month = 2;
 /* So each employee needs a field called numKudos, which is reset on the first of every month
  * This end point should take an employeeId, and company name in the request.
- * Get the current date. 
+ * Get the current month. 
  * If it is the first of the month, and rockstar hasnt yet been updated, we need to update rockstar of the month 
  * Checking if it is the first of the month is easy. In order to check if rockstar of the month has yet been updated,
  * we need to store the rockstar of the month in each company's meta collection (this is the data which contains name, company ID, and values)
  * ROM entry is a JSON which has employeeId, and the month for which that employee is ROM. 
  * If it is the first of the month, and the month in the ROM entry for the company meta collection is LAST month, 
- * then the current ROM has to be updated. Updating it should be straight forward. 
+ * then the current ROM has to be updated. NOTE: I THINK WE ONLY NEED TO CHECK IF THE ROM MONTH IS FROM LAST MONTH, NOTHING TO DO WITH THE EXACT DATE
+ * Updating it should be straight forward. 
  * After updating the ROM for the company, set the numKudos counter for each employee back to 0.
  * After exiting that whole if block, fall through out of the if stmt (no else)
  * In this place, just get the current ROM for the company requested. */
+// TODO: for testing this endpoint, just copy all the data thats currently in the outback-tech db into the test db
 // request consists of the month for which the rockstar is desired
-app.post('/api/test_get_rockstar', (req, res) => {
-	console.log("before request: " + month);
-	month = req.body.month;
-	console.log("after request: " + month);
-	res.send({serverMonth: month});
-	//currentMonth = new Date().getMonth();
+app.post('/api/get_rockstar', (req, res) => {
+	const companyName = req.body.uri;
+	const uri = "mongodb+srv://user:cs320team1@cs320.t0mlm.mongodb.net/" + companyName + "?retryWrites=true&w=majority";
+	const client = new MongoClient(uri, { useNewUrlParser: true, useUnifiedTopology: true });
+	client.connect(err => {
+		// We first need to get the ROM entry from the company's values collection
+		const db = client.db(companyName);
+		const valuesCollection = db.collection("Values");
+		// first arg is the filter (empty), second arg is the fields we want to select (only ROM)
+		// equivalent to "select _id, ROM from valuesCollection"
+		const getROM = async () => await valuesCollection.findOne({}, { ROM : 1});
+		// The ROM entry is of the format {employeeId: int, month: int} 
+		// The month field represents the most recent month for which ROM was updated
+		let romEntry = getROM();
+		// TODO: I think there might be some problems with promises in this code, so make sure to test on the test db
+		romEntry.then(ROM => {
+			const currentMonth = new Date().getMonth();
+			if (currentMonth != ROM.month) { // this is the case where ROM needs to be updated, but hasnt been updated yet
+				// find next ROM by going through employees collection and finding max numKudos
+				// then set numKudos to zero for all employees
+				// then update the valuesCollection ROM field to the new ROM's employeeId, and current month
+				// and also assign ROM to the new ROM
+			}
+			// at this point, either the ROM was correctly updated, or it didnt need to be updated, so we can just send the ROM
+			res.send(ROM);
+		});
+	});
 });
