@@ -8,6 +8,7 @@ import {
 } from "@material-ui/core";
 import { makeStyles } from '@material-ui/core/styles';
 import Navbar from '../components/Navbar';
+import Rockstar from '../components/Rockstar';
 import Kudo from '../components/Kudo';
 
 const useStyles = makeStyles(theme => ({
@@ -26,7 +27,7 @@ const useStyles = makeStyles(theme => ({
     color: theme.palette.text.primary,
   },
 }));
-  
+
 export default function Home(props) {
   const [company, setCompany] = useState('');
   const [employees, setEmployees] = useState({});
@@ -42,10 +43,10 @@ export default function Home(props) {
     }
     setCompany(companies[localStorage.getItem('uri')]);
   }, []);
-  
+
   function getKudos() {
     const uri = localStorage.getItem('uri')
-    const formData = {uri}; 
+    const formData = {uri};
     fetch('http://localhost:5000/api/data/uid_map_name',
       {
         method: 'POST',
@@ -95,7 +96,7 @@ export default function Home(props) {
             }) : 'loading'  }
           </Grid>
           <Grid item xs={4}>
-            {/* Rockstar goes here */}
+            <Rockstar/>
           </Grid>
         </Grid>
       </div>
