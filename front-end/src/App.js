@@ -10,7 +10,7 @@ import {
   blue,
   orange,
 } from "@material-ui/core/colors";
-import { useHistory } from "react-router-dom";
+//import { useHistory } from "react-router-dom";
 
 let theme = createMuiTheme({
   palette: {
@@ -22,15 +22,16 @@ let theme = createMuiTheme({
 })
 
 export default function App() {
+  const [isLoggedIn, setLoggedIn] = useState(localStorage.getItem('isLoggedIn') || false)
   const [darkState, setDarkState] = useState(localStorage.getItem('darkState') || false) ;
   const [palleteType, setPalleteType] = useState(localStorage.getItem('palleteType') || 'light');
   const [mainPrimary, setMainPrimary] = useState(localStorage.getItem('mainPrimary') || blue[200]);
   const [data, setData] = useState('');
   const [uri, setUri] = useState('');
-  let history = useHistory();
+  //let history = useHistory();
   
   const handleThemeChange = () => {
-    setDarkState(!darkState)
+    setDarkState(!darkState);
   };
 
   function setDataFromLogin(data, uri) {
@@ -38,17 +39,22 @@ export default function App() {
     // everything else, can setState for the other fields
     // setState asynchronous, so make sure the state is set
     // before window change
-    setData(data)
-    setUri(uri)
+    setData(data);
+    setUri(uri);
     localStorage.setItem('data', data);
-    localStorage.setItem('uri', uri)
-    history.push('/home');
+    localStorage.setItem('uri', uri);
+    setLoggedIn(true);
+    // history.push('/home');
   }
 
   useEffect(() => {
+    localStorage.setItem('isLoggedIn', isLoggedIn);
+  }, [isLoggedIn])
+
+  useEffect(() => {
+    localStorage.setItem('darkState', darkState);
     const palleteType = darkState ? "dark" : "light";
     const mainPrimary = darkState ? orange[500] : blue[500];
-    localStorage.setItem('darkState', darkState);
     setMainPrimary(mainPrimary);
     localStorage.setItem('mainPrimary', mainPrimary);
     setPalleteType(palleteType);
@@ -64,9 +70,10 @@ export default function App() {
   }, [darkState]);
   
   useEffect(() => {
-    localStorage.setItem('darkState', darkState);
+    localStorage.setItem('isLoggedIn', isLoggedIn);
     localStorage.setItem('mainPrimary', mainPrimary);
-    localStorage.setItem('palleteType', palleteType);  
+    localStorage.setItem('palleteType', palleteType);
+    localStorage.setItem('darkState', darkState);  
   }, []);
 
   return (
@@ -80,12 +87,12 @@ export default function App() {
         {darkState ? <Brightness7Icon/> : <Brightness2Icon/>}
       </Fab>
       <Route exact path="/" render={(props) => (
-        <Login {...props} setDataFromLogin={setDataFromLogin.bind(this)}/>
+        isLoggedIn ? <Home data={data} uri={uri}/> : <Login {...props} setDataFromLogin={setDataFromLogin.bind(this)}/>
       )}/>
-      <Route exact path="/home" render={() => (
+      {/* <Route exact path="/home" render={() => (
         // similar to how uid is passed in, the other data would be as well
         <Home data={data} uri={uri}/>
-      )}/>
+      )}/> */}
     </ThemeProvider>
   );
 };
