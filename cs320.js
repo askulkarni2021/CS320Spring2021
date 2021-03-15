@@ -267,3 +267,5 @@ app.post('/api/data/uid_map_name', (req, res) => {
 		send_data(employees);
 	});
   });
+
+app.post('/api/data/values-emojis', (req, res) => {});
