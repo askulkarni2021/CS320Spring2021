@@ -74,7 +74,7 @@ export default function Home(props) {
 
   return (
     <div className={classes.root}>
-      <Navbar/>
+      <Navbar logout={props.logout}/>
       <div className={classes.content}>
         <AppBar position="sticky" elevation={0} className={classes.appBar}>
           <Toolbar>
