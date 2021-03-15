@@ -22,7 +22,7 @@ let theme = createMuiTheme({
 })
 
 export default function App() {
-  const [isLoggedIn, setLoggedIn] = useState(false)
+  const [isLoggedIn, setLoggedIn] = useState(localStorage.getItem('isLoggedIn') || false)
   const [darkState, setDarkState] = useState(localStorage.getItem('darkState') || false) ;
   const [palleteType, setPalleteType] = useState(localStorage.getItem('palleteType') || 'light');
   const [mainPrimary, setMainPrimary] = useState(localStorage.getItem('mainPrimary') || blue[200]);
