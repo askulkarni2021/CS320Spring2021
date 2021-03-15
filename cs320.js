@@ -165,57 +165,20 @@ app.post('/api/profile_incoming', (req, res) => {
 	const companyName = req.body.uri;
 	const uri = "mongodb+srv://user:cs320team1@cs320.t0mlm.mongodb.net/" + companyName + "?retryWrites=true&w=majority";
 	const client = new MongoClient(uri, { useNewUrlParser: true, useUnifiedTopology: true });
-
+	const employeeId = req.body.uid
   	client.connect(err => {
 		assert.equal(err, null);
 		const db = client.db(companyName);
-		const employeesCollection = db.collection("Employees Database");
-		const findEmployees = async () => { 
-			const employees = await employeesCollection.find({'employeeId':req.body.uid}).toArray();
-			return employees;
-		};
-		const kudosCollection = db.collection("Kudos");	
-		
-		
-		const employees = findEmployees();
-		var temp_incoming = []; // try
-
-		const find_incoming = async (employees) => { 
-			await employees.then(value  => {
-				//adding incoming kudos
-				value.forEach(function (e) {
-					for (let i in e.incoming){
-						console.log(e.incoming[i]);
-						temp_incoming.push(e.incoming[i])}
-					}
-				);
-				// //testing with uid:7, so I had to use outgoing instead of incoming kudos
-				// console.log("I'm in");
-				// value.forEach(function (e) {
-				// 	for (let i in e.outgoing){
-				// 		console.log(e.outgoing[i]);
-				// 		temp_incoming.push(e.outgoing[i])}
-				// 	}
-				// );
-				// //Testing by printing out array
-				// console.log(temp_incoming);
-				});
-		}
-
-		find_incoming(employees);
+		const Kudos = db.collection("Kudos");
+			
 		const findKudos = async () => { 
-			//cannot find by a list of ObjectId, so use from instead
-			const kudos = await kudosCollection.find({"from": req.body.uid.toString()}).toArray();
+			const kudos = await Kudos.find({to: employeeId}).toArray();
+			console.log(kudos);
+			res.send(kudos);
 			return kudos;
 		};
-		const kudos = findKudos();
-		const find_incoming_kudos = async (kudos) => { 
-			await kudos.then(value  => {
-				console.log(value);
-				});
-		}
-		find_incoming_kudos(kudos);
-		});
+		findKudos();
+	});
 });
 
 
@@ -227,7 +190,7 @@ app.post('/api/profile_outgoing', (req, res) => {
 	const companyName = req.body.uri;
 	const uri = "mongodb+srv://user:cs320team1@cs320.t0mlm.mongodb.net/" + companyName + "?retryWrites=true&w=majority";
 	const client = new MongoClient(uri, { useNewUrlParser: true, useUnifiedTopology: true });
-	const employeeId = req.body.uid
+	const employeeId = req.body.uid;
 	client.connect(err => {
 		assert.equal(err, null);
 		const db = client.db(companyName);
@@ -239,7 +202,7 @@ app.post('/api/profile_outgoing', (req, res) => {
 			res.send(kudos);
 			return kudos;
 		};
-		findKudos()
+		findKudos();
 	});
 });
 
