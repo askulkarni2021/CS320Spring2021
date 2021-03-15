@@ -1,6 +1,9 @@
 import React, { useState, useEffect } from "react";
 import {
+  AppBar,
+  Divider,
   Grid,
+  Toolbar,
   Typography,
 } from "@material-ui/core";
 import { makeStyles } from '@material-ui/core/styles';
@@ -11,21 +14,16 @@ const useStyles = makeStyles(theme => ({
   root: {
     display: 'flex',
   },
-  bullet: {
-    display: 'inline-block',
-    margin: '0 2px',
-    transform: 'scale(0.8)',
-  },
-  title: {
-    fontSize: 14,
-  },
-  pos: {
-    marginBottom: 12,
-  },
   content: {
       flexGrow: 1,
       backgroundColor: theme.palette.background.default,
-      padding: theme.spacing(3),
+  },
+  kudos: {
+    paddingLeft: theme.spacing(2),
+  },
+  appBar: {
+    backgroundColor: theme.palette.background.default,
+    color: theme.palette.text.primary,
   },
 }));
   
@@ -36,7 +34,6 @@ export default function Home(props) {
   const classes = useStyles();
 
   useEffect(() => {
-
     getKudos();
     const companies = {
       'starship-entertainment': 'Starship Entertainment',
@@ -61,36 +58,46 @@ export default function Home(props) {
       .then(response => response.json()).then(data => {
         setEmployees(data)
       });
-
-      fetch('http://localhost:5000/api/all_kudos',
-      {
-        method: 'POST',
-        headers: {
-          "Accept": "application/json",
-          "Content-Type": "application/json"
-        },
-        body: JSON.stringify(formData)
-      })
-      .then(response => response.json()).then(data => {
-        setKudos(data)
-      });
+    fetch('http://localhost:5000/api/all_kudos',
+    {
+      method: 'POST',
+      headers: {
+        "Accept": "application/json",
+        "Content-Type": "application/json"
+      },
+      body: JSON.stringify(formData)
+    })
+    .then(response => response.json()).then(data => {
+      setKudos(data)
+    });
   }
 
   return (
     <div className={classes.root}>
       <Navbar/>
       <div className={classes.content}>
-          <Typography variant="h4" style={{margin: '20px'}}> {company} </Typography>
+        <AppBar position="sticky" elevation={0} className={classes.appBar}>
+          <Toolbar>
+            <Typography variant="h6">{company}</Typography>
+          </Toolbar>
+          <Divider variant="middle"/>
+        </AppBar>
+        <Grid container justify="space-between">
           <Grid
+          item xs={4}
           container
           direction="column"
           justify="flex-start"
-          alignItems="center"          
-          >
-          {kudos && employees[5] ? kudos.map((kudo, index) => {
-              return <Kudo to={employees[kudo.to].name} from={employees[kudo.from].name} message={kudo.kudo} key={index}/>
-          }) : 'loading'  }
+          alignItems="flex-start"
+          className={classes.kudos}>
+            {kudos && employees[5] ? kudos.map((kudo, index) => {
+                return <Kudo to={employees[kudo.to].name} from={employees[kudo.from].name} message={kudo.kudo} key={index}/>
+            }) : 'loading'  }
           </Grid>
+          <Grid item xs={4}>
+            {/* Rockstar goes here */}
+          </Grid>
+        </Grid>
       </div>
     </div>
   );

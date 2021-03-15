@@ -42,21 +42,21 @@ export default function Login(props) {
     const formData = {email, pass, uri}; 
     console.log(formData)
     fetch('http://localhost:5000/api/verify',
-      {
-        method: 'POST',
-        headers: {
-          "Accept": "application/json",
-          "Content-Type": "application/json"
-        },
-        body: JSON.stringify(formData)
-      })
-      .then(response => response.json()).then(data => {
-        if(data.found) {
-          props.setDataFromLogin(data, uri);
-        } else {
-          setInvalidLogin(true);
-        }
-      });
+    {
+      method: 'POST',
+      headers: {
+        "Accept": "application/json",
+        "Content-Type": "application/json"
+      },
+      body: JSON.stringify(formData)
+    })
+    .then(response => response.json()).then(data => {
+      if(data.found) {
+        props.setDataFromLogin(data, uri);
+      } else {
+        setInvalidLogin(true);
+      }
+    });
   }
 
   return (
