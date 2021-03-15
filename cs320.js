@@ -143,9 +143,21 @@ app.post('api/add_kudo_reaction', (req, res) => {
 		const db = client.db(companyName);
 		const kudosCollection = db.collection("Kudos");
 		const addReaction = async () => {
+			let kudoDocument = await kudosCollection.findOne(
+				{ "_id" : req.body.kudoID },
+			).toArray()[0]; // this is in an array, so get the first (and only) element
+			const reaction = req.body.reaction;
+			const reactionsTable = kudoDocument.reactions;
+			if (reactionsTable[reaction]) { // if the reaction is already in the table, just increment its value
+				reactionsTable[reaction] += 1;
+			} else {
+				reactionsTable[reaction] = 1;
+			}
 			return await kudosCollection.updateOne(
 				{ "_id" : req.body.kudoID },
-				{ $push: { reactions : req.body.reaction} }
+				{ $set:
+					{ "reactions": reactionsTable }
+				}
 			);
 		};
 		const updatedDocument = addReaction();
