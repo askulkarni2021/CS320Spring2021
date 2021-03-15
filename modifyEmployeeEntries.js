@@ -1,6 +1,5 @@
-/* The purpose of this is to initalize an "incoming" and "outgoing" list to each employee entry.
- * For each company added, the script only needs to be ran once, but running it more than once shouldnt hurt anything :) 
- * Hopefully soon this script can be modified to take in any company that is in the db as input, and operate on that instead of just outback-tech */
+/* This script could really be used to modify / delete / add any fields to the database, you just need to use a different function and change the arguments
+ * TODO: allow command line arguments to modify any arbitrary database (or maybe have an "all" option to modify every database...) */
 const MongoClient = require('mongodb').MongoClient;
 const assert = require('assert');
 
@@ -10,18 +9,26 @@ const client = new MongoClient(uri, { useNewUrlParser: true, useUnifiedTopology:
 client.connect(err => {
 	const db = client.db("outback-tech");
 	const employeesCollection = db.collection("Employees Database");
-	const initializePersonalKudos = async () => {
+	const modifyEmployees = async () => {
 		// mongodb docs explain whats going on here pretty well: https://docs.mongodb.com/manual/reference/method/db.collection.updateMany/
 		await employeesCollection.updateMany(
-			{'incoming': {$exists : false}, 'outgoing': {$exists : false}}, // only want to set fields if incoming and outgoing fields dont yet exist!
-			{ $set : // $set is the operation that sets a field to a specified value. in this case, we are just setting the fields to empty lists
+			{'isAdmin': {$exists : false}}, 
+			{ $set : 
 				{
-					"incoming": [],
-					"outgoing": []
+					"idAdmin": false,
+				}
+			}
+		);
+		// now we want to update CEO to have admin role
+		await employeesCollection.updateOne(
+			{'position': 'CEO'},
+			{ $set : 
+				{
+					"idAdmin": true,
 				}
 			}
 		);
 		client.close();
 	}
-	initializePersonalKudos();
+	modifyEmployees();
 });

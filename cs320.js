@@ -43,6 +43,7 @@ ROM database
 */
 
 
+
 const port = process.env.PORT || 5000;
 
 app.listen(port, () => console.log(`Listening on port ${port}`));
@@ -266,4 +267,79 @@ app.post('/api/data/uid_map_name', (req, res) => {
 		};
 		send_data(employees);
 	});
-  });
+});
+
+/* ************ not ready to merge yet, we need to populate the test db and test on that first ************
+ * So each employee needs a field called numKudos, which is reset whenever we need to get a new ROM
+ * Get the current month. 
+ * If rockstar hasnt yet been updated, we need to update rockstar of the month 
+ * In order to check if rockstar of the month has yet been updated,
+ * we need to store the rockstar of the month in each company's Rockstars collection
+ * Rockstars is a collection that stores all previous and current rockstars. Each entry is an empid, along with month
+ * If the most recent entry in Rockstars is not from last month, then we need to update the Rockstars collection with the ROM from this month
+ * Logic for why we are checking if the most recent entry is NOT from last month: 
+ * 		The ROM that is being displayed on the home page should be the employee with the most kudos from LAST month
+ * 		On the current month, we are still accumulating the numKudos for each employee. 
+ * 		Therefore, when querying the Rockstars collection, we want the CURRENT ROM to be dated as last month (because that is when they got their kudos)
+ * 		So lastMonth = currentMonth - 1
+ * Updating it should be straight forward. 
+ * After updating the ROM for the company, set the numKudos counter for each employee back to 0.
+ * Then we can just query the rockstars collection again, get the most recent, and send that into the response */
+// TODO: for testing this endpoint, just copy all the data thats currently in the outback-tech db into the test db
+// TODO: change the add_kudo endpoint to not push the kudo to incoming/outgoing arrays, increment numKudos for recipient
+// We will also need to initialize the Rockstars collection to some arbitrary employee as the first ROM (the ROM of february)
+// request consists of the company for which the rockstar is desired
+app.post('/api/get_rockstar', (req, res) => {
+	const companyName = req.body.uri;
+	const uri = "mongodb+srv://user:cs320team1@cs320.t0mlm.mongodb.net/" + companyName + "?retryWrites=true&w=majority";
+	const client = new MongoClient(uri, { useNewUrlParser: true, useUnifiedTopology: true });
+	client.connect(err => {
+		assert.equal(err, null);
+		const db = client.db(companyName);
+		const rockStarsCollection = db.collection("Rockstars");
+		const employeesCollection = db.collection("Employees Database");
+		const getROMs = async () => await rockStarsCollection.find({}).toArray();
+		let ROMsPromise = getROMS();
+		const employeesPromise = findEmployees(employeesCollection);
+		// TODO: Test this code on the test db
+		ROMsPromise.then(rockStars => {
+			// when getMonth returns 0 here, we end up with -1. -1 is not a month, so we need it to "wrap" around to 
+			// the last month (represented by 11). if javascript did modulo the expected way, -1 % 12 would return 11 like a cycle.
+			// instead, it returns -1. this breaks the definition of modulo in math :(
+			let lastMonth = new Date().getMonth() - 1;
+			// so we get expected modulo behavior on negative numbers
+			lastMonth = (12 + (lastMonth % 12)) % 12;
+			const mostRecentRockStar = rockStars[rockStars.length - 1];
+			// if the most recent rockstar of the month is not for last month, then we will need to update 
+			if (lastMonth != mostRecentRockStar.month) {
+				const insertNewROM = (employees) => {
+					// find the employee with the max number of kudos
+					const newROM = employees.reduce((acc, curr) => acc.numKudos >= curr.numKudos ? acc : curr);
+					// timestamp this newROM as the current month
+					newROM.month = (lastMonth + 1) % 12; // mod 12 because 12 months in a year
+					// now we need to insert this newROM into the rockStarsCollection (does this need to be async / await?)
+					rockStarsCollection.insertOne(newROM);
+				};
+				employeesPromise.then(insertNewROM);
+				// now we need to reset all the current employees numKudos to 0
+				const resetNumKudos = async () => {
+					await employeesCollection.updateMany(
+						{}, // update every employee
+						{ $set : // and set their numKudos field to 0
+							{
+								"numKudos": 0
+							}
+						}
+					);
+				};
+				resetNumKudos();
+			} 
+		});
+		// at this point, we need to get the (possibly) updated array of rockstars, and just send the most recent one into the response
+		ROMsPromise = getROMS();
+		ROMsPromise.then(rockStars => {
+			const ROM = rockStars[rockStars.length - 1];
+			res.send({employeeId : ROM.employeeId, month: ROM.month})
+		});
+	});
+});
