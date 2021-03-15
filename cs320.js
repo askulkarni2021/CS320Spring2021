@@ -164,8 +164,6 @@ app.post('api/add_kudo_reaction', (req, res) => {
 		// this needs to be tested
 		updatedDocument.then(doc => {
 			res.send(true);
-		}).catch(err => {
-			res.send(false);
 		});
 	});
 });
