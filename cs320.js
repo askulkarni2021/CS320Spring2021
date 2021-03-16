@@ -81,10 +81,12 @@ app.post('/api/verify', (req, res) => {
 				value.forEach(function(element){
 				  if(element.email === query.email){
 				    if(element.password===query.pass){
+				    	client.close();
 				    res.send({found:true, uid:element.employeeId});
 				}}
 				})
 			});
+			client.close();
 			res.send({found:found});
 		}
 		verify(employees,req.body)
@@ -126,6 +128,7 @@ app.post('/api/add_kudo', (req, res) => {
 			};
 			addToIncomingAndOutgoing(resultDoc);
 			// TODO: later on, we need to send better information here, like if the rockstar of the month has been updated
+			client.close();
 			res.send(true); 
 		};
 		add_kudo(req.body);
@@ -147,6 +150,7 @@ app.post('/api/all_kudos', (req, res) => {
 		const kudos = findKudos(kudosCollection,{});
 		const find_all = async (kudos) => { 
 			await kudos.then(value  => {
+				client.close();
 				res.send(value.reverse());
 			});
 		};
@@ -173,7 +177,7 @@ app.post('/api/profile_incoming', (req, res) => {
 			
 		const findKudos = async () => { 
 			const kudos = await Kudos.find({to: employeeId}).toArray();
-			console.log(kudos);
+			client.close();
 			res.send(kudos);
 			return kudos;
 		};
@@ -198,7 +202,7 @@ app.post('/api/profile_outgoing', (req, res) => {
 
 		const findKudos = async () => {
 			const kudos = await Kudos.find({from: employeeId}).toArray(); //find kudos with field 'from' that is the same as employeeID
-			console.log(kudos);
+			client.close();
 			res.send(kudos);
 			return kudos;
 		};
@@ -231,6 +235,7 @@ app.post('/api/data/name_map_uid', (req, res) => {
 				const data = {id:id, position:position}
 				emp[employee]=data;
 			})
+			client.close();
 			res.send(emp);
 		});
 		};
@@ -261,6 +266,7 @@ app.post('/api/data/uid_map_name', (req, res) => {
 				const data = {name:employee, position:position}
 				emp[id]=data;
 			})
+			client.close();
 			res.send(emp);
 		});
 		};
