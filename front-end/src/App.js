@@ -26,7 +26,7 @@ export default function App() {
   const [darkState, setDarkState] = useState(localStorage.getItem('darkState') || false) ;
   const [palleteType, setPalleteType] = useState(localStorage.getItem('palleteType') || 'light');
   const [mainPrimary, setMainPrimary] = useState(localStorage.getItem('mainPrimary') || blue[200]);
-  const [data, setData] = useState(localStorage.getItem('data') || null);
+  const [data, setData] = useState(JSON.parse(localStorage.getItem('data')) || null);
   const [uri, setUri] = useState(localStorage.getItem('uri') || null);
   //let history = useHistory();
   
@@ -44,7 +44,7 @@ export default function App() {
     // }
     setData(data);
     setUri(uri);
-    localStorage.setItem('data', data);
+    localStorage.setItem('data', JSON.stringify(data));
     localStorage.setItem('uri', uri);
     setLoggedIn(true);
     // history.push('/home');
