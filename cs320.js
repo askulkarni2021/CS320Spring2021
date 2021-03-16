@@ -119,12 +119,13 @@ app.post('/api/add_kudo', (req, res) => {
 						{ "employeeId": parseInt(to) }, // get the employee that is recieving the kudo
 						{ $inc: { "numKudos" : 1} } // want to push the kudo to the recipients incoming list
 					);
+					// for some reason calling client.close() outside of addToIncomingAndOutgoing caused the client to close before numKudos was incremented
+					// putting client.close() still ensures the client is closed before the response is sent and is closed after any db operation is done
+					client.close(); 
 				}
 				incrementNumKudos();
 			};
 			addToIncomingAndOutgoing(resultDoc);
-			// TODO: later on, we need to send better information here, like if the rockstar of the month has been updated
-			client.close();
 			res.send(true); 
 		};
 		add_kudo(req.body);
