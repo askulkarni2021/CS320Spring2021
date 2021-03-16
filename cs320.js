@@ -112,20 +112,15 @@ app.post('/api/add_kudo', (req, res) => {
 				let from = req.body.from;
 				kudoID = addedKudo.insertedId;
 				const employeesCollection = db.collection("Employees Database");
-				const updateGiverAndRecipient = async () => {
+				const incrementNumKudos = async () => {
 					await employeesCollection.updateOne(
 						{ "employeeId": parseInt(to) }, // get the employee that is recieving the kudo
-						{ $push: { incoming : kudoID} } // want to push the kudo to the recipients incoming list
-					);
-					await employeesCollection.updateOne(
-						{ "employeeId": parseInt(from) }, // get the employdd that is giving the kudo
-						{ $push: { outgoing : kudoID} }   // and push the kudo to their outgoing list
+						{ $inc: { numKudos : 1} } // want to push the kudo to the recipients incoming list
 					);
 				}
-				updateGiverAndRecipient();
+				incrementNumKudos();
 			};
 			addToIncomingAndOutgoing(resultDoc);
-			// TODO: later on, we need to send better information here, like if the rockstar of the month has been updated
 			res.send(true); 
 		};
 		add_kudo(req.body);
