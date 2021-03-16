@@ -117,7 +117,7 @@ app.post('/api/add_kudo', (req, res) => {
 				const incrementNumKudos = async () => {
 					await employeesCollection.updateOne(
 						{ "employeeId": parseInt(to) }, // get the employee that is recieving the kudo
-						{ $inc: { numKudos : 1} } // want to push the kudo to the recipients incoming list
+						{ $inc: { "numKudos" : 1} } // want to push the kudo to the recipients incoming list
 					);
 				}
 				incrementNumKudos();
