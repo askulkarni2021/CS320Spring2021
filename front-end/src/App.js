@@ -30,15 +30,18 @@ export default function App() {
   const [uri, setUri] = useState(localStorage.getItem('uri') || null);
   //let history = useHistory();
   
+  // toggles darkState
   const handleThemeChange = () => {
     setDarkState(!darkState);
   };
 
+  // passed down to Login.js, retrieves data from api call and sets state
+  // accordingly, also updates isLoggedin
   function setDataFromLogin(data, uri) {
-    // right now only receiving uid, once backend hooks up
-    // everything else, can setState for the other fields
-    // setState asynchronous, so make sure the state is set
-    // before window change
+    // data = {
+    // found: true/false
+    // uid: uid of user
+    // }
     setData(data);
     setUri(uri);
     localStorage.setItem('data', data);
@@ -47,16 +50,19 @@ export default function App() {
     // history.push('/home');
   }
 
+  // passed down to Navbar.js, removes saved data and updates isLoggedIn
   function logout(){
     localStorage.removeItem('uri');
     localStorage.removeItem('data');
     setLoggedIn(false);
   }
   
+  // runs on isLoggedIn toggle, updates local storage to match
   useEffect(() => {
     localStorage.setItem('isLoggedIn', isLoggedIn);
   }, [isLoggedIn])
 
+  // runs on darkState toggle and updates theme
   useEffect(() => {
     localStorage.setItem('darkState', darkState);
     const palleteType = darkState ? "dark" : "light";
@@ -75,6 +81,7 @@ export default function App() {
     })
   }, [darkState]);
   
+  // runs on reload/first visit, sets intial local storage from state
   useEffect(() => {
     localStorage.setItem('isLoggedIn', isLoggedIn);
     localStorage.setItem('mainPrimary', mainPrimary);
@@ -95,10 +102,6 @@ export default function App() {
       <Route exact path="/" render={(props) => (
         (isLoggedIn && data && uri) ? <Home data={data} uri={uri} logout={logout.bind(this)}/> : <Login {...props} setDataFromLogin={setDataFromLogin.bind(this)}/>
       )}/>
-      {/* <Route exact path="/home" render={() => (
-        // similar to how uid is passed in, the other data would be as well
-        <Home data={data} uri={uri}/>
-      )}/> */}
     </ThemeProvider>
   );
 };
