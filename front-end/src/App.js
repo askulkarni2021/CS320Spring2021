@@ -47,6 +47,12 @@ export default function App() {
     // history.push('/home');
   }
 
+  function logout(){
+    localStorage.removeItem('uri');
+    localStorage.removeItem('uid');
+    setLoggedIn(false);
+  }
+  
   useEffect(() => {
     localStorage.setItem('isLoggedIn', isLoggedIn);
   }, [isLoggedIn])
@@ -87,7 +93,7 @@ export default function App() {
         {darkState ? <Brightness7Icon/> : <Brightness2Icon/>}
       </Fab>
       <Route exact path="/" render={(props) => (
-        isLoggedIn ? <Home data={data} uri={uri}/> : <Login {...props} setDataFromLogin={setDataFromLogin.bind(this)}/>
+        isLoggedIn ? <Home data={data} uri={uri} logout={logout.bind(this)}/> : <Login {...props} setDataFromLogin={setDataFromLogin.bind(this)}/>
       )}/>
       {/* <Route exact path="/home" render={() => (
         // similar to how uid is passed in, the other data would be as well

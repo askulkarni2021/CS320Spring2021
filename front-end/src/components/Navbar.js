@@ -37,7 +37,7 @@ const useStyles = makeStyles((theme) => ({
   }
 }));
 
-export default function Navbar() {
+export default function Navbar(props) {
   const classes = useStyles();
 
   return (
@@ -75,7 +75,7 @@ export default function Navbar() {
                   <Grid container direction="column" alignItems="flex-start" justify="center" className={classes.dumb}>
                     <Button variant="contained" size="large" color="primary">+ Give Kudos</Button>
                   </Grid>
-                  <MenuItem m={1} className={classes.logout}>
+                  <MenuItem m={1} onClick={()=>props.logout()} className={classes.logout}>
                     <Typography variant="overline"><Emoji symbol="🌊"/>Logout</Typography>
                   </MenuItem>
               </Grid>
