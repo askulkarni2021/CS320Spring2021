@@ -82,10 +82,12 @@ app.post('/api/verify', (req, res) => {
 				value.forEach(function(element){
 				  if(element.email === query.email){
 				    if(element.password===query.pass){
+				    	client.close();
 				    res.send({found:true, uid:element.employeeId});
 				}}
 				})
 			});
+			client.close();
 			res.send({found:found});
 		}
 		verify(employees,req.body)
@@ -106,7 +108,7 @@ app.post('/api/add_kudo', (req, res) => {
 			const db = client.db(companyName);
 			const kudos = db.collection("Kudos");
 			// dont insert the whole query because otherwise the company name would be inserted in each kudo, which is unnecessary
-			let resultDoc = await kudos.insertOne({from: query.from, to: query.to, kudo: query.kudo});
+			let resultDoc = await kudos.insertOne({from: query.from, to: query.to, kudo: query.kudo, reactions: {}});
 			addToIncomingAndOutgoing = (addedKudo) => {
 				// NOTE: to and from are strings, not ints
 				let to = req.body.to;
@@ -116,9 +118,12 @@ app.post('/api/add_kudo', (req, res) => {
 				const incrementNumKudos = async () => {
 					await employeesCollection.updateOne(
 						{ "employeeId": parseInt(to) }, // get the employee that is recieving the kudo
-						{ $inc: { "numKudos" : 1} } // want to increment the number of kudos for this employee
+						{ $inc: { "numKudos" : 1} } // increment the number of kudos this employee has recieved
 					);
-				};
+					// for some reason calling client.close() outside of addToIncomingAndOutgoing caused the client to close before numKudos was incremented
+					// putting client.close() still ensures the client is closed before the response is sent and is closed after any db operation is done
+					client.close(); 
+				}
 				incrementNumKudos();
 			};
 			addToIncomingAndOutgoing(resultDoc);
@@ -143,6 +148,7 @@ app.post('/api/all_kudos', (req, res) => {
 		const kudos = findKudos(kudosCollection,{});
 		const find_all = async (kudos) => { 
 			await kudos.then(value  => {
+				client.close();
 				res.send(value.reverse());
 			});
 		};
@@ -169,7 +175,7 @@ app.post('/api/profile_incoming', (req, res) => {
 			
 		const findKudos = async () => { 
 			const kudos = await Kudos.find({to: employeeId}).toArray();
-			console.log(kudos);
+			client.close();
 			res.send(kudos);
 			return kudos;
 		};
@@ -194,7 +200,7 @@ app.post('/api/profile_outgoing', (req, res) => {
 
 		const findKudos = async () => {
 			const kudos = await Kudos.find({from: employeeId}).toArray(); //find kudos with field 'from' that is the same as employeeID
-			console.log(kudos);
+			client.close();
 			res.send(kudos);
 			return kudos;
 		};
@@ -227,6 +233,7 @@ app.post('/api/data/name_map_uid', (req, res) => {
 				const data = {id:id, position:position}
 				emp[employee]=data;
 			})
+			client.close();
 			res.send(emp);
 		});
 		};
@@ -257,11 +264,13 @@ app.post('/api/data/uid_map_name', (req, res) => {
 				const data = {name:employee, position:position}
 				emp[id]=data;
 			})
+			client.close();
 			res.send(emp);
 		});
 		};
 		send_data(employees);
 	});
+<<<<<<< HEAD
 });
 
 /* ************ not ready to merge yet, we need to populate the test db and test on that first ************
@@ -338,3 +347,6 @@ app.post('/api/get_rockstar', (req, res) => {
 		});
 	});
 });
+=======
+  });
+>>>>>>> c12763a5cc8fd291123d453a32bdea06157350f3
