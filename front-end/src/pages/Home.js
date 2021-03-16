@@ -33,6 +33,8 @@ export default function Home(props) {
   const [kudos, setKudos] = useState([]);
   const classes = useStyles();
 
+  // runs on reload/first visit, calls getKudos() and
+  // sets company name from uri
   useEffect(() => {
     getKudos();
     const companies = {
@@ -40,11 +42,13 @@ export default function Home(props) {
       'outback-tech': 'Outback Technology',
       'greenlife-consulting': 'Greenlife Consulting'
     }
-    setCompany(companies[localStorage.getItem('uri')]);
+    setCompany(companies[props.uri]);
   }, []);
   
+  // api call to retrieve kudos based on uri, updates
+  // employees state and kudos state
   function getKudos() {
-    const uri = localStorage.getItem('uri')
+    const uri = props.uri
     const formData = {uri}; 
     fetch('http://localhost:5000/api/data/uid_map_name',
       {

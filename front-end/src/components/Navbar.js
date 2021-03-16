@@ -67,16 +67,16 @@ export default function Navbar(props) {
           <MenuList>
               <Grid container direction="column" alignItems="flex-start" justify="center">
                   <MenuItem className={classes.menuItem}>
-                    <Typography variant="h4"><Emoji symbol="🏠"/>Home</Typography>
+                    <Typography variant="h4"><Emoji symbol="🏠" label="home"/>Home</Typography>
                   </MenuItem>
                   <MenuItem className={classes.menuItem}>
-                    <Typography variant="h4"><Emoji symbol="😺"/>Profile</Typography>
+                    <Typography variant="h4"><Emoji symbol="😺" label="cat"/>Profile</Typography>
                   </MenuItem>
                   <Grid container direction="column" alignItems="flex-start" justify="center" className={classes.dumb}>
                     <Button variant="contained" size="large" color="primary">+ Give Kudos</Button>
                   </Grid>
                   <MenuItem m={1} onClick={()=>props.logout()} className={classes.logout}>
-                    <Typography variant="overline"><Emoji symbol="🌊"/>Logout</Typography>
+                    <Typography variant="overline"><Emoji symbol="🌊" label="wave"/>Logout</Typography>
                   </MenuItem>
               </Grid>
           </MenuList>
