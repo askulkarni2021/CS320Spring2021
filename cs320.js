@@ -273,6 +273,7 @@ app.post('/api/data/uid_map_name', (req, res) => {
 });
 
 // TODO: change this so it just gets the most recent rockstar of the month
+// Not ready for usage from front end yet
 app.post('/api/get_rockstar', (req, res) => {
 	const companyName = req.body.uri;
 	const uri = "mongodb+srv://user:cs320team1@cs320.t0mlm.mongodb.net/" + companyName + "?retryWrites=true&w=majority";
@@ -282,5 +283,6 @@ app.post('/api/get_rockstar', (req, res) => {
 		const db = client.db(companyName);
 		const rockStarsCollection = db.collection("Rockstars");
 		const employeesCollection = db.collection("Employees Database");
+		client.close()
 	});
 });
