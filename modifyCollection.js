@@ -8,19 +8,44 @@
 const MongoClient = require('mongodb').MongoClient;
 const assert = require('assert');
 
-const uri = "mongodb+srv://user:cs320team1@cs320.t0mlm.mongodb.net/outback-tech?retryWrites=true&w=majority";
-const client = new MongoClient(uri, { useNewUrlParser: true, useUnifiedTopology: true });
+const outbackuri = "mongodb+srv://user:cs320team1@cs320.t0mlm.mongodb.net/outback-tech?retryWrites=true&w=majority";
+const outbackClient = new MongoClient(outbackuri, { useNewUrlParser: true, useUnifiedTopology: true });
 
-client.connect(err => {
-	const args = process.argv.slice(2);
+const testuri = "mongodb+srv://user:cs320team1@cs320.t0mlm.mongodb.net/outback-tech?retryWrites=true&w=majority";
+const testClient = new MongoClient(testuri, { useNewUrlParser: true, useUnifiedTopology: true });
+
+outbackClient.connect(err => {
+	/*const args = process.argv.slice(2);
 	console.log(args);
 	const company = args[0];
-	const collection = args[1];
-	assert.equal(err, null);
-	const db = client.db(company);
-	const kudos = db.collection(collection);
-	const modifyKudos = async () => {
+	const collectionName = args[1];
+	assert.equal(err, null);*/
+	const outback_db = outbackClient.db('outback-tech');
+	const outback_employees = db.collection("Employees Database");
+	testClient.connect(err => {
+
+	});
+
+	const modifyCollection = async () => {
 		// ************ ONLY CHANGE THINGS BETWEEN THESE CURLY BRACES *************** 
-	}
-	modifyKudos();
+		// write code for removing incoming/outgoing arrays from employees,
+		// as we remove incoming/outgoing array, $set a new field which is just the length of the incoming field
+		const getIdIncoming = async () => {
+			const IdIncoming = await employees.find({}, { projection : {"employeeId":1, "incoming": 1} }).toArray();
+			return IdIncoming;
+		};
+		getIdIncoming().then(idIncoming => {
+			//console.log(idIncoming);
+			//console.log(idIncoming.employeeId, idIncoming.incoming.length);
+			idIncoming.forEach(record => {
+				employees.updateOne(
+					{ "employeeId" : record.employeeId},
+					{ $set : 
+						{ "numKudos" : record.incoming.length }
+					}
+				);
+			});
+		});
+	};
+	modifyCollection();
 });
