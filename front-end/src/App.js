@@ -26,8 +26,8 @@ export default function App() {
   const [darkState, setDarkState] = useState(localStorage.getItem('darkState') || false) ;
   const [palleteType, setPalleteType] = useState(localStorage.getItem('palleteType') || 'light');
   const [mainPrimary, setMainPrimary] = useState(localStorage.getItem('mainPrimary') || blue[200]);
-  const [data, setData] = useState('');
-  const [uri, setUri] = useState('');
+  const [data, setData] = useState(localStorage.getItem('data') || null);
+  const [uri, setUri] = useState(localStorage.getItem('uri') || null);
   //let history = useHistory();
   
   const handleThemeChange = () => {
@@ -49,7 +49,7 @@ export default function App() {
 
   function logout(){
     localStorage.removeItem('uri');
-    localStorage.removeItem('uid');
+    localStorage.removeItem('data');
     setLoggedIn(false);
   }
   
@@ -93,7 +93,7 @@ export default function App() {
         {darkState ? <Brightness7Icon/> : <Brightness2Icon/>}
       </Fab>
       <Route exact path="/" render={(props) => (
-        isLoggedIn ? <Home data={data} uri={uri} logout={logout.bind(this)}/> : <Login {...props} setDataFromLogin={setDataFromLogin.bind(this)}/>
+        (isLoggedIn && data && uri) ? <Home data={data} uri={uri} logout={logout.bind(this)}/> : <Login {...props} setDataFromLogin={setDataFromLogin.bind(this)}/>
       )}/>
       {/* <Route exact path="/home" render={() => (
         // similar to how uid is passed in, the other data would be as well
