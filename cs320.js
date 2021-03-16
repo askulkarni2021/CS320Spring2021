@@ -270,7 +270,6 @@ app.post('/api/data/uid_map_name', (req, res) => {
 		};
 		send_data(employees);
 	});
-<<<<<<< HEAD
 });
 
 /* ************ not ready to merge yet, we need to populate the test db and test on that first ************
@@ -347,6 +346,3 @@ app.post('/api/get_rockstar', (req, res) => {
 		});
 	});
 });
-=======
-  });
->>>>>>> c12763a5cc8fd291123d453a32bdea06157350f3
