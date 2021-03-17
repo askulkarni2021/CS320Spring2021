@@ -107,28 +107,25 @@ app.post('/api/add_kudo', (req, res) => {
 			const db = client.db(companyName);
 			const kudos = db.collection("Kudos");
 			// dont insert the whole query because otherwise the company name would be inserted in each kudo, which is unnecessary
-			let resultDoc = await kudos.insertOne({from: query.from, to: query.to, kudo: query.kudo});
+			let resultDoc = await kudos.insertOne({from: query.from, to: query.to, kudo: query.kudo, reactions: {}});
 			addToIncomingAndOutgoing = (addedKudo) => {
 				// NOTE: to and from are strings, not ints
 				let to = req.body.to;
 				let from = req.body.from;
 				kudoID = addedKudo.insertedId;
 				const employeesCollection = db.collection("Employees Database");
-				const updateGiverAndRecipient = async () => {
+				const incrementNumKudos = async () => {
 					await employeesCollection.updateOne(
 						{ "employeeId": parseInt(to) }, // get the employee that is recieving the kudo
-						{ $push: { incoming : kudoID} } // want to push the kudo to the recipients incoming list
+						{ $inc: { "numKudos" : 1} } // increment the number of kudos this employee has recieved
 					);
-					await employeesCollection.updateOne(
-						{ "employeeId": parseInt(from) }, // get the employdd that is giving the kudo
-						{ $push: { outgoing : kudoID} }   // and push the kudo to their outgoing list
-					);
+					// for some reason calling client.close() outside of addToIncomingAndOutgoing caused the client to close before numKudos was incremented
+					// putting client.close() still ensures the client is closed before the response is sent and is closed after any db operation is done
+					client.close(); 
 				}
-				updateGiverAndRecipient();
+				incrementNumKudos();
 			};
 			addToIncomingAndOutgoing(resultDoc);
-			// TODO: later on, we need to send better information here, like if the rockstar of the month has been updated
-			client.close();
 			res.send(true); 
 		};
 		add_kudo(req.body);
