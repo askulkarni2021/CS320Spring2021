@@ -9,6 +9,7 @@ import {
 import { makeStyles } from '@material-ui/core/styles';
 import Navbar from '../components/Navbar';
 import Kudo from '../components/Kudo';
+import AddKudo from "../components/AddKudo";
 
 const useStyles = makeStyles(theme => ({
   root: {
@@ -97,6 +98,7 @@ export default function Home(props) {
           justify="flex-start"
           alignItems="flex-start"
           className={classes.kudos}>
+            <AddKudo/>
             {kudos && employees ? kudos.map((kudo, index) => {
                 return <Kudo to={employees[kudo.to].name} from={employees[kudo.from].name} message={kudo.kudo} key={index}/>
             }) : 'loading'  }
