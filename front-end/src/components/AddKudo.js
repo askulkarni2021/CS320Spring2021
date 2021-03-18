@@ -36,7 +36,19 @@ export default function AddKudo(props) {
         console.log('to object', nameMapUid[to]);
         console.log('message', message);
         console.log('from', uid);
-        console.log('uri', uri)
+        console.log('uri', uri);
+        const id = nameMapUid[to]['id'];
+        const reactions = {};   //trying to figure this out
+        fetch('http://localhost:5000/api/add_kudo',
+        {
+            method: 'POST',
+            headers: {
+              "Accept": "application/json",
+              "Content-Type": "application/json"
+            },
+            body: JSON.stringify({uri, id, uid, message, reactions})
+        })
+        .then(response => console.log(response));
     }
 
     return (
