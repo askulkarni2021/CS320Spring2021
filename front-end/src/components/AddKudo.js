@@ -77,7 +77,7 @@ export default function AddKudo(props) {
                     />
                     <Button type="submit" variant="contained">Submit Kudo</Button>
                 </form>
-                </CardContent>
+            </CardContent>
         </Card>
     );
 }
