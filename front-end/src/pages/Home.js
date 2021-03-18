@@ -98,7 +98,7 @@ export default function Home(props) {
           justify="flex-start"
           alignItems="flex-start"
           className={classes.kudos}>
-            <AddKudo/>
+            <AddKudo getKudos={getKudos.bind(this)}/>
             {kudos && employees ? kudos.map((kudo, index) => {
                 return <Kudo to={employees[kudo.to].name} from={employees[kudo.from].name} message={kudo.kudo} key={index}/>
             }) : 'loading'  }

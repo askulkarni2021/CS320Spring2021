@@ -4,8 +4,8 @@ import React, { useState, useEffect } from 'react';
 
 export default function AddKudo(props) {
     // need uri, to, from, message
-    const [to, setTo] = useState('');
-    const [message, updateMessage] = useState('');
+    const [name, setName] = useState('');
+    const [kudo, updateKudo] = useState('');
     const [uri, setUri] = useState('');
     const [uid, setUid] = useState('');
     const [nameMapUid, setNameMapUid] = useState('');
@@ -32,13 +32,13 @@ export default function AddKudo(props) {
     }, []);
 
     function handleSumbit() {
-        console.log('to', to);
-        console.log('to object', nameMapUid[to]);
-        console.log('message', message);
+        console.log('name', name);
+        console.log('to object', nameMapUid[name]);
+        console.log('kudo', kudo);
         console.log('from', uid);
         console.log('uri', uri);
-        const id = nameMapUid[to]['id'];
-        const reactions = {};   //trying to figure this out
+        const to = nameMapUid[name]['id'];
+        const from = uid;
         fetch('http://localhost:5000/api/add_kudo',
         {
             method: 'POST',
@@ -46,9 +46,11 @@ export default function AddKudo(props) {
               "Accept": "application/json",
               "Content-Type": "application/json"
             },
-            body: JSON.stringify({uri, id, uid, message, reactions})
+            body: JSON.stringify({uri, to, from, kudo})
         })
-        .then(response => console.log(response));
+        .then(response => {
+            props.getKudos();
+        });
     }
 
     return (
@@ -60,7 +62,7 @@ export default function AddKudo(props) {
                         options={Object.keys(nameMapUid)}
                         getOptionLabel={(option) => option}
                         onChange={(event, newValue) => {
-                            setTo(newValue);
+                            setName(newValue);
                         }}
                         renderInput={(params) => <TextField {...params} label="Send To..." variant="outlined"/>}
                     />
@@ -69,9 +71,9 @@ export default function AddKudo(props) {
                         variant='outlined' 
                         multiline
                         rows={4}
-                        value={message}
+                        value={kudo}
                         fullWidth
-                        onChange={(e) => updateMessage(e.target.value)}
+                        onChange={(e) => updateKudo(e.target.value)}
                     />
                     <Autocomplete
                         multiple
@@ -87,7 +89,7 @@ export default function AddKudo(props) {
                             />
                         )}
                     />
-                    <Button type="submit" variant="contained">Submit Kudo</Button>
+                    <Button type="submit" variant="contained" color="primary">Submit Kudo</Button>
                 </form>
             </CardContent>
         </Card>
