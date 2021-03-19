@@ -272,8 +272,8 @@ app.post('/api/data/uid_map_name', (req, res) => {
 	});
 });
 
-// TODO: change this so it just gets the most recent rockstar of the month
-// Not ready for usage from front end yet
+// Takes in the company name
+// Responds with {name: "name of employee", position: "position of employee", numKudos: "number of kudos received for that month", employeeId: "employeeid of employee"}
 app.post('/api/get_rockstar', (req, res) => {
 	const companyName = req.body.uri;
 	const uri = "mongodb+srv://user:cs320team1@cs320.t0mlm.mongodb.net/" + companyName + "?retryWrites=true&w=majority";
@@ -282,7 +282,18 @@ app.post('/api/get_rockstar', (req, res) => {
 		assert.equal(err, null);
 		const db = client.db(companyName);
 		const rockStarsCollection = db.collection("Rockstars");
-		const employeesCollection = db.collection("Employees Database");
-		client.close()
+		const getRockstars = async () => {
+			return await rockStarsCollection.find({}).toArray();
+			client.close()
+		}
+		rockStarsPromise = getRockstars()
+		const sendData = async (rockStars) => {
+			await rockStars.then(value => {
+				mostRecentROM = value[value.length - 1];
+				const ROMname = mostRecentROM.firstName + mostRecentROM.lastName;
+				res.send({name: ROMname, position: mostRecentROM.positionTitle, numKudos: mostRecentROM.numKudos, employeeId: mostRecentROM.employeeId});
+			});
+		};
+		sendData(rockStarsPromise);
 	});
 });
