@@ -2,6 +2,7 @@ import { Button, Card, CardContent, TextField } from '@material-ui/core';
 import Autocomplete from '@material-ui/lab/Autocomplete';
 import React, { useState, useEffect } from 'react';
 
+// props: getKudos, optional: toggleShowAddKudos
 export default function AddKudo(props) {
     // need uri, to, from, message
     const [name, setName] = useState('');
@@ -9,6 +10,7 @@ export default function AddKudo(props) {
     const [uri, setUri] = useState('');
     const [uid, setUid] = useState('');
     const [nameMapUid, setNameMapUid] = useState('');
+    const [coreValues] = useState(['Nice', 'Helpful', 'Mentor']);
 
     useEffect(() => {
         const uri = localStorage.getItem('uri');
@@ -50,6 +52,9 @@ export default function AddKudo(props) {
         })
         .then(response => {
             props.getKudos();
+            if (props.toggleShowAddKudo) {
+                props.toggleShowAddKudo(false);
+            }
         });
     }
 
@@ -78,7 +83,7 @@ export default function AddKudo(props) {
                     <Autocomplete
                         multiple
                         id="tags-standard"
-                        options={['Nice', 'Hardworking', 'Helpful']}
+                        options={coreValues}
                         getOptionLabel={(option) => option}
                         renderInput={(params) => (
                             <TextField
