@@ -30,23 +30,29 @@ const useStyles = makeStyles(theme => ({
 
 export default function Home(props) {
   const [company, setCompany] = useState('');
-  const [employees, setEmployees] = useState({});
-  const [kudos, setKudos] = useState([]);
+  const [employees, setEmployees] = useState();
+  const [kudos, setKudos] = useState();
   const classes = useStyles();
 
+  // runs on reload/first visit, calls getKudos() and
+  // sets company name from uri
   useEffect(() => {
+    console.log(props.data);
+    console.log(props.uri);
     getKudos();
     const companies = {
       'starship-entertainment': 'Starship Entertainment',
       'outback-tech': 'Outback Technology',
       'greenlife-consulting': 'Greenlife Consulting'
     }
-    setCompany(companies[localStorage.getItem('uri')]);
+    setCompany(companies[props.uri]);
   }, []);
-
+  
+  // api call to retrieve kudos based on uri, updates
+  // employees state and kudos state
   function getKudos() {
-    const uri = localStorage.getItem('uri')
-    const formData = {uri};
+    const uri = props.uri
+    const formData = {uri}; 
     fetch('http://localhost:5000/api/data/uid_map_name',
       {
         method: 'POST',
@@ -73,9 +79,10 @@ export default function Home(props) {
     });
   }
 
+
   return (
     <div className={classes.root}>
-      <Navbar logout={props.logout}/>
+      <Navbar employees={employees} uid={props.data.uid} logout={props.logout}/>
       <div className={classes.content}>
         <AppBar position="sticky" elevation={0} className={classes.appBar}>
           <Toolbar>
@@ -91,7 +98,7 @@ export default function Home(props) {
           justify="flex-start"
           alignItems="flex-start"
           className={classes.kudos}>
-            {kudos && employees[5] ? kudos.map((kudo, index) => {
+            {kudos && employees ? kudos.map((kudo, index) => {
                 return <Kudo to={employees[kudo.to].name} from={employees[kudo.from].name} message={kudo.kudo} key={index}/>
             }) : 'loading'  }
           </Grid>

@@ -30,6 +30,7 @@ export default function Login(props) {
   };
   
   // main function when user submits, handles api requests
+  // calls setDataFromLogin to update state of App.js
   function handleSubmit() {
     const email = user;
     let company = email.split('@')[1].split('.')[0]
