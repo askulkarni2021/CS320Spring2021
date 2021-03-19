@@ -290,7 +290,7 @@ app.post('/api/get_rockstar', (req, res) => {
 		const sendData = async (rockStars) => {
 			await rockStars.then(value => {
 				mostRecentROM = value[value.length - 1];
-				const ROMname = mostRecentROM.firstName + mostRecentROM.lastName;
+				const ROMname = mostRecentROM.firstName + " " + mostRecentROM.lastName;
 				res.send({name: ROMname, position: mostRecentROM.positionTitle, numKudos: mostRecentROM.numKudos, employeeId: mostRecentROM.employeeId});
 			});
 		};
