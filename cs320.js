@@ -132,6 +132,41 @@ app.post('/api/add_kudo', (req, res) => {
 	});
 });
 
+// the request should contain the company name, the reaction (just an emoji) and the _id of the kudo
+// the front end should have the _id of the kudo from the all_kudos endpoint
+app.post('api/add_kudo_reaction', (req, res) => {
+	const companyName = req.body.uri;
+	const uri = "mongodb+srv://user:cs320team1@cs320.t0mlm.mongodb.net/" + companyName + "?retryWrites=true&w=majority";
+	const client = new MongoClient(uri, { useNewUrlParser: true, useUnifiedTopology: true });
+	client.connect(err => {
+		assert.equal(err, null);
+		const db = client.db(companyName);
+		const kudosCollection = db.collection("Kudos");
+		const addReaction = async () => {
+			let kudoDocument = await kudosCollection.findOne(
+				{ "_id" : req.body.kudoID },
+			).toArray()[0]; // this is in an array, so get the first (and only) element
+			const reaction = req.body.reaction;
+			const reactionsTable = kudoDocument.reactions;
+			if (reactionsTable[reaction]) { // if the reaction is already in the table, just increment its value
+				reactionsTable[reaction] += 1;
+			} else {
+				reactionsTable[reaction] = 1;
+			}
+			return await kudosCollection.updateOne(
+				{ "_id" : req.body.kudoID },
+				{ $set:
+					{ "reactions": reactionsTable }
+				}
+			);
+		};
+		const updatedDocument = addReaction();
+		// this needs to be tested
+		updatedDocument.then(doc => {
+			res.send(true);
+		});
+	});
+});
 
 //Expects the company name(as uri field of the incoming query) and returns all kudos within that company as an array
 app.post('/api/all_kudos', (req, res) => {
