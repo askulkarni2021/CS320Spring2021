@@ -12,7 +12,8 @@ import AddKudo from "../components/AddKudo";
 
 const useStyles = makeStyles(theme => ({
   kudos: {
-    paddingLeft: theme.spacing(2),
+    paddingTop: theme.spacing(3),
+    paddingLeft: theme.spacing(6),
   },
   appBar: {
     backgroundColor: theme.palette.background.default,

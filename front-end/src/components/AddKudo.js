@@ -10,7 +10,8 @@ export default function AddKudo(props) {
     const [uri, setUri] = useState('');
     const [uid, setUid] = useState('');
     const [nameMapUid, setNameMapUid] = useState('');
-    const [coreValues] = useState(['Nice', 'Helpful', 'Mentor']);
+    /* FAKE CORE VALUES, PRESET */
+    const [coreValues] = useState(['Fake', 'Values', 'Not', 'Hooked', 'Up']);
 
     useEffect(() => {
         const uri = localStorage.getItem('uri');
@@ -89,7 +90,7 @@ export default function AddKudo(props) {
                             <TextField
                                 {...params}
                                 variant="standard"
-                                label="Multiple values"
+                                label="Core Values"
                                 placeholder="Core values"
                             />
                         )}
