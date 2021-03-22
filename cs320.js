@@ -168,13 +168,14 @@ app.post('/api/profile_incoming', (req, res) => {
 	const uri = "mongodb+srv://user:cs320team1@cs320.t0mlm.mongodb.net/" + companyName + "?retryWrites=true&w=majority";
 	const client = new MongoClient(uri, { useNewUrlParser: true, useUnifiedTopology: true });
 	const employeeId = req.body.uid
-  	client.connect(err => {
+  	client.connect(err => {	
+		console.log(req.body);
 		assert.equal(err, null);
 		const db = client.db(companyName);
 		const Kudos = db.collection("Kudos");
 			
 		const findKudos = async () => { 
-			const kudos = await Kudos.find({to: employeeId}).toArray();
+			const kudos = await Kudos.find({to: parseInt(employeeId)}).toArray();
 			client.close();
 			res.send(kudos);
 			return kudos;
@@ -197,9 +198,8 @@ app.post('/api/profile_outgoing', (req, res) => {
 		assert.equal(err, null);
 		const db = client.db(companyName);
 		const Kudos = db.collection("Kudos");
-
 		const findKudos = async () => {
-			const kudos = await Kudos.find({from: employeeId}).toArray(); //find kudos with field 'from' that is the same as employeeID
+			const kudos = await Kudos.find({from: parseInt(employeeId)}).toArray(); //find kudos with field 'from' that is the same as employeeID
 			client.close();
 			res.send(kudos);
 			return kudos;
