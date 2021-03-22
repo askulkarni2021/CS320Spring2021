@@ -1,5 +1,5 @@
 import React from 'react'
-import {Grid, Card, CardContent, Typography, CardActions, Button} from '@material-ui/core'
+import {Grid, Card, CardContent, Typography, CardActions, Chip} from '@material-ui/core'
 import { makeStyles } from '@material-ui/core/styles';
 
 const useStyles = makeStyles({
@@ -32,7 +32,9 @@ export default function Kudo(props) {
                 </Typography>
             </CardContent>
             <CardActions>
-                <Button size="small" variant="contained" color="secondary">Team Player</Button>
+                {props.tags ? props.tags.map((tag, index) => {
+                    return <Chip key={index} label={tag} color="primary"/>
+                }) : null}
             </CardActions>
         </Card>
         </Grid>
