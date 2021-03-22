@@ -11,9 +11,10 @@ import ExpandMoreIcon from '@material-ui/icons/ExpandMore';
 import MoreVertIcon from '@material-ui/icons/MoreVert';
 import IconButton from '@material-ui/core/IconButton';
 import Typography from '@material-ui/core/Typography';
+import Box from "@material-ui/core/Box";
 import Grid from "@material-ui/core/Grid";
 import clsx from 'clsx';
-import Kudo from '../components/Kudo';
+import RockstarKudos from '../components/RockstarKudos';
 
 
 const useStyles = makeStyles((theme) => ({
@@ -24,7 +25,9 @@ const useStyles = makeStyles((theme) => ({
   drawerPaper: {
     variant:"elevation3",
     width: 250,
-    // height: 250,
+    height: 800,
+    backgroundColor: 'transparent',
+    border: 'none',
   },
   expand: {
     transform: 'rotate(0deg)',
@@ -43,15 +46,16 @@ const useStyles = makeStyles((theme) => ({
 
 export default function Rockstar(props) {
   const classes = useStyles();
-  const [expanded, setExpanded] = React.useState(false);
+  const [expanded, setExpanded] = useState(false);
   const [rockstar, setRockstar] = useState({})
   const [user, setUser] = useState('');
   const [position, setPosition] = useState('');
   const [numKudos, setNumKudos] = useState();
   const [uid, setUid] = useState('');
-  const [incoming, setIncoming] = useState([]);
-  const [kudos, setKudos] = useState([]);
-  const [employees, setEmployees] = useState([]);
+  const [incoming, setIncoming] = useState();
+  const [kudos, setKudos] = useState();
+  const [employees, setEmployees] = useState();
+  // const [testKudos, setTestKudos] = useState();
   const uri = localStorage.getItem('uri');
 
   const handleExpandClick = () => {
@@ -61,12 +65,6 @@ export default function Rockstar(props) {
   useEffect(() => {
     getRockstar();
     getRockstarIncoming();
-    console.log(rockstar);
-    // console.log(uri);
-    // console.log(user);
-    // console.log(numKudos);
-    // console.log(uid);
-    // console.log(incoming);
   }, []);
 
   function getRockstar() {
@@ -81,12 +79,25 @@ export default function Rockstar(props) {
       body: JSON.stringify(formData)
     })
     .then(response => response.json()).then(data => {
-      console.log(data)
+      // console.log(data)
       setRockstar(data)
       setUser(data.name)
       setPosition(data.position)
       setNumKudos(data.numKudos)
       setUid(data.uid)
+    });
+
+    fetch('http://localhost:5000/api/all_kudos',
+    {
+      method: 'POST',
+      headers: {
+        "Accept": "application/json",
+        "Content-Type": "application/json"
+      },
+      body: JSON.stringify(formData)
+    })
+    .then(response => response.json()).then(data => {
+      setKudos(data)
     });
 
   }
@@ -115,6 +126,7 @@ export default function Rockstar(props) {
       body: JSON.stringify(formData)
     })
     .then(response => response.json()).then(data => {
+      // console.log(data)
       setIncoming(data)
     });
   }
@@ -124,7 +136,7 @@ export default function Rockstar(props) {
       <Drawer
         className={classes.drawer}
         variant="permanent"
-        classes={{paper: classes.drawerPaper,}}
+        classes={{paper: classes.drawerPaper}}
         anchor="right"
       >
         <Card>
@@ -137,7 +149,7 @@ export default function Rockstar(props) {
         <Card>
           <CardHeader
           avatar={
-            <Avatar aria-label="Rockstar" src="https://www.rd.com/wp-content/uploads/2017/09/01-shutterstock_476340928-Irina-Bg.jpg" className={classes.avatar} />
+            <Avatar aria-label="Rockstar" alt="Remy Sharp" className={classes.avatar} />
           }
           title={user}
           subheader={position}
@@ -163,17 +175,19 @@ export default function Rockstar(props) {
           </CardActions>
           <Collapse in={expanded} timeout="auto" unmountOnExit>
             <CardContent>
-              <Grid
-              item xs={4}
-              container
-              direction="column"
-              justify="flex-start"
-              alignItems="flex-start"
-              className={classes.kudos}>
-                {incoming ? kudos.map((kudo, index) => {
-                    return <Kudo to={employees[kudo.to].name} from={employees[kudo.from].name} message={kudo.kudo} key={index}/>
-                }) : 'loading'  }
-              </Grid>
+              <Box style={{maxHeight: '530px', overflow: 'auto'}}>
+                <Grid
+                item xs={4}
+                container
+                direction="column"
+                justify="flex-start"
+                alignItems="flex-start"
+                className={classes.kudos}>
+                  {kudos && employees ? kudos.map((kudo, index) => {
+                      return <RockstarKudos to={employees[kudo.to].name} from={employees[kudo.from].name} message={kudo.kudo} key={index}/>
+                  }) : 'loading'  }
+                </Grid>
+              </Box>
             </CardContent>
           </Collapse>
         </Card>
