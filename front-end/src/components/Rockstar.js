@@ -183,7 +183,7 @@ export default function Rockstar(props) {
                 justify="flex-start"
                 alignItems="flex-start"
                 className={classes.kudos}>
-                  {kudos && employees ? kudos.map((kudo, index) => {
+                  {incoming && employees ? incoming.map((kudo, index) => {
                       return <RockstarKudos to={employees[kudo.to].name} from={employees[kudo.from].name} message={kudo.kudo} key={index}/>
                   }) : 'loading'  }
                 </Grid>
