@@ -134,31 +134,35 @@ app.post('/api/add_kudo', (req, res) => {
 
 // the request should contain the company name, the reaction (just an emoji) and the _id of the kudo
 // the front end should have the _id of the kudo from the all_kudos endpoint
-app.post('api/add_kudo_reaction', (req, res) => {
+// req := {uri: "company name", kudoID: "id of kudo to be updated", reaction: "emoji that is chosen"
+app.post('/api/add_kudo_reaction', (req, res) => {
 	const companyName = req.body.uri;
 	const uri = "mongodb+srv://user:cs320team1@cs320.t0mlm.mongodb.net/" + companyName + "?retryWrites=true&w=majority";
 	const client = new MongoClient(uri, { useNewUrlParser: true, useUnifiedTopology: true });
+	const kudoID = new ObjectId(req.body.kudoID);
 	client.connect(err => {
 		assert.equal(err, null);
 		const db = client.db(companyName);
 		const kudosCollection = db.collection("Kudos");
+		findKudos(kudosCollection, {"_id": kudoID}).then(kudos => {console.log(kudos.reverse());});
 		const addReaction = async () => {
-			let kudoDocument = await kudosCollection.findOne(
-				{ "_id" : req.body.kudoID },
-			).toArray()[0]; // this is in an array, so get the first (and only) element
-			const reaction = req.body.reaction;
-			const reactionsTable = kudoDocument.reactions;
-			if (reactionsTable[reaction]) { // if the reaction is already in the table, just increment its value
-				reactionsTable[reaction] += 1;
-			} else {
-				reactionsTable[reaction] = 1;
-			}
-			return await kudosCollection.updateOne(
-				{ "_id" : req.body.kudoID },
-				{ $set:
-					{ "reactions": reactionsTable }
+			// first we have to actually insert the reaction field if it doesnt exist
+			const reactionField = "reactions." + req.body.reaction;
+			await kudosCollection.updateOne(
+				{"_id": kudoID, reactionField: {$exists : false}}, // if the reaction isnt in the reactions table, then add it
+				{ $set :
+					{
+						reactionField: 0 // initialize the count to zero for now
+					}
 				}
 			);
+			// then we can update the count of the reaction, whether or not it is new
+			const updatedKudo = await kudosCollection.updateOne(
+				{"_id": kudoID},
+				{ $inc : { reactionField: 1} } // increment the count of the reactions by one
+			);
+			client.close(); // db operations no longer needed
+			return updatedKudo;
 		};
 		const updatedDocument = addReaction();
 		// this needs to be tested
