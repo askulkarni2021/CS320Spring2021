@@ -19,7 +19,8 @@ const useStyles = makeStyles(theme => ({
       backgroundColor: theme.palette.background.default,
   },
   kudos: {
-    paddingLeft: theme.spacing(2),
+    paddingTop: theme.spacing(3),
+    paddingLeft: theme.spacing(6),
   },
   appBar: {
     backgroundColor: theme.palette.background.default,
