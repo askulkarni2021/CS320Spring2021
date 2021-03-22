@@ -32,13 +32,6 @@ kudo : {
 	reson:
 }
 
-Rockstar of the month (user flow):
-
-Having 2 endpoint using and an additional database for storing information abour the 
-previos ROM employee. Using timestamp to see if it is the first of the month 
-and then exploit a variable called kudosForThisMonth which needs to be set to 0 
-on the first after aking the max of the previous month and storing it in the 
-ROM database
 
 */
 
@@ -107,12 +100,11 @@ app.post('/api/add_kudo', (req, res) => {
 			const db = client.db(companyName);
 			const kudos = db.collection("Kudos");
 			// dont insert the whole query because otherwise the company name would be inserted in each kudo, which is unnecessary
-			let resultDoc = await kudos.insertOne({from: query.from, to: query.to, kudo: query.kudo, reactions: {}});
+			let resultDoc = await kudos.insertOne({from: query.from, to: query.to, kudo: query.kudo, reactions: {}, tags: query.tags});
 			addToIncomingAndOutgoing = (addedKudo) => {
 				// NOTE: to and from are strings, not ints
 				let to = req.body.to;
 				let from = req.body.from;
-				kudoID = addedKudo.insertedId;
 				const employeesCollection = db.collection("Employees Database");
 				const incrementNumKudos = async () => {
 					await employeesCollection.updateOne(
@@ -209,6 +201,7 @@ app.post('/api/profile_outgoing', (req, res) => {
 
 // Data Sending Endpoints
 
+
 app.post('/api/data/name_map_uid', (req, res) => {
 	console.log(req.body);
 	const companyName = req.body.uri;
@@ -270,3 +263,29 @@ app.post('/api/data/uid_map_name', (req, res) => {
 		send_data(employees);
 	});
   });
+
+app.post('/api/data/get_core_values', (req, res) => {
+	console.log(req.body);
+	const companyName = req.body.uri;
+	const uri = "mongodb+srv://user:cs320team1@cs320.t0mlm.mongodb.net/" + companyName + "?retryWrites=true&w=majority";
+	const client = new MongoClient(uri, { useNewUrlParser: true, useUnifiedTopology: true });
+
+  	client.connect(err =>  {
+		assert.equal(err, null);
+		const db = client.db(companyName);
+		const Collection = db.collection("Values-Emojis");
+
+		const val_em = findEmployees(Collection);
+
+		const send_data = async (val_em) => {
+			await val_em.then(value  => {
+			console.log(value[0].values);
+			client.close();
+			res.send(value[0].values);
+		});
+		};
+		send_data(val_em);
+	});
+  });
+
+
