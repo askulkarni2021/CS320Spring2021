@@ -47,13 +47,13 @@ const useStyles = makeStyles((theme) => ({
 export default function Rockstar(props) {
   const classes = useStyles();
   const [expanded, setExpanded] = useState(false);
-  const [rockstar, setRockstar] = useState({})
+  // const [rockstar, setRockstar] = useState({})
   const [user, setUser] = useState('');
   const [position, setPosition] = useState('');
   const [numKudos, setNumKudos] = useState();
-  const [uid, setUid] = useState('');
+  const [uid, setUid] = useState();
   const [incoming, setIncoming] = useState();
-  const [kudos, setKudos] = useState();
+  // const [kudos, setKudos] = useState();
   const [employees, setEmployees] = useState();
   // const [testKudos, setTestKudos] = useState();
   const uri = localStorage.getItem('uri');
@@ -80,25 +80,25 @@ export default function Rockstar(props) {
     })
     .then(response => response.json()).then(data => {
       // console.log(data)
-      setRockstar(data)
+      // setRockstar(data)
       setUser(data.name)
       setPosition(data.position)
       setNumKudos(data.numKudos)
-      setUid(data.uid)
+      setUid(data.employeeId)
     });
 
-    fetch('http://localhost:5000/api/all_kudos',
-    {
-      method: 'POST',
-      headers: {
-        "Accept": "application/json",
-        "Content-Type": "application/json"
-      },
-      body: JSON.stringify(formData)
-    })
-    .then(response => response.json()).then(data => {
-      setKudos(data)
-    });
+    // fetch('http://localhost:5000/api/all_kudos',
+    // {
+    //   method: 'POST',
+    //   headers: {
+    //     "Accept": "application/json",
+    //     "Content-Type": "application/json"
+    //   },
+    //   body: JSON.stringify(formData)
+    // })
+    // .then(response => response.json()).then(data => {
+    //   setKudos(data)
+    // });
 
   }
 
