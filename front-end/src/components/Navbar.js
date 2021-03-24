@@ -1,7 +1,9 @@
 import React, { useState, useEffect } from "react";
 import { makeStyles } from '@material-ui/core/styles';
-import {Drawer, CssBaseline, List, MenuList, MenuItem , Button, Avatar, Box, Grid, Typography} from '@material-ui/core'
+import {Drawer, CssBaseline, List, MenuList, MenuItem , Button, Avatar, Box, Grid, Typography, Modal} from '@material-ui/core'
 import Emoji from '../components/Emoji';
+import AddKudo from "./AddKudo";
+import { useHistory } from "react-router-dom";
 
 const drawerWidth = 350;
 
@@ -34,24 +36,42 @@ const useStyles = makeStyles((theme) => ({
   dumb: {
     paddingLeft: '10px',
     marginLeft: '0',
+  },
+  modalCenter: {
+    position: 'absolute',
+    top: '30%',
+    left: '50%',
+    transform: 'translate(-50%, -50%)',
+    outline: '0',
   }
 }));
-
 export default function Navbar(props) {
   const classes = useStyles();
   const [name, setEmployeeName] = useState('');
   const [position, setEmployeePosition] = useState('');
+  const [showAddKudo, toggleShowAddKudo] = useState(false);
+  let history = useHistory();
+  
   useEffect(() => {
     if(props.employees){
       setEmployeeName(props.employees[props.uid]['name']);
       setEmployeePosition(props.employees[props.uid]['position']);  
     }
-    
   }, [props.employees]);
 
   return (
     <div>
       <CssBaseline/>
+      <Modal
+        open={showAddKudo}
+        onClose={() => toggleShowAddKudo(false)}
+        aria-labelledby="add-kudo-modal"
+        aria-describedby="add-kudo"
+      >
+        <div className={classes.modalCenter}>
+          <AddKudo getKudos={props.getKudos} toggleShowAddKudo={toggleShowAddKudo}/>
+        </div>
+      </Modal>
       <Drawer
         className={classes.drawer}
         variant="permanent"
@@ -75,14 +95,14 @@ export default function Navbar(props) {
           </Box>
           <MenuList>
               <Grid container direction="column" alignItems="flex-start" justify="center">
-                  <MenuItem className={classes.menuItem}>
+                  <MenuItem className={classes.menuItem} onClick={() => history.push('/home')}>
                     <Typography variant="h4"><Emoji symbol="🏠" label="home"/>Home</Typography>
                   </MenuItem>
-                  <MenuItem className={classes.menuItem}>
+                  <MenuItem className={classes.menuItem} onClick={() => history.push('/profile')}>
                     <Typography variant="h4"><Emoji symbol="😺" label="cat"/>Profile</Typography>
                   </MenuItem>
                   <Grid container direction="column" alignItems="flex-start" justify="center" className={classes.dumb}>
-                    <Button variant="contained" size="large" color="primary">+ Give Kudos</Button>
+                    <Button variant="contained" size="large" color="primary" onClick={() => toggleShowAddKudo(true)}>+ Give Kudos</Button>
                   </Grid>
                   <MenuItem m={1} onClick={()=>props.logout()} className={classes.logout}>
                     <Typography variant="overline"><Emoji symbol="🌊" label="wave"/>Logout</Typography>
