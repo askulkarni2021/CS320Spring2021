@@ -46,12 +46,13 @@ const useStyles = makeStyles((theme) => ({
 
 export default function Rockstar(props) {
   const classes = useStyles();
+  const monthNames = ["January","February","March","April","May","June","July","August","September","October","November","December"]
   const [expanded, setExpanded] = useState(false);
   // const [rockstar, setRockstar] = useState({})
   const [user, setUser] = useState('');
   const [position, setPosition] = useState('');
   const [numKudos, setNumKudos] = useState();
-  //const [uid, setUid] = useState();
+  const [month, setMonth] = useState();
   const [incoming, setIncoming] = useState();
   // const [kudos, setKudos] = useState();
   const [employees, setEmployees] = useState();
@@ -87,10 +88,12 @@ export default function Rockstar(props) {
       setUser(data.name)
       setPosition(data.position)
       setNumKudos(data.numKudos)
+      setMonth(data.month)
+      console.log(data.month)
 	  // put this function inside the response promise handle so we access to the uid of ROM
 	  // for some reason, the react state variable are undefined when trying to access them
 	  // in the function itself. a fix to this (idk best way to do it) is to put this function
-	  // inside the response handle so that we have access to the uid. this means we no longer need a 
+	  // inside the response handle so that we have access to the uid. this means we no longer need a
 	  // state for uid
   	  function getRockstarIncoming() {
   	    // NEED to figure out how to get the uid from state
@@ -137,7 +140,7 @@ export default function Rockstar(props) {
         <CardHeader
         titleTypographyProps={{variant:'h6' }}
         title="Rockstar of the Month"
-        subheader="March"
+        subheader={monthNames[month-1]}
         />
         </Card>
         <Card>
