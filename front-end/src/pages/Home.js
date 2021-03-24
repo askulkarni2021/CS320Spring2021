@@ -7,6 +7,8 @@ import {
   Typography,
 } from "@material-ui/core";
 import { makeStyles } from '@material-ui/core/styles';
+import Navbar from '../components/Navbar';
+import Rockstar from '../components/Rockstar';
 import Kudo from '../components/Kudo';
 import AddKudo from "../components/AddKudo";
 
@@ -23,7 +25,7 @@ const useStyles = makeStyles(theme => ({
     backgroundColor: theme.palette.background.default,
   }
 }));
-  
+
 export default function Home(props) {
   const [company, setCompany] = useState('');
   const classes = useStyles();
@@ -64,7 +66,7 @@ export default function Home(props) {
           }) : 'loading'  }
         </Grid>
         <Grid item xs={4}>
-          {/* Rockstar goes here */}
+          {<Rockstar/>}
         </Grid>
       </Grid>
     </div>
