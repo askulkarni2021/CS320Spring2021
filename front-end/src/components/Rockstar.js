@@ -51,23 +51,26 @@ export default function Rockstar(props) {
   const [user, setUser] = useState('');
   const [position, setPosition] = useState('');
   const [numKudos, setNumKudos] = useState();
-  const [uid, setUid] = useState();
+  //const [uid, setUid] = useState();
   const [incoming, setIncoming] = useState();
   // const [kudos, setKudos] = useState();
   const [employees, setEmployees] = useState();
   // const [testKudos, setTestKudos] = useState();
-  const uri = localStorage.getItem('uri');
+  //const uri = localStorage.getItem('uri');
 
   const handleExpandClick = () => {
     setExpanded(!expanded);
   };
 
   useEffect(() => {
-    getRockstar();
-    getRockstarIncoming();
+    getRockstarAndIncoming();
   }, []);
 
-  function getRockstar() {
+  // TODO: right now numKudos is the number of kudos the ROM recieved last month
+  // however, we are displaying the kudos the ROM has recieved so far this month
+  // in the ROM collection, we need to store the kudos from last month
+  function getRockstarAndIncoming() {
+	const uri = localStorage.getItem('uri');
     const formData = {uri}
     fetch('http://localhost:5000/api/get_rockstar',
     {
@@ -84,50 +87,41 @@ export default function Rockstar(props) {
       setUser(data.name)
       setPosition(data.position)
       setNumKudos(data.numKudos)
-      setUid(data.employeeId)
-    });
-
-    // fetch('http://localhost:5000/api/all_kudos',
-    // {
-    //   method: 'POST',
-    //   headers: {
-    //     "Accept": "application/json",
-    //     "Content-Type": "application/json"
-    //   },
-    //   body: JSON.stringify(formData)
-    // })
-    // .then(response => response.json()).then(data => {
-    //   setKudos(data)
-    // });
-
-  }
-
-  function getRockstarIncoming() {
-    const formData = {uri, uid}
-    fetch('http://localhost:5000/api/data/uid_map_name',
-    {
-      method: 'POST',
-      headers: {
-        "Accept": "application/json",
-        "Content-Type": "application/json"
-      },
-      body: JSON.stringify(formData)
-    })
-    .then(response => response.json()).then(data => {
-      setEmployees(data)
-    });
-    fetch('http://localhost:5000/api/profile_incoming',
-    {
-      method: 'POST',
-      headers: {
-        "Accept": "application/json",
-        "Content-Type": "application/json"
-      },
-      body: JSON.stringify(formData)
-    })
-    .then(response => response.json()).then(data => {
-      // console.log(data)
-      setIncoming(data)
+	  // put this function inside the response promise handle so we access to the uid of ROM
+	  // for some reason, the react state variable are undefined when trying to access them
+	  // in the function itself. a fix to this (idk best way to do it) is to put this function
+	  // inside the response handle so that we have access to the uid. this means we no longer need a 
+	  // state for uid
+  	  function getRockstarIncoming() {
+  	    // NEED to figure out how to get the uid from state
+		const uid = data.employeeId;
+  	    const formData = {uri, uid}
+  	    fetch('http://localhost:5000/api/data/uid_map_name',
+  	    {
+  	      method: 'POST',
+  	      headers: {
+  	        "Accept": "application/json",
+  	        "Content-Type": "application/json"
+  	      },
+  	      body: JSON.stringify(formData)
+  	    })
+  	    .then(response => response.json()).then(data => {
+  	      setEmployees(data)
+  	    });
+  	    fetch('http://localhost:5000/api/profile_incoming',
+  	    {
+  	      method: 'POST',
+  	      headers: {
+  	        "Accept": "application/json",
+  	        "Content-Type": "application/json"
+  	      },
+  	      body: JSON.stringify(formData)
+  	    })
+  	    .then(response => response.json()).then(data => {
+  	      setIncoming(data)
+  	    });
+  	  }
+	  getRockstarIncoming();
     });
   }
 
