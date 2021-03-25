@@ -163,7 +163,7 @@ app.post('/api/profile_incoming', (req, res) => {
 		const findKudos = async () => { 
 			const kudos = await Kudos.find({to: parseInt(employeeId)}).toArray();
 			client.close();
-			res.send(kudos);
+			res.send(kudos.reverse());
 			return kudos;
 		};
 		findKudos();
@@ -186,7 +186,7 @@ app.post('/api/profile_outgoing', (req, res) => {
 		const findKudos = async () => {
 			const kudos = await Kudos.find({from: parseInt(employeeId)}).toArray(); //find kudos with field 'from' that is the same as employeeID
 			client.close();
-			res.send(kudos);
+			res.send(kudos.reverse());
 			return kudos;
 		};
 		findKudos();
@@ -306,3 +306,4 @@ app.post('/api/data/get_core_values', (req, res) => {
 		send_data(val_em);
 	});
   });
+
