@@ -147,20 +147,18 @@ app.post('/api/add_kudo_reaction', (req, res) => {
 		findKudos(kudosCollection, {"_id": kudoID}).then(kudos => {console.log(kudos.reverse());});
 		const addReaction = async () => {
 			// first we have to actually insert the reaction field if it doesnt exist
-			const reactionField = "reactions." + req.body.reaction;
-			await kudosCollection.updateOne(
-				{"_id": kudoID, reactionField: {$exists : false}}, // if the reaction isnt in the reactions table, then add it
-				{ $set :
-					{
-						reactionField: 0 // initialize the count to zero for now
-					}
-				}
-			);
+			const reactionField = `reactions.${req.body.reaction}`;
+			let query = {"_id": kudoID};
+			query[reactionField] = {"$exists" : false};
+			let update = { "$set" : {}};
+			update["$set"][reactionField] = 0;
+			// needs to be done this way so we can use a variable in the field name.
+			await kudosCollection.updateOne(query, update);
 			// then we can update the count of the reaction, whether or not it is new
-			const updatedKudo = await kudosCollection.updateOne(
-				{"_id": kudoID},
-				{ $inc : { reactionField: 1} } // increment the count of the reactions by one
-			);
+			query = {"_id": kudoID};
+			update = {"$inc" : {}};
+			update["$inc"][reactionField] = 1;
+			const updatedKudo = await kudosCollection.updateOne(query, update);
 			client.close(); // db operations no longer needed
 			return updatedKudo;
 		};
