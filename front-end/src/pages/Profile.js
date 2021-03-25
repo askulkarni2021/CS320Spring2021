@@ -1,12 +1,19 @@
 import React, { useState, useEffect } from 'react';
 import { makeStyles } from '@material-ui/core/styles';
+import { Button, Card, CardContent, TextField, Box } from '@material-ui/core';
 import AppBar from '@material-ui/core/AppBar';
+import Toolbar from '@material-ui/core/Toolbar';
+import Typography from '@material-ui/core/Typography';
+import Divider from '@material-ui/core/Divider';
 import Tab from '@material-ui/core/Tab';
 import Grid from '@material-ui/core/Grid';
 import TabContext from '@material-ui/lab/TabContext';
 import TabList from '@material-ui/lab/TabList';
 import TabPanel from '@material-ui/lab/TabPanel';
+import Modal from '@material-ui/core/Modal';
 import Kudo from '../components/Kudo';
+import AddKudo from "../components/AddKudo";
+
 
 const useStyles = makeStyles((theme) => ({
   root: {
@@ -14,7 +21,22 @@ const useStyles = makeStyles((theme) => ({
     backgroundColor: theme.palette.background.default,
   },
   list: {
-    width: 620,
+    width: 640,
+  },
+  header: {
+    height: 200,
+    width: 800,
+  },
+  modalCenter: {
+    position: 'absolute',
+    top: '30%',
+    left: '50%',
+    transform: 'translate(-50%, -50%)',
+    outline: '0',
+  },
+  appBar: {
+    backgroundColor: theme.palette.background.default,
+    color: theme.palette.text.primary,
   },
 }));
 
@@ -24,10 +46,16 @@ export default function Profile(props) {
   const [incoming, setIncoming] = useState();
   const [outgoing, setOutgoing] = useState();
   const [employees, setEmployees] = useState();
+  const [showSettingVerify, toggleShowSettingVerify] = useState(false);
+  const [verPass, setVerPass] = useState();
 
   useEffect(() => {
     getInOut();
   }, []);
+
+  function handleSumbit() {
+      console.log('submit')
+  }
 
   function getInOut() {
     const uri = props.uri;
@@ -78,21 +106,61 @@ export default function Profile(props) {
   return (
 
     <div className={classes.root}>
+      <Modal
+        open={showSettingVerify}
+        onClose={() => toggleShowSettingVerify(false)}
+        aria-labelledby="add-kudo-modal"
+        aria-describedby="add-kudo"
+      >
+        <div className={classes.modalCenter}>
+          <Card style={{width: '600px', margin: '10px'}}>
+              <CardContent>
+                  <form onSubmit={(e) => {e.preventDefault(); handleSumbit();}}>
+                      <TextField
+                          label='Password'
+                          variant='outlined'
+                          multiline
+                          rows={1}
+                          value={verPass}
+                          fullWidth
+                          onChange={(e) => setVerPass(e.target.value)}
+                      />
+                    <Button type="submit" variant="contained" color="primary">Verify Password</Button>
+                  </form>
+              </CardContent>
+          </Card>
+        </div>
+      </Modal>
+      <AppBar position="sticky" elevation={0} className={classes.appBar}>
+        <Toolbar>
+          <Typography variant="h6">Profile</Typography>
+        </Toolbar>
+        <Divider variant="middle"/>
+      </AppBar>
+      <Grid className={classes.header}>
+
+      </Grid>
       <Grid className={classes.list}>
+        <Box style={{maxHeight: '650px', overflow: 'auto'}}>
         <TabContext value={value}>
-          <AppBar position="static">
+          <AppBar position="sticky">
             <TabList onChange={handleChange} aria-label="simple tabs example" centered>
               <Tab label="Incoming" value="1" />
               <Tab label="Outgoing" value="2" />
+              <Tab label="Settings" value="3" onClick={() =>  toggleShowSettingVerify(true)}/>
             </TabList>
           </AppBar>
           <TabPanel value="1">{incoming && employees ? incoming.map((kudo, index) => {
               return <Kudo to={employees[kudo.to].name} from={employees[kudo.from].name} message={kudo.kudo} key={index}/>
           }) : 'loading'  }</TabPanel>
-        <TabPanel value="2">{outgoing && employees ? outgoing.map((kudo, index) => {
-              return <Kudo to={employees[kudo.to].name} from={employees[kudo.from].name} message={kudo.kudo} key={index}/>
-          }) : 'loading'  }</TabPanel>
+          <TabPanel value="2">{outgoing && employees ? outgoing.map((kudo, index) => {
+                return <Kudo to={employees[kudo.to].name} from={employees[kudo.from].name} message={kudo.kudo} key={index}/>
+            }) : 'loading'  }</TabPanel>
+          <TabPanel value="3">
+            Settings
+          </TabPanel>
         </TabContext>
+        </Box>
       </Grid>
     </div>
 
