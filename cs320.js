@@ -306,3 +306,28 @@ app.post('/api/data/get_core_values', (req, res) => {
 		send_data(val_em);
 	});
   });
+
+// Settings endpoints
+app.post('/api/data/get_core_values', (req, res) => {
+	console.log(req.body);
+	const companyName = req.body.uri;
+	const uri = "mongodb+srv://user:cs320team1@cs320.t0mlm.mongodb.net/" + companyName + "?retryWrites=true&w=majority";
+	const client = new MongoClient(uri, { useNewUrlParser: true, useUnifiedTopology: true });
+
+  	client.connect(err =>  {
+		assert.equal(err, null);
+		const db = client.db(companyName);
+		const Collection = db.collection("Employees Database");
+
+		const employees = findEmployees(Collection);
+
+		const change_password = async (req, employees) => {
+			await val_em.then(value  => {
+			console.log(value[0].values);
+			client.close();
+			res.send(value[0].values);
+		});
+		};
+		send_data(val_em);
+	});
+  });
