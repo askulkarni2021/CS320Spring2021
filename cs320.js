@@ -307,3 +307,26 @@ app.post('/api/data/get_core_values', (req, res) => {
 	});
   });
 
+app.post('/api/data/get_emojis', (req, res) => {
+	console.log(req.body);
+	const companyName = req.body.uri;
+	const uri = "mongodb+srv://user:cs320team1@cs320.t0mlm.mongodb.net/" + companyName + "?retryWrites=true&w=majority";
+	const client = new MongoClient(uri, { useNewUrlParser: true, useUnifiedTopology: true });
+
+  	client.connect(err =>  {
+		assert.equal(err, null);
+		const db = client.db(companyName);
+		const Collection = db.collection("Values-Emojis");
+
+		const val_em = findEmployees(Collection);
+
+		const send_data = async (val_em) => {
+			await val_em.then(value  => {
+			console.log(value[0].emojis);
+			client.close();
+			res.send(value[0].emojis);
+		});
+		};
+		send_data(val_em);
+	});
+});
