@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { makeStyles } from '@material-ui/core/styles';
-import { Button, Card, CardContent, TextField, Box } from '@material-ui/core';
+import { Button, Card, CardContent, TextField, Box, Input } from '@material-ui/core';
 import AppBar from '@material-ui/core/AppBar';
 import Toolbar from '@material-ui/core/Toolbar';
 import Typography from '@material-ui/core/Typography';
@@ -21,7 +21,7 @@ const useStyles = makeStyles((theme) => ({
     backgroundColor: theme.palette.background.default,
   },
   list: {
-    width: 640,
+    width: 660,
   },
   header: {
     height: 200,
@@ -49,14 +49,23 @@ export default function Profile(props) {
   const [showSettingVerify, toggleShowSettingVerify] = useState(false);
   const [verPass, setVerPass] = useState();
   const [newPass, setNewPass] = useState();
+  const [avatar, setAvatar] = useState();
 
   useEffect(() => {
     getInOut();
   }, []);
 
-  function handleSumbit() {
+  function handleSumbitVerify() {
       console.log(verPass)
       toggleShowSettingVerify(false)
+  }
+
+  function handleSumbitNewPass() {
+      console.log(newPass)
+  }
+
+  function handleSumbitAvatar() {
+      //console.log(avatar)
   }
 
   function getInOut() {
@@ -117,7 +126,7 @@ export default function Profile(props) {
         <div className={classes.modalCenter}>
           <Card style={{width: '600px', margin: '10px'}}>
               <CardContent>
-                  <form onSubmit={(e) => {e.preventDefault(); handleSumbit();}}>
+                  <form onSubmit={(e) => {e.preventDefault(); handleSumbitVerify();}}>
                       <TextField
                           label='Password'
                           variant='outlined'
@@ -143,7 +152,7 @@ export default function Profile(props) {
 
       </Grid>
       <Grid className={classes.list}>
-        <Box style={{maxHeight: '650px', overflow: 'auto'}}>
+        <Box style={{maxHeight: '635px', overflow: 'auto'}}>
         <TabContext value={value}>
           <AppBar position="sticky">
             <TabList onChange={handleChange} aria-label="simple tabs example" centered>
@@ -163,7 +172,7 @@ export default function Profile(props) {
               <Card style={{width: '600px', margin: '10px'}}>
                   <CardContent>
                       <Typography variant="h6">Enter New password:</Typography>
-                    <form onSubmit={(e) => {e.preventDefault(); handleSumbit();}}>
+                    <form onSubmit={(e) => {e.preventDefault(); handleSumbitNewPass();}}>
                         <TextField
                             label='Password'
                             variant='outlined'
@@ -177,6 +186,17 @@ export default function Profile(props) {
                     </form>
                   </CardContent>
                 </Card>
+                <Card style={{width: '600px', margin: '10px'}}>
+                    <CardContent>
+                        <Typography variant="h6">Upload Avatar:</Typography>
+                      <form onSubmit={(e) => {e.preventDefault(); handleSumbitAvatar();}}>
+                        <Input
+                          type='file'>
+                        </Input>
+                        <Button type="submit" variant="contained" color="primary">Upload</Button>
+                      </form>
+                    </CardContent>
+                  </Card>
             </Grid>
           </TabPanel>
         </TabContext>
