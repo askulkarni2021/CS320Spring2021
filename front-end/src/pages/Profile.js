@@ -48,13 +48,15 @@ export default function Profile(props) {
   const [employees, setEmployees] = useState();
   const [showSettingVerify, toggleShowSettingVerify] = useState(false);
   const [verPass, setVerPass] = useState();
+  const [newPass, setNewPass] = useState();
 
   useEffect(() => {
     getInOut();
   }, []);
 
   function handleSumbit() {
-      console.log('submit')
+      console.log(verPass)
+      toggleShowSettingVerify(false)
   }
 
   function getInOut() {
@@ -157,7 +159,25 @@ export default function Profile(props) {
                 return <Kudo to={employees[kudo.to].name} from={employees[kudo.from].name} message={kudo.kudo} key={index}/>
             }) : 'loading'  }</TabPanel>
           <TabPanel value="3">
-            Settings
+            <Grid>
+              <Card style={{width: '600px', margin: '10px'}}>
+                  <CardContent>
+                      <Typography variant="h6">Enter New password:</Typography>
+                    <form onSubmit={(e) => {e.preventDefault(); handleSumbit();}}>
+                        <TextField
+                            label='Password'
+                            variant='outlined'
+                            multiline
+                            rows={1}
+                            value={newPass}
+                            fullWidth
+                            onChange={(e) => setNewPass(e.target.value)}
+                        />
+                      <Button type="submit" variant="contained" color="primary">Enter Password</Button>
+                    </form>
+                  </CardContent>
+                </Card>
+            </Grid>
           </TabPanel>
         </TabContext>
         </Box>
