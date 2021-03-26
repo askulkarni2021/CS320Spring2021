@@ -1,21 +1,10 @@
 import React, { useState, useEffect } from 'react';
 import { makeStyles } from '@material-ui/core/styles';
-import Drawer from '@material-ui/core/Drawer';
-import Avatar from '@material-ui/core/Avatar';
-import Card from "@material-ui/core/Card";
-import CardHeader from "@material-ui/core/CardHeader";
-import CardContent from '@material-ui/core/CardContent';
-import CardActions from '@material-ui/core/CardActions';
-import Collapse from '@material-ui/core/Collapse';
+import { Drawer, Avatar, Card, CardHeader, CardContent, CardActions, Collapse, IconButton, Typography, Box, Grid } from '@material-ui/core';
 import ExpandMoreIcon from '@material-ui/icons/ExpandMore';
 import MoreVertIcon from '@material-ui/icons/MoreVert';
-import IconButton from '@material-ui/core/IconButton';
-import Typography from '@material-ui/core/Typography';
-import Box from "@material-ui/core/Box";
-import Grid from "@material-ui/core/Grid";
 import clsx from 'clsx';
 import RockstarKudos from '../components/RockstarKudos';
-
 
 const useStyles = makeStyles((theme) => ({
   drawer: {
@@ -25,7 +14,6 @@ const useStyles = makeStyles((theme) => ({
   drawerPaper: {
     variant:"elevation3",
     width: 250,
-    height: 800,
     backgroundColor: 'transparent',
     border: 'none',
   },
@@ -39,27 +27,39 @@ const useStyles = makeStyles((theme) => ({
   expandOpen: {
     transform: 'rotate(180deg)',
   },
-  avatar: {
-
-  },
 }));
 
 export default function Rockstar(props) {
-  const classes = useStyles();
   const monthNames = ["January","February","March","April","May","June","July","August","September","October","November","December"]
   const [expanded, setExpanded] = useState(false);
-  // const [rockstar, setRockstar] = useState({})
+  const [rHeight, setRHeight] = useState('278px');
   const [user, setUser] = useState('');
   const [position, setPosition] = useState('');
   const [numKudos, setNumKudos] = useState();
   const [month, setMonth] = useState();
   const [incoming, setIncoming] = useState();
-  // const [kudos, setKudos] = useState();
   const [employees, setEmployees] = useState();
-  // const [testKudos, setTestKudos] = useState();
-  //const uri = localStorage.getItem('uri');
+
+  const useStyles = makeStyles((theme) => ({
+    drawerPaper: {
+      variant:"elevation3",
+      width: 250,
+      height: rHeight,
+      backgroundColor: 'transparent',
+      border: 'none',
+    },
+  }));
+
+  const classes = useStyles();
 
   const handleExpandClick = () => {
+    if (expanded) {
+      setTimeout(function () {
+        setRHeight('278px');
+      }, 500)
+    } else {
+      setRHeight('800px');
+    }
     setExpanded(!expanded);
   };
 
@@ -83,21 +83,13 @@ export default function Rockstar(props) {
       body: JSON.stringify(formData)
     })
     .then(response => response.json()).then(data => {
-      // console.log(data)
-      // setRockstar(data)
       setUser(data.name)
       setPosition(data.position)
       setNumKudos(data.numKudos)
       setMonth(data.month)
-      console.log(data.month)
-	  // put this function inside the response promise handle so we access to the uid of ROM
-	  // for some reason, the react state variable are undefined when trying to access them
-	  // in the function itself. a fix to this (idk best way to do it) is to put this function
-	  // inside the response handle so that we have access to the uid. this means we no longer need a
-	  // state for uid
+
   	  function getRockstarIncoming() {
-  	    // NEED to figure out how to get the uid from state
-		const uid = data.employeeId;
+		    const uid = data.employeeId;
   	    const formData = {uri, uid}
   	    fetch('http://localhost:5000/api/data/uid_map_name',
   	    {
@@ -146,7 +138,7 @@ export default function Rockstar(props) {
         <Card>
           <CardHeader
           avatar={
-            <Avatar aria-label="Rockstar" alt="Remy Sharp" className={classes.avatar} />
+            <Avatar aria-label="Rockstar" alt="Remy Sharp"/>
           }
           title={user}
           subheader={position}
