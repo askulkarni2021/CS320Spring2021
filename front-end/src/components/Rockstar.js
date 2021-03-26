@@ -60,7 +60,6 @@ export default function Rockstar(props) {
     } else {
       setRHeight('800px');
     }
-    console.log(rHeight);
     setExpanded(!expanded);
   };
 
