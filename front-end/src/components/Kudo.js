@@ -18,7 +18,7 @@ export default function Kudo(props) {
         <Grid
         item
         style={{width: '600px', margin: '10px'}}>
-        <Card className={classes.root}>
+        <Card className={classes.root} elevation={3}>
             <CardContent>
                 <Typography
                     className={classes.title}
@@ -33,7 +33,8 @@ export default function Kudo(props) {
             </CardContent>
             <CardActions>
                 {props.tags ? props.tags.map((tag, index) => {
-                    return <Chip key={index} label={tag} color="primary"/>
+                    const colors = ['#FF0000', '#FF6600', '#0000FF']
+                    return <Chip key={index} label={tag} style={{backgroundColor:colors[index]}}/>
                 }) : null}
             </CardActions>
         </Card>
