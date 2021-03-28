@@ -308,6 +308,8 @@ app.post('/api/data/get_core_values', (req, res) => {
   });
 
 // Settings endpoints
+
+//Expects : uri, uid and password
 app.post('/api/verify_settings', (req, res) => {
 	const companyName = req.body.uri;
 	const uri = "mongodb+srv://user:cs320team1@cs320.t0mlm.mongodb.net/" + companyName + "?retryWrites=true&w=majority";
@@ -324,8 +326,10 @@ app.post('/api/verify_settings', (req, res) => {
 			await employees.then(value  => {
 				//console.log(value.password);
 				found = (req.body.pass === value[0].password)
-				console.log(value);
-				console.log(found);
+				if (found===true){
+				client.close()
+				res.send({found:found, pass:value[0].password});
+			}
 			});
 			client.close();
 			res.send({found:found});
