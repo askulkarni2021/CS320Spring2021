@@ -36,6 +36,7 @@ kudo : {
 */
 
 
+
 const port = process.env.PORT || 5000;
 
 app.listen(port, () => console.log(`Listening on port ${port}`));
@@ -57,7 +58,6 @@ const findKudos = async (kudosCollection,filter_query) => {
 //Login Pages Endpoints
 
 app.post('/api/verify', (req, res) => {
-	console.log(req.body);
 	const companyName = req.body.uri;
 	const uri = "mongodb+srv://user:cs320team1@cs320.t0mlm.mongodb.net/" + companyName + "?retryWrites=true&w=majority";
 	const client = new MongoClient(uri, { useNewUrlParser: true, useUnifiedTopology: true });
@@ -88,7 +88,6 @@ app.post('/api/verify', (req, res) => {
 
 //Home Pages Endpoints
 app.post('/api/add_kudo', (req, res) => {
-	console.log(req.body);
 	const companyName = req.body.uri;
 	const uri = "mongodb+srv://user:cs320team1@cs320.t0mlm.mongodb.net/" + companyName + "?retryWrites=true&w=majority";
 	const client = new MongoClient(uri, { useNewUrlParser: true, useUnifiedTopology: true });
@@ -127,7 +126,6 @@ app.post('/api/add_kudo', (req, res) => {
 
 //Expects the company name(as uri field of the incoming query) and returns all kudos within that company as an array
 app.post('/api/all_kudos', (req, res) => {
-	console.log(req.body);
 	const companyName = req.body.uri;
 	const uri = "mongodb+srv://user:cs320team1@cs320.t0mlm.mongodb.net/" + companyName + "?retryWrites=true&w=majority";
 	const client = new MongoClient(uri, { useNewUrlParser: true, useUnifiedTopology: true });
@@ -154,20 +152,18 @@ app.post('/api/all_kudos', (req, res) => {
 //Returns - An array of all inccoming kudos for this user!
 
 app.post('/api/profile_incoming', (req, res) => {
-	console.log(req.body);
 	const companyName = req.body.uri;
 	const uri = "mongodb+srv://user:cs320team1@cs320.t0mlm.mongodb.net/" + companyName + "?retryWrites=true&w=majority";
 	const client = new MongoClient(uri, { useNewUrlParser: true, useUnifiedTopology: true });
 	const employeeId = req.body.uid
-  	client.connect(err => {
+  	client.connect(err => {	
 		assert.equal(err, null);
 		const db = client.db(companyName);
 		const Kudos = db.collection("Kudos");
-			
 		const findKudos = async () => { 
-			const kudos = await Kudos.find({to: employeeId}).toArray();
+			const kudos = await Kudos.find({to: parseInt(employeeId)}).toArray();
 			client.close();
-			res.send(kudos);
+			res.send(kudos.reverse());
 			return kudos;
 		};
 		findKudos();
@@ -179,7 +175,6 @@ app.post('/api/profile_incoming', (req, res) => {
 //Returns - An array of all outgoing kudos for this user!
 
 app.post('/api/profile_outgoing', (req, res) => { 
-	console.log(req.body);
 	const companyName = req.body.uri;
 	const uri = "mongodb+srv://user:cs320team1@cs320.t0mlm.mongodb.net/" + companyName + "?retryWrites=true&w=majority";
 	const client = new MongoClient(uri, { useNewUrlParser: true, useUnifiedTopology: true });
@@ -188,11 +183,10 @@ app.post('/api/profile_outgoing', (req, res) => {
 		assert.equal(err, null);
 		const db = client.db(companyName);
 		const Kudos = db.collection("Kudos");
-
 		const findKudos = async () => {
-			const kudos = await Kudos.find({from: employeeId}).toArray(); //find kudos with field 'from' that is the same as employeeID
+			const kudos = await Kudos.find({from: parseInt(employeeId)}).toArray(); //find kudos with field 'from' that is the same as employeeID
 			client.close();
-			res.send(kudos);
+			res.send(kudos.reverse());
 			return kudos;
 		};
 		findKudos();
@@ -203,7 +197,6 @@ app.post('/api/profile_outgoing', (req, res) => {
 
 
 app.post('/api/data/name_map_uid', (req, res) => {
-	console.log(req.body);
 	const companyName = req.body.uri;
 	const uri = "mongodb+srv://user:cs320team1@cs320.t0mlm.mongodb.net/" + companyName + "?retryWrites=true&w=majority";
 	const client = new MongoClient(uri, { useNewUrlParser: true, useUnifiedTopology: true });
@@ -234,7 +227,6 @@ app.post('/api/data/name_map_uid', (req, res) => {
   });
 
 app.post('/api/data/uid_map_name', (req, res) => {
-	console.log(req.body);
 	const companyName = req.body.uri;
 	const uri = "mongodb+srv://user:cs320team1@cs320.t0mlm.mongodb.net/" + companyName + "?retryWrites=true&w=majority";
 	const client = new MongoClient(uri, { useNewUrlParser: true, useUnifiedTopology: true });
@@ -262,7 +254,34 @@ app.post('/api/data/uid_map_name', (req, res) => {
 		};
 		send_data(employees);
 	});
-  });
+});
+
+// Takes in the company name
+// Responds with {name: "name of employee", position: "position of employee", numKudos: "number of kudos received for that month", employeeId: "employeeid of employee"}
+app.post('/api/get_rockstar', (req, res) => {
+	const companyName = req.body.uri;
+	const uri = "mongodb+srv://user:cs320team1@cs320.t0mlm.mongodb.net/" + companyName + "?retryWrites=true&w=majority";
+	const client = new MongoClient(uri, { useNewUrlParser: true, useUnifiedTopology: true });
+	client.connect(err => {
+		assert.equal(err, null);
+		const db = client.db(companyName);
+		const rockStarsCollection = db.collection("Rockstars");
+		const getRockstars = async () => {
+			return await rockStarsCollection.find({}).toArray();
+			client.close()
+		}
+		rockStarsPromise = getRockstars()
+		const sendData = async (rockStars) => {
+			await rockStars.then(value => {
+				mostRecentROM = value[value.length - 1];
+				const ROMname = mostRecentROM.firstName + " " + mostRecentROM.lastName;
+				res.send({name: ROMname, position: mostRecentROM.positionTitle, numKudos: mostRecentROM.numKudos, 
+							employeeId: mostRecentROM.employeeId, month: mostRecentROM.month});
+			});
+		};
+		sendData(rockStarsPromise);
+	});
+});
 
 app.post('/api/data/get_core_values', (req, res) => {
 	console.log(req.body);
@@ -288,4 +307,26 @@ app.post('/api/data/get_core_values', (req, res) => {
 	});
   });
 
+app.post('/api/data/get_emojis', (req, res) => {
+	console.log(req.body);
+	const companyName = req.body.uri;
+	const uri = "mongodb+srv://user:cs320team1@cs320.t0mlm.mongodb.net/" + companyName + "?retryWrites=true&w=majority";
+	const client = new MongoClient(uri, { useNewUrlParser: true, useUnifiedTopology: true });
 
+  	client.connect(err =>  {
+		assert.equal(err, null);
+		const db = client.db(companyName);
+		const Collection = db.collection("Values-Emojis");
+
+		const val_em = findEmployees(Collection);
+
+		const send_data = async (val_em) => {
+			await val_em.then(value  => {
+			console.log(value[0].emojis);
+			client.close();
+			res.send(value[0].emojis);
+		});
+		};
+		send_data(val_em);
+	});
+});
