@@ -326,13 +326,11 @@ app.post('/api/verify_settings', (req, res) => {
 			await employees.then(value  => {
 				//console.log(value.password);
 				found = (req.body.pass === value[0].password)
-				if (found===true){
+				//if (found===true){
 				client.close()
 				res.send({found:found, pass:value[0].password});
-			}
+			//}
 			});
-			client.close();
-			res.send({found:found});
 		}
 		verify(employees,req.body)
 	});
