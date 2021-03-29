@@ -63,7 +63,7 @@ export default function Home(props) {
         className={classes.kudos}>
           <AddKudo getKudos={props.getKudos}/>
           {props.kudos && props.employees ? props.kudos.map((kudo, index) => {
-              return <Kudo to={props.employees[kudo.to].name} from={props.employees[kudo.from].name} message={kudo.kudo} tags={kudo.tags} key={index}/>
+              return <Kudo to={props.employees[kudo.to].name} from={props.employees[kudo.from].name} message={kudo.kudo} tags={kudo.tags} key={kudo._id}/>
           }) : 
           <div style={{margin:'auto', marginTop: '50px'}}><CircularProgress/></div> }
         </Grid>

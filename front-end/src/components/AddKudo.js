@@ -107,6 +107,7 @@ export default function AddKudo(props) {
                         <Grid item>
                             <Autocomplete
                                 multiple
+                                required
                                 id="tags-outlined"
                                 options={coreValues}
                                 getOptionLabel={(option) => option.value}
@@ -121,7 +122,6 @@ export default function AddKudo(props) {
                                 )}
                                 renderInput={(params) => (
                                     <TextField
-                                        required
                                         {...params}
                                         variant="outlined"
                                         label="Core Values"
