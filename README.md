@@ -23,3 +23,7 @@ For the backend, we need to keep a node.js api running thta listens on a certain
 This gets your API running on the specified port and should be able to take in requests from the React frontend. 
 
 Both things need to be running on your local host for this to work. 
+
+<br></br>
+
+Here is the live documentation for the [API](https://documenter.getpostman.com/view/5555722/Tz5p6yJ2#6a7c1764-3f4b-427e-a9db-43a040f8c733)

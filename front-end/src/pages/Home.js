@@ -1,97 +1,74 @@
 import React, { useState, useEffect } from "react";
 import {
+  AppBar,
+  Divider,
   Grid,
+  Toolbar,
   Typography,
 } from "@material-ui/core";
 import { makeStyles } from '@material-ui/core/styles';
 import Navbar from '../components/Navbar';
+import Rockstar from '../components/Rockstar';
 import Kudo from '../components/Kudo';
+import AddKudo from "../components/AddKudo";
 
 const useStyles = makeStyles(theme => ({
-  root: {
-    display: 'flex',
+  kudos: {
+    paddingTop: theme.spacing(3),
+    paddingLeft: theme.spacing(6),
   },
-  bullet: {
-    display: 'inline-block',
-    margin: '0 2px',
-    transform: 'scale(0.8)',
+  appBar: {
+    backgroundColor: theme.palette.background.default,
+    color: theme.palette.text.primary,
   },
-  title: {
-    fontSize: 14,
-  },
-  pos: {
-    marginBottom: 12,
-  },
-  content: {
-      flexGrow: 1,
-      backgroundColor: theme.palette.background.default,
-      padding: theme.spacing(3),
-  },
+  stop: {
+    backgroundColor: theme.palette.background.default,
+  }
 }));
-  
+
 export default function Home(props) {
   const [company, setCompany] = useState('');
-  const [employees, setEmployees] = useState({});
-  const [kudos, setKudos] = useState([]);
   const classes = useStyles();
 
+  // runs on reload/first visit, calls getKudos() and
+  // sets company name from uri
   useEffect(() => {
-
-    getKudos();
+    console.log(props.data);
+    console.log(props.uri);
+    props.getKudos();
     const companies = {
       'starship-entertainment': 'Starship Entertainment',
       'outback-tech': 'Outback Technology',
       'greenlife-consulting': 'Greenlife Consulting'
     }
-    setCompany(companies[localStorage.getItem('uri')]);
+    setCompany(companies[props.uri]);
   }, []);
-  
-  function getKudos() {
-    const uri = localStorage.getItem('uri')
-    const formData = {uri}; 
-    fetch('http://localhost:5000/api/data/uid_map_name',
-      {
-        method: 'POST',
-        headers: {
-          "Accept": "application/json",
-          "Content-Type": "application/json"
-        },
-        body: JSON.stringify(formData)
-      })
-      .then(response => response.json()).then(data => {
-        setEmployees(data)
-      });
-
-      fetch('http://localhost:5000/api/all_kudos',
-      {
-        method: 'POST',
-        headers: {
-          "Accept": "application/json",
-          "Content-Type": "application/json"
-        },
-        body: JSON.stringify(formData)
-      })
-      .then(response => response.json()).then(data => {
-        setKudos(data)
-      });
-  }
 
   return (
-    <div className={classes.root}>
-      <Navbar/>
-      <div className={classes.content}>
-          <Typography variant="h4" style={{margin: '20px'}}> {company} </Typography>
-          <Grid
-          container
-          direction="column"
-          justify="flex-start"
-          alignItems="center"          
-          >
-          {kudos && employees[5] ? kudos.map((kudo, index) => {
-              return <Kudo to={employees[kudo.to].name} from={employees[kudo.from].name} message={kudo.kudo} key={index}/>
+    <div className={classes.stop}>
+      <AppBar position="sticky" elevation={0} className={classes.appBar}>
+        <Toolbar>
+          <Typography variant="h6">{company}</Typography>
+        </Toolbar>
+        <Divider variant="middle"/>
+      </AppBar>
+      <Grid container justify="space-between">
+        <Grid
+        item xs={4}
+        container
+        direction="column"
+        justify="flex-start"
+        alignItems="flex-start"
+        className={classes.kudos}>
+          <AddKudo getKudos={props.getKudos}/>
+          {props.kudos && props.employees ? props.kudos.map((kudo, index) => {
+              return <Kudo to={props.employees[kudo.to].name} from={props.employees[kudo.from].name} message={kudo.kudo} key={index}/>
           }) : 'loading'  }
-          </Grid>
-      </div>
+        </Grid>
+        <Grid item xs={4}>
+          {<Rockstar/>}
+        </Grid>
+      </Grid>
     </div>
   );
 }

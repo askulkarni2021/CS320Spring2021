@@ -1,17 +1,11 @@
-import React from 'react';
+import React, { useState, useEffect } from "react";
 import { makeStyles } from '@material-ui/core/styles';
-import Drawer from '@material-ui/core/Drawer';
-import CssBaseline from '@material-ui/core/CssBaseline';
-import List from '@material-ui/core/List';
+import {Drawer, CssBaseline, List, MenuList, MenuItem , Button, Avatar, Box, Grid, Typography, Modal} from '@material-ui/core'
 import Emoji from '../components/Emoji';
-import Button from '@material-ui/core/Button';
-import Avatar from '@material-ui/core/Avatar';
-import Box from '@material-ui/core/Box';
-import Grid from '@material-ui/core/Grid';
-import MenuItem from '@material-ui/core/MenuItem';
-import MenuList from '@material-ui/core/MenuList';
+import AddKudo from "./AddKudo";
+import { useHistory } from "react-router-dom";
 
-const drawerWidth = 250;
+const drawerWidth = 350;
 
 const useStyles = makeStyles((theme) => ({
   drawer: {
@@ -20,15 +14,64 @@ const useStyles = makeStyles((theme) => ({
   },
   drawerPaper: {
     width: drawerWidth,
+    backgroundColor: theme.palette.background.default,
+    paddingLeft: '100px',
   },
+  menuItem: {
+    borderRadius: '50px',
+    marginBottom: '10px',
+    paddingLeft: '10px',
+    paddingRight: '10px',
+    '&:hover': {
+      backgroundColor: theme.palette.primary.main,
+      color: theme.palette.text.main
+    }
+  },
+  logout: {
+    borderRadius: '50px',
+    padding: '1px 4px',
+    marginLeft: '6px',
+    marginTop: '10px',
+  },
+  dumb: {
+    paddingLeft: '10px',
+    marginLeft: '0',
+  },
+  modalCenter: {
+    position: 'absolute',
+    top: '30%',
+    left: '50%',
+    transform: 'translate(-50%, -50%)',
+    outline: '0',
+  }
 }));
-
-export default function Navbar() {
+export default function Navbar(props) {
   const classes = useStyles();
+  const [name, setEmployeeName] = useState('');
+  const [position, setEmployeePosition] = useState('');
+  const [showAddKudo, toggleShowAddKudo] = useState(false);
+  let history = useHistory();
+  
+  useEffect(() => {
+    if(props.employees){
+      setEmployeeName(props.employees[props.uid]['name']);
+      setEmployeePosition(props.employees[props.uid]['position']);  
+    }
+  }, [props.employees]);
 
   return (
     <div>
-      <CssBaseline />
+      <CssBaseline/>
+      <Modal
+        open={showAddKudo}
+        onClose={() => toggleShowAddKudo(false)}
+        aria-labelledby="add-kudo-modal"
+        aria-describedby="add-kudo"
+      >
+        <div className={classes.modalCenter}>
+          <AddKudo getKudos={props.getKudos} toggleShowAddKudo={toggleShowAddKudo}/>
+        </div>
+      </Modal>
       <Drawer
         className={classes.drawer}
         variant="permanent"
@@ -36,29 +79,37 @@ export default function Navbar() {
           paper: classes.drawerPaper,
         }}
         anchor="left"
-      >
-
-        <div className={classes.toolbar} />
-        
+      >        
         <List>
-            <Box textAlign="center" m={1} fontSize={50}>Kudos</Box>
-            <Grid container spacing={0} direction="column" alignItems="center" justify="center">
-                <Avatar alt="Remy Sharp" src="https://www.rd.com/wp-content/uploads/2017/09/01-shutterstock_476340928-Irina-Bg.jpg" style={{ height: '140px', width: '140px' }} />
-            </Grid>
-            <Box textAlign="center" m={1} fontSize={25}>Kianna Westervelt</Box>
-            <Box textAlign="center" m={1} fontSize={15}>Software Engineer</Box>
-            <MenuList>
-                <Grid container spacing={0} direction="column" alignItems="center" justify="center">
-                    <MenuItem><Emoji symbol="🏠"/> Home</MenuItem>
-                    <MenuItem><Emoji symbol="😺"/> Profile</MenuItem>
-                    <MenuItem><Emoji symbol="🌊"/>Logout</MenuItem>
-                </Grid>
-            </MenuList>
-            <Grid container spacing={0} direction="column" alignItems="center" justify="center">
-                <Button variant="contained" size="large">+ Give Kudos</Button>
-            </Grid>
+          <Box textAlign="left" className={classes.dumb}>
+            <Typography variant="h2">Kudos</Typography>
+          </Box>
+          <Grid container direction="column" alignItems="flex-start" justify="center" className={classes.dumb}>
+              <Avatar alt="Remy Sharp" style={{ height: '140px', width: '140px', marginTop: '10px', marginBottom: '10px' }} />
+          </Grid>
+          <Box textAlign="left" className={classes.dumb}>
+            <Typography variant="h5">{name}</Typography>
+          </Box>
+          <Box textAlign="left" className={classes.dumb}>
+            <Typography variant="subtitle1">{position}</Typography>  
+          </Box>
+          <MenuList>
+              <Grid container direction="column" alignItems="flex-start" justify="center">
+                  <MenuItem className={classes.menuItem} onClick={() => history.push('/home')}>
+                    <Typography variant="h4"><Emoji symbol="🏠" label="home"/>Home</Typography>
+                  </MenuItem>
+                  <MenuItem className={classes.menuItem} onClick={() => history.push('/profile')}>
+                    <Typography variant="h4"><Emoji symbol="😺" label="cat"/>Profile</Typography>
+                  </MenuItem>
+                  <Grid container direction="column" alignItems="flex-start" justify="center" className={classes.dumb}>
+                    <Button variant="contained" size="large" color="primary" onClick={() => toggleShowAddKudo(true)}>+ Give Kudos</Button>
+                  </Grid>
+                  <MenuItem m={1} onClick={()=>props.logout()} className={classes.logout}>
+                    <Typography variant="overline"><Emoji symbol="🌊" label="wave"/>Logout</Typography>
+                  </MenuItem>
+              </Grid>
+          </MenuList>
         </List>
-        
       </Drawer>
     </div>
   );

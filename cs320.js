@@ -32,15 +32,9 @@ kudo : {
 	reson:
 }
 
-Rockstar of the month (user flow):
-
-Having 2 endpoint using and an additional database for storing information abour the 
-previos ROM employee. Using timestamp to see if it is the first of the month 
-and then exploit a variable called kudosForThisMonth which needs to be set to 0 
-on the first after aking the max of the previous month and storing it in the 
-ROM database
 
 */
+
 
 
 const port = process.env.PORT || 5000;
@@ -64,7 +58,6 @@ const findKudos = async (kudosCollection,filter_query) => {
 //Login Pages Endpoints
 
 app.post('/api/verify', (req, res) => {
-	console.log(req.body);
 	const companyName = req.body.uri;
 	const uri = "mongodb+srv://user:cs320team1@cs320.t0mlm.mongodb.net/" + companyName + "?retryWrites=true&w=majority";
 	const client = new MongoClient(uri, { useNewUrlParser: true, useUnifiedTopology: true });
@@ -81,10 +74,12 @@ app.post('/api/verify', (req, res) => {
 				value.forEach(function(element){
 				  if(element.email === query.email){
 				    if(element.password===query.pass){
+				    	client.close();
 				    res.send({found:true, uid:element.employeeId});
 				}}
 				})
 			});
+			client.close();
 			res.send({found:found});
 		}
 		verify(employees,req.body)
@@ -93,7 +88,6 @@ app.post('/api/verify', (req, res) => {
 
 //Home Pages Endpoints
 app.post('/api/add_kudo', (req, res) => {
-	console.log(req.body);
 	const companyName = req.body.uri;
 	const uri = "mongodb+srv://user:cs320team1@cs320.t0mlm.mongodb.net/" + companyName + "?retryWrites=true&w=majority";
 	const client = new MongoClient(uri, { useNewUrlParser: true, useUnifiedTopology: true });
@@ -105,27 +99,24 @@ app.post('/api/add_kudo', (req, res) => {
 			const db = client.db(companyName);
 			const kudos = db.collection("Kudos");
 			// dont insert the whole query because otherwise the company name would be inserted in each kudo, which is unnecessary
-			let resultDoc = await kudos.insertOne({from: query.from, to: query.to, kudo: query.kudo});
+			let resultDoc = await kudos.insertOne({from: query.from, to: query.to, kudo: query.kudo, reactions: {}, tags: query.tags});
 			addToIncomingAndOutgoing = (addedKudo) => {
 				// NOTE: to and from are strings, not ints
 				let to = req.body.to;
 				let from = req.body.from;
-				kudoID = addedKudo.insertedId;
 				const employeesCollection = db.collection("Employees Database");
-				const updateGiverAndRecipient = async () => {
+				const incrementNumKudos = async () => {
 					await employeesCollection.updateOne(
 						{ "employeeId": parseInt(to) }, // get the employee that is recieving the kudo
-						{ $push: { incoming : kudoID} } // want to push the kudo to the recipients incoming list
+						{ $inc: { "numKudos" : 1} } // increment the number of kudos this employee has recieved
 					);
-					await employeesCollection.updateOne(
-						{ "employeeId": parseInt(from) }, // get the employdd that is giving the kudo
-						{ $push: { outgoing : kudoID} }   // and push the kudo to their outgoing list
-					);
+					// for some reason calling client.close() outside of addToIncomingAndOutgoing caused the client to close before numKudos was incremented
+					// putting client.close() still ensures the client is closed before the response is sent and is closed after any db operation is done
+					client.close(); 
 				}
-				updateGiverAndRecipient();
+				incrementNumKudos();
 			};
 			addToIncomingAndOutgoing(resultDoc);
-			// TODO: later on, we need to send better information here, like if the rockstar of the month has been updated
 			res.send(true); 
 		};
 		add_kudo(req.body);
@@ -135,7 +126,6 @@ app.post('/api/add_kudo', (req, res) => {
 
 //Expects the company name(as uri field of the incoming query) and returns all kudos within that company as an array
 app.post('/api/all_kudos', (req, res) => {
-	console.log(req.body);
 	const companyName = req.body.uri;
 	const uri = "mongodb+srv://user:cs320team1@cs320.t0mlm.mongodb.net/" + companyName + "?retryWrites=true&w=majority";
 	const client = new MongoClient(uri, { useNewUrlParser: true, useUnifiedTopology: true });
@@ -147,6 +137,7 @@ app.post('/api/all_kudos', (req, res) => {
 		const kudos = findKudos(kudosCollection,{});
 		const find_all = async (kudos) => { 
 			await kudos.then(value  => {
+				client.close();
 				res.send(value.reverse());
 			});
 		};
@@ -161,20 +152,18 @@ app.post('/api/all_kudos', (req, res) => {
 //Returns - An array of all inccoming kudos for this user!
 
 app.post('/api/profile_incoming', (req, res) => {
-	console.log(req.body);
 	const companyName = req.body.uri;
 	const uri = "mongodb+srv://user:cs320team1@cs320.t0mlm.mongodb.net/" + companyName + "?retryWrites=true&w=majority";
 	const client = new MongoClient(uri, { useNewUrlParser: true, useUnifiedTopology: true });
 	const employeeId = req.body.uid
-  	client.connect(err => {
+  	client.connect(err => {	
 		assert.equal(err, null);
 		const db = client.db(companyName);
 		const Kudos = db.collection("Kudos");
-			
 		const findKudos = async () => { 
-			const kudos = await Kudos.find({to: employeeId}).toArray();
-			console.log(kudos);
-			res.send(kudos);
+			const kudos = await Kudos.find({to: parseInt(employeeId)}).toArray();
+			client.close();
+			res.send(kudos.reverse());
 			return kudos;
 		};
 		findKudos();
@@ -186,7 +175,6 @@ app.post('/api/profile_incoming', (req, res) => {
 //Returns - An array of all outgoing kudos for this user!
 
 app.post('/api/profile_outgoing', (req, res) => { 
-	console.log(req.body);
 	const companyName = req.body.uri;
 	const uri = "mongodb+srv://user:cs320team1@cs320.t0mlm.mongodb.net/" + companyName + "?retryWrites=true&w=majority";
 	const client = new MongoClient(uri, { useNewUrlParser: true, useUnifiedTopology: true });
@@ -195,11 +183,10 @@ app.post('/api/profile_outgoing', (req, res) => {
 		assert.equal(err, null);
 		const db = client.db(companyName);
 		const Kudos = db.collection("Kudos");
-
 		const findKudos = async () => {
-			const kudos = await Kudos.find({from: employeeId}).toArray(); //find kudos with field 'from' that is the same as employeeID
-			console.log(kudos);
-			res.send(kudos);
+			const kudos = await Kudos.find({from: parseInt(employeeId)}).toArray(); //find kudos with field 'from' that is the same as employeeID
+			client.close();
+			res.send(kudos.reverse());
 			return kudos;
 		};
 		findKudos();
@@ -208,8 +195,8 @@ app.post('/api/profile_outgoing', (req, res) => {
 
 // Data Sending Endpoints
 
+
 app.post('/api/data/name_map_uid', (req, res) => {
-	console.log(req.body);
 	const companyName = req.body.uri;
 	const uri = "mongodb+srv://user:cs320team1@cs320.t0mlm.mongodb.net/" + companyName + "?retryWrites=true&w=majority";
 	const client = new MongoClient(uri, { useNewUrlParser: true, useUnifiedTopology: true });
@@ -231,6 +218,7 @@ app.post('/api/data/name_map_uid', (req, res) => {
 				const data = {id:id, position:position}
 				emp[employee]=data;
 			})
+			client.close();
 			res.send(emp);
 		});
 		};
@@ -239,7 +227,6 @@ app.post('/api/data/name_map_uid', (req, res) => {
   });
 
 app.post('/api/data/uid_map_name', (req, res) => {
-	console.log(req.body);
 	const companyName = req.body.uri;
 	const uri = "mongodb+srv://user:cs320team1@cs320.t0mlm.mongodb.net/" + companyName + "?retryWrites=true&w=majority";
 	const client = new MongoClient(uri, { useNewUrlParser: true, useUnifiedTopology: true });
@@ -261,11 +248,136 @@ app.post('/api/data/uid_map_name', (req, res) => {
 				const data = {name:employee, position:position}
 				emp[id]=data;
 			})
+			client.close();
 			res.send(emp);
 		});
 		};
 		send_data(employees);
 	});
+});
+
+// Takes in the company name
+// Responds with {name: "name of employee", position: "position of employee", numKudos: "number of kudos received for that month", employeeId: "employeeid of employee"}
+app.post('/api/get_rockstar', (req, res) => {
+	const companyName = req.body.uri;
+	const uri = "mongodb+srv://user:cs320team1@cs320.t0mlm.mongodb.net/" + companyName + "?retryWrites=true&w=majority";
+	const client = new MongoClient(uri, { useNewUrlParser: true, useUnifiedTopology: true });
+	client.connect(err => {
+		assert.equal(err, null);
+		const db = client.db(companyName);
+		const rockStarsCollection = db.collection("Rockstars");
+		const getRockstars = async () => {
+			return await rockStarsCollection.find({}).toArray();
+			client.close()
+		}
+		rockStarsPromise = getRockstars()
+		const sendData = async (rockStars) => {
+			await rockStars.then(value => {
+				mostRecentROM = value[value.length - 1];
+				const ROMname = mostRecentROM.firstName + " " + mostRecentROM.lastName;
+				res.send({name: ROMname, position: mostRecentROM.positionTitle, numKudos: mostRecentROM.numKudos, 
+							employeeId: mostRecentROM.employeeId, month: mostRecentROM.month});
+			});
+		};
+		sendData(rockStarsPromise);
+	});
+});
+
+app.post('/api/data/get_core_values', (req, res) => {
+	console.log(req.body);
+	const companyName = req.body.uri;
+	const uri = "mongodb+srv://user:cs320team1@cs320.t0mlm.mongodb.net/" + companyName + "?retryWrites=true&w=majority";
+	const client = new MongoClient(uri, { useNewUrlParser: true, useUnifiedTopology: true });
+
+  	client.connect(err =>  {
+		assert.equal(err, null);
+		const db = client.db(companyName);
+		const Collection = db.collection("Values-Emojis");
+
+		const val_em = findEmployees(Collection);
+
+		const send_data = async (val_em) => {
+			await val_em.then(value  => {
+			console.log(value[0].values);
+			client.close();
+			res.send(value[0].values);
+		});
+		};
+		send_data(val_em);
+	});
   });
 
-app.post('/api/data/values-emojis', (req, res) => {});
+app.post('/api/data/get_emojis', (req, res) => {
+	console.log(req.body);
+	const companyName = req.body.uri;
+	const uri = "mongodb+srv://user:cs320team1@cs320.t0mlm.mongodb.net/" + companyName + "?retryWrites=true&w=majority";
+	const client = new MongoClient(uri, { useNewUrlParser: true, useUnifiedTopology: true });
+
+  	client.connect(err =>  {
+		assert.equal(err, null);
+		const db = client.db(companyName);
+		const Collection = db.collection("Values-Emojis");
+
+		const val_em = findEmployees(Collection);
+
+		const send_data = async (val_em) => {
+			await val_em.then(value  => {
+			console.log(value[0].emojis);
+			client.close();
+			res.send(value[0].emojis);
+		});
+		};
+		send_data(val_em);
+	});
+});
+
+
+//Expects uri and string for the value to be added 
+app.post('/api/data/add_value', (req, res) => {
+	console.log(req.body);
+	const companyName = req.body.uri;
+	const uri = "mongodb+srv://user:cs320team1@cs320.t0mlm.mongodb.net/" + companyName + "?retryWrites=true&w=majority";
+	const client = new MongoClient(uri, { useNewUrlParser: true, useUnifiedTopology: true });
+	const value = req.body.value;
+
+	client.connect(err => {
+		assert.equal(err, null);
+		const db = client.db(companyName);
+		const Collection = db.collection("Values-Emojis");
+		const insertValue = async (value) => {
+			await Collection.updateOne(
+					{},
+					{$push: {values: value}}
+				);
+			client.close();
+			res.send(true)
+		};
+		insertValue(value);
+	});
+
+});
+
+//Expects uri and string for the emoji to be added 
+app.post('/api/data/add_emoji', (req, res) => {
+	console.log(req.body);
+	const companyName = req.body.uri;
+	const uri = "mongodb+srv://user:cs320team1@cs320.t0mlm.mongodb.net/" + companyName + "?retryWrites=true&w=majority";
+	const client = new MongoClient(uri, { useNewUrlParser: true, useUnifiedTopology: true });
+	const emoji = req.body.emoji;
+
+	client.connect(err => {
+		assert.equal(err, null);
+		const db = client.db(companyName);
+		const Collection = db.collection("Values-Emojis");
+		
+		const insertEmoji = async (emoji) => {
+			await Collection.updateOne(
+					{},
+					{$push: {emojis: emoji}}
+				);
+			client.close();
+			res.send(true)
+		};
+		insertEmoji(emoji);
+	});
+});
