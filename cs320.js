@@ -385,13 +385,14 @@ app.post('/api/data/get_emojis', (req, res) => {
 });
 
 
-//Expects uri and string for the value to be added 
+//Expects uri and string for the value and the color of the value to be added 
 app.post('/api/data/add_value', (req, res) => {
 	console.log(req.body);
 	const companyName = req.body.uri;
 	const uri = "mongodb+srv://user:cs320team1@cs320.t0mlm.mongodb.net/" + companyName + "?retryWrites=true&w=majority";
 	const client = new MongoClient(uri, { useNewUrlParser: true, useUnifiedTopology: true });
 	const value = req.body.value;
+	const color = req.body.color 
 
 	client.connect(err => {
 		assert.equal(err, null);
@@ -400,7 +401,7 @@ app.post('/api/data/add_value', (req, res) => {
 		const insertValue = async (value) => {
 			await Collection.updateOne(
 					{},
-					{$push: {values: value}}
+					{$push: {values: {value: value, color: color , active: 1}}}
 				);
 			client.close();
 			res.send(true)
