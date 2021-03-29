@@ -330,3 +330,54 @@ app.post('/api/data/get_emojis', (req, res) => {
 		send_data(val_em);
 	});
 });
+
+
+//Expects uri and string for the value to be added 
+app.post('/api/data/add_value', (req, res) => {
+	console.log(req.body);
+	const companyName = req.body.uri;
+	const uri = "mongodb+srv://user:cs320team1@cs320.t0mlm.mongodb.net/" + companyName + "?retryWrites=true&w=majority";
+	const client = new MongoClient(uri, { useNewUrlParser: true, useUnifiedTopology: true });
+	const value = req.body.value;
+
+	client.connect(err => {
+		assert.equal(err, null);
+		const db = client.db(companyName);
+		const Collection = db.collection("Value-Emojis");
+		const insertValue = async (value) => {
+			await Collection.updateOne(
+					{},
+					{$push: {values: value}}
+				);
+			client.close();
+			res.send(true)
+		};
+		insertValue(value);
+	});
+
+});
+
+//Expects uri and string for the emoji to be added 
+app.post('/api/data/add_emoji', (req, res) => {
+	console.log(req.body);
+	const companyName = req.body.uri;
+	const uri = "mongodb+srv://user:cs320team1@cs320.t0mlm.mongodb.net/" + companyName + "?retryWrites=true&w=majority";
+	const client = new MongoClient(uri, { useNewUrlParser: true, useUnifiedTopology: true });
+	const emoji = req.body.emoji;
+
+	client.connect(err => {
+		assert.equal(err, null);
+		const db = client.db(companyName);
+		const Collection = db.collection("Value-Emojis");
+		
+		const insertEmoji = async (emoji) => {
+			await Collection.updateOne(
+					{},
+					{$push: {emojis: emoji}}
+				);
+			client.close();
+			res.send(true)
+		};
+		insertEmoji(emoji);
+	});
+});
