@@ -343,7 +343,7 @@ app.post('/api/data/add_value', (req, res) => {
 	client.connect(err => {
 		assert.equal(err, null);
 		const db = client.db(companyName);
-		const Collection = db.collection("Value-Emojis");
+		const Collection = db.collection("Values-Emojis");
 		const insertValue = async (value) => {
 			await Collection.updateOne(
 					{},
@@ -368,7 +368,7 @@ app.post('/api/data/add_emoji', (req, res) => {
 	client.connect(err => {
 		assert.equal(err, null);
 		const db = client.db(companyName);
-		const Collection = db.collection("Value-Emojis");
+		const Collection = db.collection("Values-Emojis");
 		
 		const insertEmoji = async (emoji) => {
 			await Collection.updateOne(
