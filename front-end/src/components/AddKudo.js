@@ -42,7 +42,7 @@ export default function AddKudo(props) {
         })
         .then(response => response.json())
         .then(data => {
-            const colors = ['#FF0000', '#FF6600', '#0000FF']
+            const colors = ['#FF0000', '#FF6600', '#0000FF', '#27b4d8', '#6f4cef', '#bd954e', '#dc6b8c']
             let coloredData = data.map((value, index) => {
                 return {value: value, color: colors[index]}
             })
