@@ -1,4 +1,4 @@
-import { Button, Card, CardContent, TextField } from '@material-ui/core';
+import { Button, Card, CardContent, Chip, TextField, Grid } from '@material-ui/core';
 import Autocomplete from '@material-ui/lab/Autocomplete';
 import React, { useState, useEffect } from 'react';
 
@@ -10,8 +10,7 @@ export default function AddKudo(props) {
     const [uri, setUri] = useState('');
     const [uid, setUid] = useState('');
     const [nameMapUid, setNameMapUid] = useState('');
-    /* FAKE CORE VALUES, PRESET */
-    const [coreValues] = useState(['Fake', 'Values', 'Not', 'Hooked', 'Up']);
+    const [coreValues, setCoreValues] = useState(['loading']);
 
     useEffect(() => {
         const uri = localStorage.getItem('uri');
@@ -32,14 +31,26 @@ export default function AddKudo(props) {
             setNameMapUid(data);
             console.log(data);
         });
+        fetch('http://localhost:5000/api/data/get_core_values',
+        {
+            method: 'POST',
+            headers: {
+                "Accept": "application/json",
+                "Content-Type": "application/json"
+            },
+            body: JSON.stringify({uri})
+        })
+        .then(response => response.json())
+        .then(data => {
+            const colors = ['#FF0000', '#FF6600', '#0000FF']
+            let coloredData = data.map((value, index) => {
+                return {value: value, color: colors[index]}
+            })
+            setCoreValues(coloredData)
+        })
     }, []);
 
     function handleSumbit() {
-        console.log('name', name);
-        console.log('to object', nameMapUid[name]);
-        console.log('kudo', kudo);
-        console.log('from', uid);
-        console.log('uri', uri);
         const to = nameMapUid[name]['id'];
         const from = uid;
         fetch('http://localhost:5000/api/add_kudo',
@@ -60,42 +71,69 @@ export default function AddKudo(props) {
     }
 
     return (
-        <Card style={{width: '600px', margin: '10px'}}>
+        <Card style={{width: '600px', margin: '10px'}} elevation={0}>
             <CardContent>
                 <form onSubmit={(e) => {e.preventDefault(); handleSumbit();}}>
-                    <Autocomplete
-                        id='toField'
-                        options={Object.keys(nameMapUid)}
-                        getOptionLabel={(option) => option}
-                        onChange={(event, newValue) => {
-                            setName(newValue);
-                        }}
-                        renderInput={(params) => <TextField {...params} label="Send To..." variant="outlined"/>}
-                    />
-                    <TextField 
-                        label='Message' 
-                        variant='outlined' 
-                        multiline
-                        rows={4}
-                        value={kudo}
-                        fullWidth
-                        onChange={(e) => updateKudo(e.target.value)}
-                    />
-                    <Autocomplete
-                        multiple
-                        id="tags-standard"
-                        options={coreValues}
-                        getOptionLabel={(option) => option}
-                        renderInput={(params) => (
-                            <TextField
-                                {...params}
-                                variant="standard"
-                                label="Core Values"
-                                placeholder="Core values"
+                    <Grid
+                     container
+                     direction="column"
+                     justify="space-evenly"
+                     alignItems="stretch"
+                     spacing={1}
+                     >
+                        <Grid item>
+                            <Autocomplete
+                                id='toField'
+                                options={Object.keys(nameMapUid)}
+                                getOptionLabel={(option) => option}
+                                onChange={(event, newValue) => {
+                                    setName(newValue);
+                                }}
+                                renderInput={(params) => <TextField {...params} required label="Send To..." variant="outlined"/>}
                             />
-                        )}
-                    />
-                    <Button type="submit" variant="contained" color="primary">Submit Kudo</Button>
+                        </Grid>
+                        <Grid item>
+                            <TextField 
+                                required
+                                label='Message' 
+                                variant='outlined' 
+                                multiline
+                                rows={4}
+                                value={kudo}
+                                fullWidth
+                                onChange={(e) => updateKudo(e.target.value)}
+                            />
+                        </Grid>
+                        <Grid item>
+                            <Autocomplete
+                                multiple
+                                id="tags-outlined"
+                                options={coreValues}
+                                getOptionLabel={(option) => option.value}
+                                renderTags={(value, getTagProps) => (
+                                    value.map((option, index) => (
+                                        <Chip
+                                        style={{backgroundColor: option.color}}
+                                        label={option.value}
+                                        {...getTagProps({index})}
+                                       />
+                                    ))
+                                )}
+                                renderInput={(params) => (
+                                    <TextField
+                                        required
+                                        {...params}
+                                        variant="outlined"
+                                        label="Core Values"
+                                        placeholder="Core values"
+                                    />
+                                )}
+                            />
+                        </Grid>
+                        <Grid item container justify='flex-end'>
+                            <Button type="submit" variant="contained" color="primary">Submit Kudo</Button>
+                        </Grid>
+                    </Grid>
                 </form>
             </CardContent>
         </Card>
