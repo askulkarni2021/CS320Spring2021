@@ -348,7 +348,7 @@ app.post('/api/data/add_value', (req, res) => {
 		const insertValue = async (value) => {
 			await Collection.updateOne(
 					{},
-					{$push: {values: {value: value, color: color , active: 1}}}
+					{$push: {values: {value: value, color: color , active: 1, numTagged:0}}}
 				);
 			client.close();
 			res.send(true)
