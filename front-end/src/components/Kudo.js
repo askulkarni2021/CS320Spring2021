@@ -72,7 +72,7 @@ export default function Kudo(props) {
                         aria-controls="panelbh-content"
                         id="panelbh-header"
                         >
-                        <Grid style={{width: '550px'}} container spacing={12}>
+                        <Grid style={{width: '550px'}} container spacing={0}>
                             <Grid item xs={2} style={{paddingLeft: '10px'}}>
                                 <Avatar alt="Remy Sharp" style={{ height: '70px', width: '70px'}} />
                             </Grid>
