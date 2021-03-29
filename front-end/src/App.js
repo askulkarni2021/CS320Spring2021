@@ -45,7 +45,7 @@ export default function App() {
   const [kudos, setKudos] = useState();
   const classes = useStyles();
   let history = useHistory();
-  
+
   // toggles darkState
   const handleThemeChange = () => {
     setDarkState(!darkState);
@@ -79,12 +79,12 @@ export default function App() {
   }
 
   // grabs uid_map_name for employees and all kudos
-  // from specified uri. 
+  // from specified uri.
   // Passed into Home, Navbar
   // Called when home feed first loads and when new kudo
   //        is added from AddKudo
   function getKudos() {
-    const formData = {uri}; 
+    const formData = {uri};
     fetch('http://localhost:5000/api/data/uid_map_name',
       {
         method: 'POST',
@@ -110,7 +110,7 @@ export default function App() {
       setKudos(data)
     });
   }
-  
+
   // runs on isLoggedIn toggle, updates local storage to match
   useEffect(() => {
     localStorage.setItem('isLoggedIn', isLoggedIn);
@@ -124,7 +124,7 @@ export default function App() {
     setMainPrimary(mainPrimary);
     localStorage.setItem('mainPrimary', mainPrimary);
     setPalleteType(palleteType);
-    localStorage.setItem('palleteType', palleteType);    
+    localStorage.setItem('palleteType', palleteType);
     theme = createMuiTheme({
       palette: {
         type: palleteType,
@@ -134,7 +134,7 @@ export default function App() {
       }
     })
   }, [darkState]);
-  
+
   // runs on reload/first visit, sets intial local storage from state
   useEffect(() => {
     localStorage.setItem('isLoggedIn', isLoggedIn);
@@ -153,8 +153,8 @@ export default function App() {
   return (
     <ThemeProvider theme={theme}>
       <CssBaseline/>
-      <Fab color="primary" 
-        aria-label="change theme" 
+      <Fab color="primary"
+        aria-label="change theme"
         onClick={() => handleThemeChange()}
         style={{position: 'fixed', top: 'auto', right: 20, bottom: 20, left: 'auto'}}
       >
@@ -163,7 +163,7 @@ export default function App() {
       <Route exact path="/" render={(props) => (
         (isLoggedIn && uri && data) ? null : <Login {...props} setDataFromLogin={setDataFromLogin.bind(this)}/>
       )}/>
-      { (isLoggedIn && uri && data) ? 
+      { (isLoggedIn && uri && data) ?
         <div className={classes.root}>
           <Navbar employees={uidEmployees} uid={data.uid} logout={logout.bind(this)} getKudos={getKudos.bind(this)}/>
             <div className={classes.content}>
@@ -171,7 +171,7 @@ export default function App() {
                 <Home {...props} data={data} uri={uri} employees={uidEmployees} kudos={kudos} getKudos={getKudos.bind(this)}/>
               )}/>
               <Route exact path="/profile" render={(props) => (
-                <Profile/>
+                <Profile data={data} uri={uri} employees={uidEmployees}/>
               )}/>
             </div>
         </div>
