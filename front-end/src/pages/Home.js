@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from "react";
 import {
   AppBar,
+  CircularProgress,
   Divider,
   Grid,
   Toolbar,
@@ -14,7 +15,7 @@ import AddKudo from "../components/AddKudo";
 
 const useStyles = makeStyles(theme => ({
   kudos: {
-    paddingTop: theme.spacing(3),
+    paddingTop: theme.spacing(1),
     paddingLeft: theme.spacing(6),
   },
   appBar: {
@@ -62,8 +63,9 @@ export default function Home(props) {
         className={classes.kudos}>
           <AddKudo getKudos={props.getKudos}/>
           {props.kudos && props.employees ? props.kudos.map((kudo, index) => {
-              return <Kudo to={props.employees[kudo.to].name} from={props.employees[kudo.from].name} message={kudo.kudo} key={index}/>
-          }) : 'loading'  }
+              return <Kudo to={props.employees[kudo.to].name} from={props.employees[kudo.from].name} message={kudo.kudo} tags={kudo.tags} key={kudo._id}/>
+          }) : 
+          <div style={{margin:'auto', marginTop: '50px'}}><CircularProgress/></div> }
         </Grid>
         <Grid item xs={4}>
           {<Rockstar/>}
