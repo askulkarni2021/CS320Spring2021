@@ -90,7 +90,7 @@ export default function Kudo(props) {
                                 </div>
                                 <CardActions>
                                     {props.tags ? props.tags.map((tag, index) => {
-                                        return <Chip key={index} label={tag} color="primary"/>
+                                        return <Chip key={index} label={tag.value} style={{backgroundColor: tag.color}}/>
                                     }) : null}
                                 </CardActions>
                             </Grid>

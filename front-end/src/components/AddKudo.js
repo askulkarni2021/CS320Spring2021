@@ -11,6 +11,7 @@ export default function AddKudo(props) {
     const [uid, setUid] = useState('');
     const [nameMapUid, setNameMapUid] = useState('');
     const [coreValues, setCoreValues] = useState(['loading']);
+    const [tags, updateTags] = useState('');
 
     useEffect(() => {
         const uri = localStorage.getItem('uri');
@@ -60,7 +61,7 @@ export default function AddKudo(props) {
               "Accept": "application/json",
               "Content-Type": "application/json"
             },
-            body: JSON.stringify({uri, to, from, kudo})
+            body: JSON.stringify({uri, to, from, kudo, tags})
         })
         .then(response => {
             props.getKudos();
@@ -68,6 +69,9 @@ export default function AddKudo(props) {
                 props.toggleShowAddKudo(false);
             }
         });
+        setName('');
+        updateKudo('');
+        updateTags([]);
     }
 
     return (
@@ -84,6 +88,7 @@ export default function AddKudo(props) {
                         <Grid item>
                             <Autocomplete
                                 id='toField'
+                                value={name}
                                 options={Object.keys(nameMapUid)}
                                 getOptionLabel={(option) => option}
                                 onChange={(event, newValue) => {
@@ -107,25 +112,26 @@ export default function AddKudo(props) {
                         <Grid item>
                             <Autocomplete
                                 multiple
-                                required
                                 id="tags-outlined"
                                 options={coreValues}
                                 getOptionLabel={(option) => option.value}
-                                renderTags={(value, getTagProps) => (
-                                    value.map((option, index) => (
+                                renderTags={() => (
+                                    tags.map((option, index) => (
                                         <Chip
                                         style={{backgroundColor: option.color}}
                                         label={option.value}
-                                        {...getTagProps({index})}
                                        />
                                     ))
                                 )}
+                                onChange={(event, newValue) => {
+                                    updateTags(newValue)}}
                                 renderInput={(params) => (
                                     <TextField
                                         {...params}
+                                        required={tags.length == 0}
                                         variant="outlined"
                                         label="Core Values"
-                                        placeholder="Core values"
+                                        placeholder="Core Values"
                                     />
                                 )}
                             />
