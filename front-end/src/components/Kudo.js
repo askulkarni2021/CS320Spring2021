@@ -1,5 +1,5 @@
 import React from 'react'
-import {Grid, Card, CardContent, Typography, CardActions, Button, Avatar} from '@material-ui/core'
+import {Grid, Card, CardContent, Typography, CardActions, Chip, Avatar} from '@material-ui/core'
 import { makeStyles } from '@material-ui/core/styles';
 import { withStyles } from '@material-ui/core/styles';
 import MuiAccordion from '@material-ui/core/Accordion';
@@ -11,8 +11,13 @@ const useStyles = makeStyles({
     root: {
       display: 'flex',
     },
-    title: {
-      fontSize: 14,
+    recv: {
+        display:'inline',
+        backgroundColor:'#F2F2F2', 
+        color:'#616161', 
+        marginRight:'5px', 
+        paddingLeft: '2px',
+        paddingRight: '2px',
     },
 });
 
@@ -58,7 +63,7 @@ const Accordion = withStyles({
   }))(MuiAccordionDetails);
 
 export default function Kudo(props) {
-    const classes = useStyles;
+    const classes = useStyles();
     const [expanded, setExpanded] = React.useState(false);
     const handleChange = (panel) => (event, isExpanded) => {
         setExpanded(isExpanded ? panel : false);
@@ -66,26 +71,28 @@ export default function Kudo(props) {
 
     return(
         <Card className={classes.root} style={{width: '600px', margin: '10px'}}>
-            <CardContent>
+            <CardContent style={{padding:'5px'}}>
                 <Accordion square expanded={expanded === 'panel'} onChange={handleChange('panel')}>
                     <AccordionSummary
-                        aria-controls="panelbh-content"
-                        id="panelbh-header"
-                        >
-                        <Grid style={{width: '550px'}} container spacing={0}>
-                            <Grid item xs={2} style={{paddingLeft: '10px'}}>
-                                <Avatar alt="Remy Sharp" style={{ height: '70px', width: '70px'}} />
+                    aria-controls="panelbh-content"
+                    id="panelbh-header"
+                    >
+                        <Grid container>
+                            <Grid item>
+                                <Avatar alt="Remy Sharp" style={{ height: '70px', width: '70px', marginRight: '10px'}} />
                             </Grid>
-                            <Grid item xs={10}>
-                                <Typography
-                                    className={classes.title}
-                                    color="textSecondary"
-                                    gutterBottom
-                                >
-                                <b>{props.to}</b> received kudos from {props.from}
-                                </Typography>
+                            <Grid item>
+                                <div>
+                                    <Typography variant="h6" style={{display:'inline', marginRight:'5px'}}>{props.to}</Typography>
+                                    <Typography variant="subtitle1" className={classes.recv}>
+                                        received kudos from
+                                    </Typography>
+                                    {props.from}
+                                </div>
                                 <CardActions>
-                                    <Button size="small" variant="contained" color="secondary">Team Player</Button>
+                                    {props.tags ? props.tags.map((tag, index) => {
+                                        return <Chip key={index} label={tag.value} style={{backgroundColor: tag.color}}/>
+                                    }) : null}
                                 </CardActions>
                             </Grid>
                         </Grid>
