@@ -29,7 +29,15 @@ export default function AddKudo(props) {
         })
         .then(response => response.json())
         .then(data => {
-            setNameMapUid(data);
+            const filterObject = (obj, filter, filterValue) => 
+                Object.keys(obj).reduce((acc, val) => 
+                    (obj[val][filter] == filterValue ? acc : {
+                        ...acc,
+                        [val]: obj[val]
+                    }                                        
+                ), 
+            {});
+            setNameMapUid(filterObject(data, "id", uid));
             console.log(data);
         });
         fetch('http://localhost:5000/api/data/get_core_values',

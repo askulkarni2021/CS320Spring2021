@@ -12,6 +12,7 @@ const useStyles = makeStyles({
       display: 'flex',
     },
     recv: {
+        display:'inline',
         backgroundColor:'#F2F2F2', 
         color:'#616161', 
         marginRight:'5px', 
@@ -83,7 +84,7 @@ export default function Kudo(props) {
                             <Grid item>
                                 <div>
                                     <Typography variant="h6" style={{display:'inline', marginRight:'5px'}}>{props.to}</Typography>
-                                    <Typography variant="subtitle" className={classes.recv}>
+                                    <Typography variant="subtitle1" className={classes.recv}>
                                         received kudos from
                                     </Typography>
                                     {props.from}
