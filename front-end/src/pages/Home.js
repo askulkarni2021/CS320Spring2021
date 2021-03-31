@@ -8,7 +8,6 @@ import {
   Typography,
 } from "@material-ui/core";
 import { makeStyles } from '@material-ui/core/styles';
-import Navbar from '../components/Navbar';
 import Rockstar from '../components/Rockstar';
 import Kudo from '../components/Kudo';
 import AddKudo from "../components/AddKudo";

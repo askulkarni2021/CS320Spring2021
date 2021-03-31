@@ -31,7 +31,7 @@ export default function AddKudo(props) {
         .then(data => {
             const filterObject = (obj, filter, filterValue) => 
                 Object.keys(obj).reduce((acc, val) => 
-                    (obj[val][filter] == filterValue ? acc : {
+                    (obj[val][filter] === filterValue ? acc : {
                         ...acc,
                         [val]: obj[val]
                     }                                        
@@ -51,6 +51,7 @@ export default function AddKudo(props) {
         })
         .then(response => response.json())
         .then(data => {
+            console.log(data)
             const colors = ['#FF0000', '#FF6600', '#0000FF', '#27b4d8', '#6f4cef', '#bd954e', '#dc6b8c']
             let coloredData = data.map((value, index) => {
                 return {value: value, color: colors[index]}
@@ -96,7 +97,7 @@ export default function AddKudo(props) {
                         <Grid item>
                             <Autocomplete
                                 id='toField'
-                                value={name}
+                                value={name !== '' ? name : null}
                                 options={Object.keys(nameMapUid)}
                                 getOptionLabel={(option) => option}
                                 onChange={(event, newValue) => {
@@ -128,6 +129,7 @@ export default function AddKudo(props) {
                                         <Chip
                                         style={{backgroundColor: option.color}}
                                         label={option.value}
+                                        key={index}
                                        />
                                     ))
                                 )}
@@ -136,7 +138,7 @@ export default function AddKudo(props) {
                                 renderInput={(params) => (
                                     <TextField
                                         {...params}
-                                        required={tags.length == 0}
+                                        required={tags.length === 0}
                                         variant="outlined"
                                         label="Core Values"
                                         placeholder="Core Values"
