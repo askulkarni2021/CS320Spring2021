@@ -108,7 +108,7 @@ app.post('/api/add_kudo', (req, res) => {
 				const incrementNumKudos = async () => {
 					await employeesCollection.updateOne(
 						{ "employeeId": parseInt(to) }, // get the employee that is recieving the kudo
-						{ $inc: { "numKudos" : 1} } // increment the number of kudos this employee has recieved
+						{ $inc: { "numKudos" : 1, "totalKudos" : 1} } // increment the number of kudos this employee has recieved
 					);
 					// for some reason calling client.close() outside of addToIncomingAndOutgoing caused the client to close before numKudos was incremented
 					// putting client.close() still ensures the client is closed before the response is sent and is closed after any db operation is done
