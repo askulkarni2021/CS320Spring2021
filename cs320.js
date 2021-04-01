@@ -429,7 +429,7 @@ app.post('/api/data/add_value', (req, res) => {
 	const uri = "mongodb+srv://user:cs320team1@cs320.t0mlm.mongodb.net/" + companyName + "?retryWrites=true&w=majority";
 	const client = new MongoClient(uri, { useNewUrlParser: true, useUnifiedTopology: true });
 	const value = req.body.value;
-	const color = req.body.color 
+	const color = req.body.color; 
 
 	client.connect(err => {
 		assert.equal(err, null);
@@ -471,5 +471,57 @@ app.post('/api/data/add_emoji', (req, res) => {
 		};
 		insertEmoji(emoji);
 	});
+});
+
+
+
+//Expects uri and string for the emoji to be deleted 
+app.post('/api/data/delete_emoji', (req, res) => {
+	console.log(req.body);
+	const companyName = req.body.uri;
+	const uri = "mongodb+srv://user:cs320team1@cs320.t0mlm.mongodb.net/" + companyName + "?retryWrites=true&w=majority";
+	const client = new MongoClient(uri, { useNewUrlParser: true, useUnifiedTopology: true });
+	const emoji = req.body.emoji;
+
+	client.connect(err => {
+		assert.equal(err, null);
+		const db = client.db(companyName);
+		const Collection = db.collection("Values-Emojis");
+		
+		const removeEmoji = async (emoji) => {
+			await Collection.updateOne(
+					{},
+					{$pull: {emojis: emoji}}
+				);
+			client.close();
+			res.send(true)
+		};
+		removeEmoji(emoji);
+	});
+});
+
+//Expects uri and string for the value to be deleted  
+app.post('/api/data/delete_value', (req, res) => {
+	console.log(req.body);
+	const companyName = req.body.uri;
+	const uri = "mongodb+srv://user:cs320team1@cs320.t0mlm.mongodb.net/" + companyName + "?retryWrites=true&w=majority";
+	const client = new MongoClient(uri, { useNewUrlParser: true, useUnifiedTopology: true });
+	const value = req.body.value;
+
+	client.connect(err => {
+		assert.equal(err, null);
+		const db = client.db(companyName);
+		const Collection = db.collection("Values-Emojis");
+		const removeValue = async (value) => {
+			await Collection.updateOne(
+					{},
+					{$pull: {values: {value: value}}}
+				);
+			client.close();
+			res.send(true)
+		};
+		removeValue(value);
+	});
+
 });
 
