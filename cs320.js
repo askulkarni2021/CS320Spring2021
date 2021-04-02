@@ -340,6 +340,7 @@ app.post('/api/data/add_value', (req, res) => {
 	const client = new MongoClient(uri, { useNewUrlParser: true, useUnifiedTopology: true });
 	const value = req.body.value;
 	const color = req.body.color; 
+	const FieldName = "values.".concat(value) // Use dot notation to add to a subfield in mongodb
 
 	client.connect(err => {
 		assert.equal(err, null);
@@ -347,8 +348,8 @@ app.post('/api/data/add_value', (req, res) => {
 		const Collection = db.collection("Values-Emojis");
 		const insertValue = async (value) => {
 			await Collection.updateOne(
-					{},
-					{$push: {values: {value: value, color: color , active: 1, numTagged:0}}}
+				{},
+					{$set: {[FieldName]:{ color: color , active: 1, numTagged:0}}}
 				);
 			client.close();
 			res.send(true)
@@ -416,6 +417,8 @@ app.post('/api/data/delete_value', (req, res) => {
 	const uri = "mongodb+srv://user:cs320team1@cs320.t0mlm.mongodb.net/" + companyName + "?retryWrites=true&w=majority";
 	const client = new MongoClient(uri, { useNewUrlParser: true, useUnifiedTopology: true });
 	const value = req.body.value;
+	const FieldName = "values.".concat(value); // Use dot notation to add to a subfield in mongodb
+
 
 	client.connect(err => {
 		assert.equal(err, null);
@@ -424,7 +427,7 @@ app.post('/api/data/delete_value', (req, res) => {
 		const removeValue = async (value) => {
 			await Collection.updateOne(
 					{},
-					{$pull: {values: {value: value}}}
+					{$unset: { [FieldName]: ""}}
 				);
 			client.close();
 			res.send(true)
