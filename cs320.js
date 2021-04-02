@@ -47,8 +47,8 @@ app.listen(port, () => console.log(`Listening on port ${port}`));
 app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({ extended: true }));
 
-const findEmployees = async (employeesCollection) => { 
-	const employees = await employeesCollection.find({}).toArray();
+const findEmployees = async (employeesCollection, filter_query = {}) => { 
+	const employees = await employeesCollection.find(filter_query).toArray();
 	return employees;
 };
 const findKudos = async (kudosCollection,filter_query) => { 
@@ -123,6 +123,43 @@ app.post('/api/add_kudo', (req, res) => {
 	});
 });
 
+// the request should contain the company name, the reaction (just an emoji) and the _id of the kudo
+// the front end should have the _id of the kudo from the all_kudos endpoint
+// req := {uri: "company name", kudoID: "id of kudo to be updated", reaction: "emoji that is chosen"
+app.post('/api/add_kudo_reaction', (req, res) => {
+	const companyName = req.body.uri;
+	const uri = "mongodb+srv://user:cs320team1@cs320.t0mlm.mongodb.net/" + companyName + "?retryWrites=true&w=majority";
+	const client = new MongoClient(uri, { useNewUrlParser: true, useUnifiedTopology: true });
+	const kudoID = new ObjectId(req.body.kudoID);
+	client.connect(err => {
+		assert.equal(err, null);
+		const db = client.db(companyName);
+		const kudosCollection = db.collection("Kudos");
+		findKudos(kudosCollection, {"_id": kudoID}).then(kudos => {console.log(kudos.reverse());});
+		const addReaction = async () => {
+			// first we have to actually insert the reaction field if it doesnt exist
+			const reactionField = `reactions.${req.body.reaction}`;
+			let query = {"_id": kudoID};
+			query[reactionField] = {"$exists" : false};
+			let update = { "$set" : {}};
+			update["$set"][reactionField] = 0;
+			// needs to be done this way so we can use a variable in the field name.
+			await kudosCollection.updateOne(query, update);
+			// then we can update the count of the reaction, whether or not it is new
+			query = {"_id": kudoID};
+			update = {"$inc" : {}};
+			update["$inc"][reactionField] = 1;
+			const updatedKudo = await kudosCollection.updateOne(query, update);
+			client.close(); // db operations no longer needed
+			return updatedKudo;
+		};
+		const updatedDocument = addReaction();
+		// this needs to be tested
+		updatedDocument.then(doc => {
+			res.send(true);
+		});
+	});
+});
 
 //Expects the company name(as uri field of the incoming query) and returns all kudos within that company as an array
 app.post('/api/all_kudos', (req, res) => {
@@ -307,6 +344,59 @@ app.post('/api/data/get_core_values', (req, res) => {
 	});
   });
 
+// Settings endpoints
+
+//Expects : uri, uid and password
+app.post('/api/verify_settings', (req, res) => {
+	const companyName = req.body.uri;
+	const uri = "mongodb+srv://user:cs320team1@cs320.t0mlm.mongodb.net/" + companyName + "?retryWrites=true&w=majority";
+	const client = new MongoClient(uri, { useNewUrlParser: true, useUnifiedTopology: true });
+
+  	client.connect(err => {
+		assert.equal(err, null);
+		const db = client.db(companyName);
+		const employeesCollection = db.collection("Employees Database");
+		const employees = findEmployees(employeesCollection, {employeeId:req.body.uid});
+
+		const verify = async (employees,query) => {
+			found = false;
+			await employees.then(value  => {
+				//console.log(value.password);
+				found = (req.body.pass === value[0].password)
+				//if (found===true){
+				client.close()
+				res.send({found:found, pass:value[0].password});
+			//}
+			});
+		}
+		verify(employees,req.body)
+	});
+});
+
+// app.post('/api/data/change_password', (req, res) => {
+// 	console.log(req.body);
+// 	const companyName = req.body.uri;
+// 	const uri = "mongodb+srv://user:cs320team1@cs320.t0mlm.mongodb.net/" + companyName + "?retryWrites=true&w=majority";
+// 	const client = new MongoClient(uri, { useNewUrlParser: true, useUnifiedTopology: true });
+
+//   	client.connect(err =>  {
+// 		assert.equal(err, null);
+// 		const db = client.db(companyName);
+// 		const Collection = db.collection("Employees Database");
+
+// 		const employees = findEmployees(Collection);
+
+// 		const change_password = async (req, employees) => {
+// 			await val_em.then(value  => {
+// 			console.log(value[0].values);
+// 			client.close();
+// 			res.send(value[0].values);
+// 		});
+// 		};
+// 		send_data(val_em);
+// 	});
+//   });
+
 app.post('/api/data/get_emojis', (req, res) => {
 	console.log(req.body);
 	const companyName = req.body.uri;
@@ -385,6 +475,7 @@ app.post('/api/data/add_emoji', (req, res) => {
 });
 
 
+
 //Expects uri and string for the emoji to be deleted 
 app.post('/api/data/delete_emoji', (req, res) => {
 	console.log(req.body);
@@ -436,3 +527,4 @@ app.post('/api/data/delete_value', (req, res) => {
 	});
 
 });
+

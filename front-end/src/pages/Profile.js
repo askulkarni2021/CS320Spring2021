@@ -1,16 +1,9 @@
 import React, { useState, useEffect } from 'react';
 import { makeStyles } from '@material-ui/core/styles';
-import { Button, Card, CardContent, TextField, Box, Input } from '@material-ui/core';
-import AppBar from '@material-ui/core/AppBar';
-import Toolbar from '@material-ui/core/Toolbar';
-import Typography from '@material-ui/core/Typography';
-import Divider from '@material-ui/core/Divider';
-import Tab from '@material-ui/core/Tab';
-import Grid from '@material-ui/core/Grid';
+import { Button, Card, CardContent, TextField, Box, Input, AppBar, Toolbar, Typography, Divider, Tab, Grid, Modal } from '@material-ui/core';
 import TabContext from '@material-ui/lab/TabContext';
 import TabList from '@material-ui/lab/TabList';
 import TabPanel from '@material-ui/lab/TabPanel';
-import Modal from '@material-ui/core/Modal';
 import Kudo from '../components/Kudo';
 import AddKudo from "../components/AddKudo";
 
@@ -47,18 +40,14 @@ export default function Profile(props) {
   const [outgoing, setOutgoing] = useState();
   const [employees, setEmployees] = useState();
   const [showSettingVerify, toggleShowSettingVerify] = useState(false);
-  const [verPass, setVerPass] = useState();
+  const [pass, setPass] = useState();
+  const [valid, setValid] = useState(false);
   const [newPass, setNewPass] = useState();
   const [avatar, setAvatar] = useState();
 
   useEffect(() => {
     getInOut();
   }, []);
-
-  function handleSumbitVerify() {
-      console.log(verPass)
-      toggleShowSettingVerify(false)
-  }
 
   function handleSumbitNewPass() {
       console.log(newPass)
@@ -110,6 +99,30 @@ export default function Profile(props) {
     });
   }
 
+  function handleSumbitVerify() {
+    const uri = props.uri;
+    const uid = props.data.uid;
+    const formData = {uri, uid, pass}
+    fetch('http://localhost:5000/api/verify_settings',
+    {
+      method: 'POST',
+      headers: {
+        "Accept": "application/json",
+        "Content-Type": "application/json"
+      },
+      body: JSON.stringify(formData)
+    })
+    .then(response => response.json()).then(data => {
+      if(data.found) {
+        toggleShowSettingVerify(false)
+        setValid(false)
+      } else {
+        setValid(true)
+        console.log('WrongPass')
+      }
+    });
+  }
+
   const handleChange = (event, newValue) => {
     setValue(newValue);
   };
@@ -130,13 +143,15 @@ export default function Profile(props) {
                       <TextField
                           label='Password'
                           variant='outlined'
+                          error={valid}
                           multiline
                           rows={1}
-                          value={verPass}
+                          value={pass}
                           fullWidth
-                          onChange={(e) => setVerPass(e.target.value)}
+                          onChange={(e) => setPass(e.target.value)}
                       />
                     <Button type="submit" variant="contained" color="primary">Verify Password</Button>
+                    {valid ? <Typography variant="caption" display="block" color="error"> password is incorrect </Typography> : null}
                   </form>
               </CardContent>
           </Card>
@@ -162,10 +177,10 @@ export default function Profile(props) {
             </TabList>
           </AppBar>
           <TabPanel value="1">{incoming && employees ? incoming.map((kudo, index) => {
-              return <Kudo to={employees[kudo.to].name} from={employees[kudo.from].name} message={kudo.kudo} key={index}/>
+              return <Kudo to={employees[kudo.to].name} from={employees[kudo.from].name} message={kudo.kudo} tags={kudo.tags} key={kudo._id}/>
           }) : 'loading'  }</TabPanel>
           <TabPanel value="2">{outgoing && employees ? outgoing.map((kudo, index) => {
-                return <Kudo to={employees[kudo.to].name} from={employees[kudo.from].name} message={kudo.kudo} key={index}/>
+                return <Kudo to={employees[kudo.to].name} from={employees[kudo.from].name} message={kudo.kudo} tags={kudo.tags} key={kudo._id}/>
             }) : 'loading'  }</TabPanel>
           <TabPanel value="3">
             <Grid>
