@@ -14,38 +14,36 @@ const outbackClient = new MongoClient(outbackuri, { useNewUrlParser: true, useUn
 const testuri = "mongodb+srv://user:cs320team1@cs320.t0mlm.mongodb.net/outback-tech?retryWrites=true&w=majority";
 const testClient = new MongoClient(testuri, { useNewUrlParser: true, useUnifiedTopology: true });
 
-outbackClient.connect(err => {
+testClient.connect(err => {
 	/*const args = process.argv.slice(2);
 	console.log(args);
 	const company = args[0];
 	const collectionName = args[1];
 	assert.equal(err, null);*/
-	const outback_db = outbackClient.db('outback-tech');
-	const outback_employees = db.collection("Employees Database");
-	testClient.connect(err => {
-
-	});
-
+	const test_db = testClient.db('Test');
+	const testValues = test_db.collection("Values-Emojis");
 	const modifyCollection = async () => {
 		// ************ ONLY CHANGE THINGS BETWEEN THESE CURLY BRACES *************** 
 		// write code for removing incoming/outgoing arrays from employees,
 		// as we remove incoming/outgoing array, $set a new field which is just the length of the incoming field
-		const getIdIncoming = async () => {
-			const IdIncoming = await employees.find({}, { projection : {"employeeId":1, "incoming": 1} }).toArray();
-			return IdIncoming;
-		};
-		getIdIncoming().then(idIncoming => {
-			//console.log(idIncoming);
-			//console.log(idIncoming.employeeId, idIncoming.incoming.length);
-			idIncoming.forEach(record => {
-				employees.updateOne(
-					{ "employeeId" : record.employeeId},
-					{ $set : 
-						{ "numKudos" : record.incoming.length }
+		await testValues.updateMany(
+			{},
+			{ 
+				// store values as a dictionary of dictionaries for fast lookup (when stored as an array, we have to do linear scan to find the desired core_value). 
+				// the key for each dictionary is the name of the core_value
+				// the value for the key is the color and active field associated with the core_value
+				$set : {
+					values : {
+						'Selfless'		: { 'color' : '', 'active' : 1},
+						'Nimble'		: { 'color' : '', 'active' : 1},
+						'Mentoring'		: { 'color' : '', 'active' : 1},
+						'hardworking'	: { 'color' : '', 'active' : 1},
+						'Inspirational' : { 'color' : '', 'active' : 1},
+						'Smart' 		: { 'color' : '', 'active' : 1},
 					}
-				);
+				}
 			});
-		});
+		testClient.close();
 	};
 	modifyCollection();
 });
