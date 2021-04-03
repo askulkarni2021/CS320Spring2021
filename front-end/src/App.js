@@ -141,14 +141,7 @@ export default function App() {
     localStorage.setItem('mainPrimary', mainPrimary);
     localStorage.setItem('palleteType', palleteType);
     localStorage.setItem('darkState', darkState);
-    alreadyLoggedIn();
   }, []);
-
-  function alreadyLoggedIn() {
-    if (isLoggedIn && uri && data) {
-      history.push('/home')
-    }
-  }
 
   return (
     <ThemeProvider theme={theme}>
@@ -171,7 +164,7 @@ export default function App() {
                 <Home {...props} data={data} uri={uri} employees={uidEmployees} kudos={kudos} getKudos={getKudos.bind(this)}/>
               )}/>
               <Route exact path="/profile" render={(props) => (
-                <Profile data={data} uri={uri} employees={uidEmployees}/>
+                <Profile {...props} data={data} uri={uri} employees={uidEmployees}/>
               )}/>
             </div>
         </div>

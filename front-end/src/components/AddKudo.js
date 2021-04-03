@@ -38,7 +38,6 @@ export default function AddKudo(props) {
                 ), 
             {});
             setNameMapUid(filterObject(data, "id", uid));
-            console.log(data);
         });
         fetch('http://localhost:5000/api/data/get_core_values',
         {
@@ -51,11 +50,7 @@ export default function AddKudo(props) {
         })
         .then(response => response.json())
         .then(data => {
-            console.log(data)
-            /*const colors = ['#FF0000', '#FF6600', '#0000FF', '#27b4d8', '#6f4cef', '#bd954e', '#dc6b8c']
-            let coloredData = data.map((value, index) => {
-                return {value: value, color: colors[index]}
-			})*/
+            //[ {value: "Innovative", color: "hex", active: 1, numTags: 0}, {...}, ... ]
             setCoreValues(data)
         })
     }, []);
@@ -134,7 +129,8 @@ export default function AddKudo(props) {
                                     ))
                                 )}
                                 onChange={(event, newValue) => {
-                                    updateTags(newValue)}}
+                                    updateTags(newValue)
+                                }}
                                 renderInput={(params) => (
                                     <TextField
                                         {...params}
