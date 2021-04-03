@@ -14,10 +14,10 @@ const useStyles = makeStyles((theme) => ({
     backgroundColor: theme.palette.background.default,
   },
   list: {
-    width: 660,
+    width: 750,
   },
   header: {
-    height: 200,
+    height: 50,
     width: 800,
   },
   modalCenter: {
@@ -166,6 +166,15 @@ export default function Profile(props) {
       <Grid className={classes.header}>
 
       </Grid>
+
+      <Grid
+        container
+        spacing={0}
+        alignItems="center"
+        justify="center"
+        
+      >
+        <Grid item xs={10}>
       <Grid className={classes.list}>
         <Box style={{maxHeight: '635px', overflow: 'auto'}}>
         <TabContext value={value}>
@@ -216,6 +225,8 @@ export default function Profile(props) {
           </TabPanel>
         </TabContext>
         </Box>
+      </Grid>
+      </Grid>
       </Grid>
     </div>
 
