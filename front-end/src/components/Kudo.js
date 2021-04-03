@@ -5,7 +5,6 @@ import { withStyles } from '@material-ui/core/styles';
 import MuiAccordion from '@material-ui/core/Accordion';
 import MuiAccordionSummary from '@material-ui/core/AccordionSummary';
 import MuiAccordionDetails from '@material-ui/core/AccordionDetails';
-import Reactions from './Reactions'
 
 
 const useStyles = makeStyles({
@@ -107,7 +106,6 @@ export default function Kudo(props) {
                         </Grid>
                     </AccordionDetails>
                 </Accordion>
-                <Reactions kudoID={props.kudoID} kudoReactions={props.kudoReactions} compReactions={props.compReactions}/>
             </CardContent>
         </Card>
     )

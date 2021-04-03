@@ -132,7 +132,7 @@ export default function Profile(props) {
     <div className={classes.root}>
       <Modal
         open={showSettingVerify}
-        onClose={() => toggleShowSettingVerify(false)}
+        onClose={() => window.location.reload(false)}
         aria-labelledby="add-kudo-modal"
         aria-describedby="add-kudo"
       >
