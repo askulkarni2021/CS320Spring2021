@@ -154,7 +154,7 @@ export default function App() {
     localStorage.setItem('isLoggedIn', isLoggedIn);
     localStorage.setItem('mainPrimary', mainPrimary);
     localStorage.setItem('palleteType', palleteType);
-    localStorage.setItem('darkState', darkState);
+    localStorage.setItem('darkState', 'false'); //original: darkState. proposing to make the default and on refresh white.
   }, []);
 
   return (
