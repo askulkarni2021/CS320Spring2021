@@ -154,7 +154,7 @@ export default function App() {
     localStorage.setItem('isLoggedIn', isLoggedIn);
     localStorage.setItem('mainPrimary', mainPrimary);
     localStorage.setItem('palleteType', palleteType);
-    localStorage.setItem('darkState', 'false');
+    localStorage.setItem('darkState', darkState);
   }, []);
 
   return (
