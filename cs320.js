@@ -99,7 +99,7 @@ app.post('/api/add_kudo', (req, res) => {
 			const db = client.db(companyName);
 			const kudos = db.collection("Kudos");
 			// dont insert the whole query because otherwise the company name would be inserted in each kudo, which is unnecessary
-			let resultDoc = await kudos.insertOne({from: query.from, to: query.to, kudo: query.kudo, reactions: {}, tags: query.tags});
+			let resultDoc = await kudos.insertOne({from: query.from, to: query.to, kudo: query.kudo, reactions: {}, tags: query.tags, time: new Date().toDateString()});
 			addToIncomingAndOutgoing = (addedKudo) => {
 				// NOTE: to and from are strings, not ints
 				let to = req.body.to;
