@@ -429,7 +429,8 @@ app.post('/api/data/add_value', (req, res) => {
 	const uri = "mongodb+srv://user:cs320team1@cs320.t0mlm.mongodb.net/" + companyName + "?retryWrites=true&w=majority";
 	const client = new MongoClient(uri, { useNewUrlParser: true, useUnifiedTopology: true });
 	const value = req.body.value;
-	const color = req.body.color 
+	const color = req.body.color; 
+	const FieldName = "values.".concat(value) // Use dot notation to add to a subfield in mongodb
 
 	client.connect(err => {
 		assert.equal(err, null);
@@ -437,8 +438,8 @@ app.post('/api/data/add_value', (req, res) => {
 		const Collection = db.collection("Values-Emojis");
 		const insertValue = async (value) => {
 			await Collection.updateOne(
-					{},
-					{$push: {values: {value: value, color: color , active: 1, numTagged:0}}}
+				{},
+					{$set: {[FieldName]:{ color: color , active: 1, numTagged:0}}}
 				);
 			client.close();
 			res.send(true)
@@ -471,5 +472,59 @@ app.post('/api/data/add_emoji', (req, res) => {
 		};
 		insertEmoji(emoji);
 	});
+});
+
+
+
+//Expects uri and string for the emoji to be deleted 
+app.post('/api/data/delete_emoji', (req, res) => {
+	console.log(req.body);
+	const companyName = req.body.uri;
+	const uri = "mongodb+srv://user:cs320team1@cs320.t0mlm.mongodb.net/" + companyName + "?retryWrites=true&w=majority";
+	const client = new MongoClient(uri, { useNewUrlParser: true, useUnifiedTopology: true });
+	const emoji = req.body.emoji;
+
+	client.connect(err => {
+		assert.equal(err, null);
+		const db = client.db(companyName);
+		const Collection = db.collection("Values-Emojis");
+		
+		const removeEmoji = async (emoji) => {
+			await Collection.updateOne(
+					{},
+					{$pull: {emojis: emoji}}
+				);
+			client.close();
+			res.send(true)
+		};
+		removeEmoji(emoji);
+	});
+});
+
+//Expects uri and string for the value to be deleted  
+app.post('/api/data/delete_value', (req, res) => {
+	console.log(req.body);
+	const companyName = req.body.uri;
+	const uri = "mongodb+srv://user:cs320team1@cs320.t0mlm.mongodb.net/" + companyName + "?retryWrites=true&w=majority";
+	const client = new MongoClient(uri, { useNewUrlParser: true, useUnifiedTopology: true });
+	const value = req.body.value;
+	const FieldName = "values.".concat(value); // Use dot notation to add to a subfield in mongodb
+
+
+	client.connect(err => {
+		assert.equal(err, null);
+		const db = client.db(companyName);
+		const Collection = db.collection("Values-Emojis");
+		const removeValue = async (value) => {
+			await Collection.updateOne(
+					{},
+					{$unset: { [FieldName]: ""}}
+				);
+			client.close();
+			res.send(true)
+		};
+		removeValue(value);
+	});
+
 });
 
