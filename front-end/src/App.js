@@ -44,6 +44,7 @@ export default function App() {
   const [uri, setUri] = useState(localStorage.getItem('uri') || null);
   const [uidEmployees, setUidEmployees] = useState();
   const [kudos, setKudos] = useState();
+  const [reactions, setReactions] = useState(); 
   const classes = useStyles();
   let history = useHistory();
 
@@ -110,6 +111,19 @@ export default function App() {
     .then(response => response.json()).then(data => {
       setKudos(data)
     });
+    fetch('http://localhost:5000/api/data/get_emojis',
+        {
+            method: 'POST',
+            headers: {
+                "Accept": "application/json",
+                "Content-Type": "application/json"
+            },
+            body: JSON.stringify({uri})
+        })
+      .then(response => response.json())
+      .then(data => {
+          setReactions(data);
+      });
   }
 
   // runs on isLoggedIn toggle, updates local storage to match
@@ -141,15 +155,8 @@ export default function App() {
     localStorage.setItem('isLoggedIn', isLoggedIn);
     localStorage.setItem('mainPrimary', mainPrimary);
     localStorage.setItem('palleteType', palleteType);
-    localStorage.setItem('darkState', darkState);
-    alreadyLoggedIn();
+    localStorage.setItem('darkState', 'false'); //original: darkState. proposing to make the default and on refresh white.
   }, []);
-
-  function alreadyLoggedIn() {
-    if (isLoggedIn && uri && data) {
-      history.push('/home')
-    }
-  }
 
   return (
     <ThemeProvider theme={theme}>
@@ -169,10 +176,10 @@ export default function App() {
           <Navbar employees={uidEmployees} uid={data.uid} logout={logout.bind(this)} getKudos={getKudos.bind(this)}/>
             <div className={classes.content}>
               <Route exact path="/home" render={(props) => (
-                <Home {...props} data={data} uri={uri} employees={uidEmployees} kudos={kudos} getKudos={getKudos.bind(this)}/>
+                <Home {...props} data={data} uri={uri} employees={uidEmployees} kudos={kudos} getKudos={getKudos.bind(this)} reactions={reactions}/>
               )}/>
               <Route exact path="/profile" render={(props) => (
-                <Profile data={data} uri={uri} employees={uidEmployees}/>
+                <Profile {...props} data={data} uri={uri} employees={uidEmployees}/>
               )}/>
               <Route exact path="/admin" render={(props) => (
                 <Admin data={data} uri={uri} employees={uidEmployees} kudos={kudos} getKudos={getKudos.bind(this)}/>

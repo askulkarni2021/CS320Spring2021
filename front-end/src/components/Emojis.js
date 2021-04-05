@@ -4,8 +4,8 @@ import React, { useState, useEffect, images } from 'react';
 import Chip from '@material-ui/core/Chip';
 import Plus from '../Plus_symbol.svg';
 
-
-export default function AddValue(props) {
+// props: getKudos, optional: toggleShowAddKudos
+export default function AddEmoji(props) {
     // need uri, to, from, message
     const [name, setName] = useState('');
     const [kudo, updateKudo] = useState('');
@@ -13,19 +13,19 @@ export default function AddValue(props) {
     const [uid, setUid] = useState('');
     const [nameMapUid, setNameMapUid] = useState('');
     /* FAKE CORE VALUES, PRESET */
-    const [coreValues] = useState(['Test Value', 'Teamwork', 'Spirited']);
-    const [value, setVal] = useState('');
-    const [color, setColor] = useState('');
+    const [emojis] = useState(['🤣', '🤝🏽', '🏆']);
+    const [emoji, setEmoji] = useState('');
 
     const handleClick = () => {
         console.info('You clicked the Chip.');
     };
-
-    const valueChips = coreValues.map((val) =>
+    
+    const emojiChips = emojis.map((val) =>
         <Chip
         style={{marginBottom: "0.5rem"}} 
         label={val} 
-        color="secondary"
+        color="primary"
+        variant="outlined"
         onClick={handleClick} ></Chip>
     )
 
@@ -54,15 +54,14 @@ export default function AddValue(props) {
     //Proceeds to then empty the Val string so another value can be added.
     function handleSubmit() {
         console.log('uri', uri);
-        setColor("red");
-        fetch('http://localhost:5000/api/data/add_value',
+        fetch('http://localhost:5000/api/data/add_emoji',
         {
             method: 'POST',
             headers: {
               "Accept": "application/json",
               "Content-Type": "application/json"
             },
-            body: JSON.stringify({uri, value, color})
+            body: JSON.stringify({uri, emoji})
         })
         .then(response => {
             
@@ -70,7 +69,7 @@ export default function AddValue(props) {
                 console.log(response)
             }
         });
-        setVal('');
+        setEmoji('');
     }
 
     return (
@@ -80,17 +79,17 @@ export default function AddValue(props) {
 
                     <Grid container direction="column" alignItems="flex-start">
 
-                         {valueChips} </Grid>
+                         {emojiChips} </Grid>
                    
                     {'\n'}
 
                     <Button type="submit" variant="contained" color="primary" style={{maxWidth: '20px', minWidth: '20px'}}>+</Button>
                     
                     <TextField 
-                        label='Add Value' 
+                        label='Add Emoji' 
                         variant='outlined' 
                         rows={1}
-                        value={value}
+                        value={emoji}
                         style={{
                             flex:1,
                             flexDirection: 'column',
@@ -99,10 +98,10 @@ export default function AddValue(props) {
                             maxHeight: '16px',
                             minHeight: '16px',
                             marginLeft: '0.5rem',
-                            marginBottom: '0.5rem'
+                            marginBottom: '0.7rem'
                         }}
                         
-                        onChange={(e) => setVal(e.target.value)}
+                        onChange={(e) => setEmoji(e.target.value)}
                     />
 
 

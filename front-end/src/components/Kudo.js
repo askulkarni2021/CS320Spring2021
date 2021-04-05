@@ -62,6 +62,7 @@ const Accordion = withStyles({
     },
   }))(MuiAccordionDetails);
 
+//to, from, message, tags, kudoID, kudoReactions, compReactions 
 export default function Kudo(props) {
     const classes = useStyles();
     const [expanded, setExpanded] = React.useState(false);

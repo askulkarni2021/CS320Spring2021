@@ -11,6 +11,7 @@ import Navbar from '../components/Navbar';
 import Rockstar from '../components/Rockstar';
 import Kudo from '../components/Kudo';
 import Values from "../components/Values";
+import Emojis from "../components/Emojis";
 
 const useStyles = makeStyles(theme => ({
   kudos: {
@@ -54,14 +55,15 @@ export default function Home(props) {
       </AppBar>
       <Grid container justify="space-between">
         <Grid
-        item xs={4}
+        item xs={16}
         container
-        direction="column"
-        justify="flex-start"
-        alignItems="flex-start"
+        
+        direction="row"
+        justify="space-around"
+        alignItems="center"
         className={classes.kudos}>
           <Values getKudos={props.getKudos}/>
- 
+          <Emojis getKudos={props.getKudos}/>
         </Grid>
       </Grid>
     </div>

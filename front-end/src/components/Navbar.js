@@ -20,8 +20,10 @@ const useStyles = makeStyles((theme) => ({
   menuItem: {
     borderRadius: '50px',
     marginBottom: '10px',
-    paddingLeft: '10px',
-    paddingRight: '10px',
+    paddingTop: '13px',
+    paddingBottom: '13px',
+    paddingLeft: '23px',
+    paddingRight: '23px',
     '&:hover': {
       backgroundColor: theme.palette.primary.main,
       color: theme.palette.text.main
