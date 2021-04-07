@@ -1,11 +1,15 @@
 import React, { useState, useEffect } from 'react';
 import { makeStyles } from '@material-ui/core/styles';
-import { Button, Card, CardContent, TextField, Box, Input, AppBar, Toolbar, Typography, Divider, Tab, Grid, Modal } from '@material-ui/core';
+import { Button, Card, CardContent, TextField, Box, Input, AppBar, Toolbar, Typography, Divider, Tab, Grid, Avatar, Modal} from '@material-ui/core';
 import TabContext from '@material-ui/lab/TabContext';
 import TabList from '@material-ui/lab/TabList';
 import TabPanel from '@material-ui/lab/TabPanel';
 import Kudo from '../components/Kudo';
 import AddKudo from "../components/AddKudo";
+import { red } from '@material-ui/core/colors';
+import ChangeAvatar from '../components/ChangeAvatar';
+import pic1 from '../components/Avatar Pics/female.png';
+import pic2 from '../components/Avatar Pics/male.png';
 
 
 const useStyles = makeStyles((theme) => ({
@@ -17,7 +21,7 @@ const useStyles = makeStyles((theme) => ({
     width: 750,
   },
   header: {
-    height: 50,
+    height: 230,
     width: 800,
   },
   modalCenter: {
@@ -43,7 +47,8 @@ export default function Profile(props) {
   const [pass, setPass] = useState();
   const [valid, setValid] = useState(false);
   const [newPass, setNewPass] = useState();
-  const [avatar, setAvatar] = useState();
+  const [avatar, setAvatar] = useState('');
+  const [isAvatarModalVisible, setIsAvatarModalVisible] = useState(false);
 
   useEffect(() => {
     getInOut();
@@ -53,9 +58,7 @@ export default function Profile(props) {
       console.log(newPass)
   }
 
-  function handleSumbitAvatar() {
-      //console.log(avatar)
-  }
+  
 
   function getInOut() {
     const uri = props.uri;
@@ -127,6 +130,14 @@ export default function Profile(props) {
     setValue(newValue);
   };
 
+  const handleSubmitAvatar = (newAvatar) => {
+    setAvatar(newAvatar);
+  };
+
+  const closeAvatarModal = () => {
+    setIsAvatarModalVisible(false);
+  };
+
   return (
 
     <div className={classes.root}>
@@ -157,16 +168,52 @@ export default function Profile(props) {
           </Card>
         </div>
       </Modal>
+
+      <Modal
+        open={isAvatarModalVisible}
+        onClose={() => setIsAvatarModalVisible(false)}
+        aria-labelledby="add-kudo-modal"
+        aria-describedby="add-kudo"
+      >
+        <div className={classes.modalCenter}>
+          <ChangeAvatar handleSubmitAvatar={handleSubmitAvatar} pic1={pic1} pic2={pic2} closeAvatarModal={closeAvatarModal}/>
+        </div>
+      </Modal>
+
       <AppBar position="sticky" elevation={0} className={classes.appBar}>
         <Toolbar>
           <Typography variant="h6">Profile</Typography>
         </Toolbar>
         <Divider variant="middle"/>
       </AppBar>
-      <Grid className={classes.header}>
 
+      <Grid className={classes.header} container justify='flex-end'>
+        <Grid style={{marginTop: '70px', paddingRight: '20px',}}>
+          <Box textAlign="right" >
+            <Typography style={{fontSize: '12px', color: 'grey',}}>Name</Typography>
+          </Box>
+          <Box textAlign="right" >
+            <Typography style={{fontSize: '18px'}}>Kianna Westervelt</Typography>
+          </Box>
+          <Box textAlign="right" >
+            <Typography style={{fontSize: '12px', color: 'grey', marginTop: '13px',}}>Position</Typography>
+          </Box>
+          <Box textAlign="right" >
+            <Typography style={{fontSize: '18px'}}>Software Engineer</Typography>
+          </Box>
+          
+
+        </Grid>
+        <Grid  style={{marginTop: '50px',}}>
+            <Avatar alt="Remy Sharp" 
+            style={{ height: '150px', width: '150px', marginLeft: '10px',}} 
+            src={avatar}
+            onClick={() => setIsAvatarModalVisible(true)} />
+        </Grid>
       </Grid>
 
+      
+      
       <Grid
         container
         spacing={0}
@@ -210,17 +257,7 @@ export default function Profile(props) {
                     </form>
                   </CardContent>
                 </Card>
-                <Card style={{width: '600px', margin: '10px'}}>
-                    <CardContent>
-                        <Typography variant="h6">Upload Avatar:</Typography>
-                      <form onSubmit={(e) => {e.preventDefault(); handleSumbitAvatar();}}>
-                        <Input
-                          type='file'>
-                        </Input>
-                        <Button type="submit" variant="contained" color="primary">Upload</Button>
-                      </form>
-                    </CardContent>
-                  </Card>
+      
             </Grid>
           </TabPanel>
         </TabContext>
