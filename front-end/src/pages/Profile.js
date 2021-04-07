@@ -5,7 +5,6 @@ import TabContext from '@material-ui/lab/TabContext';
 import TabList from '@material-ui/lab/TabList';
 import TabPanel from '@material-ui/lab/TabPanel';
 import Kudo from '../components/Kudo';
-import AddKudo from "../components/AddKudo";
 import { red } from '@material-ui/core/colors';
 import ChangeAvatar from '../components/ChangeAvatar';
 import pic1 from '../components/Avatar Pics/female.png';
@@ -172,8 +171,8 @@ export default function Profile(props) {
       <Modal
         open={isAvatarModalVisible}
         onClose={() => setIsAvatarModalVisible(false)}
-        aria-labelledby="add-kudo-modal"
-        aria-describedby="add-kudo"
+        aria-labelledby="change-avatar-modal"
+        aria-describedby="change-avatar"
       >
         <div className={classes.modalCenter}>
           <ChangeAvatar handleSubmitAvatar={handleSubmitAvatar} pic1={pic1} pic2={pic2} closeAvatarModal={closeAvatarModal}/>
