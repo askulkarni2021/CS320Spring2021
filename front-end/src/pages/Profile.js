@@ -205,36 +205,34 @@ export default function Profile(props) {
         </Toolbar>
         <Divider variant="middle"/>
       </AppBar>
-
-      <Grid container direction={"row"} justify='center' spacing={2}>
-        <Grid item style={{marginTop:'115px', paddingRight: '100px'}}>
+      <Grid className={classes.header} container justify='flex-end'>
+        <Grid style={{marginTop: '115px', paddingRight: '110px'}}>
           <Button type="submit" variant="contained" color="primary" onClick={() => {toggleShowSettingVerify(true); setInvalid(false);}}>Change Password</Button>
         </Grid>
-        <Grid item className={classes.header} container >
-          <Grid style={{marginTop: '70px', paddingRight: '20px',}}>
-            <Box textAlign="right" >
-              <Typography style={{fontSize: '12px', color: 'grey',}}>Name</Typography>
-            </Box>
-            <Box textAlign="right" >
-              <Typography style={{fontSize: '18px'}}>Kianna Westervelt</Typography>
-            </Box>
-            <Box textAlign="right" >
-              <Typography style={{fontSize: '12px', color: 'grey', marginTop: '13px',}}>Position</Typography>
-            </Box>
-            <Box textAlign="right" >
-              <Typography style={{fontSize: '18px'}}>Software Engineer</Typography>
-            </Box>
+        <Grid style={{marginTop: '70px', paddingRight: '20px',}}>
+          <Box textAlign="right" >
+            <Typography style={{fontSize: '12px', color: 'grey',}}>Name</Typography>
+          </Box>
+          <Box textAlign="right" >
+            <Typography style={{fontSize: '18px'}}>Kianna Westervelt</Typography>
+          </Box>
+          <Box textAlign="right" >
+            <Typography style={{fontSize: '12px', color: 'grey', marginTop: '13px',}}>Position</Typography>
+          </Box>
+          <Box textAlign="right" >
+            <Typography style={{fontSize: '18px'}}>Software Engineer</Typography>
+          </Box>
 
 
-          </Grid>
-          <Grid  style={{marginTop: '50px',}}>
-              <Avatar alt="Remy Sharp"
-              style={{ height: '150px', width: '150px', marginLeft: '10px',}}
-              src={avatar}
-              onClick={() => setIsAvatarModalVisible(true)} />
-          </Grid>
+        </Grid>
+        <Grid  style={{marginTop: '50px',}}>
+            <Avatar alt="Remy Sharp"
+            style={{ height: '150px', width: '150px', marginLeft: '10px',}}
+            src={avatar}
+            onClick={() => setIsAvatarModalVisible(true)} />
         </Grid>
       </Grid>
+
 
 
       <Grid
