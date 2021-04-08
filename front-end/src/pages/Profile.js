@@ -48,9 +48,16 @@ export default function Profile(props) {
   const [newPass, setNewPass] = useState();
   const [avatar, setAvatar] = useState('');
   const [isAvatarModalVisible, setIsAvatarModalVisible] = useState(false);
+  const [company, setCompany] = useState('');
 
   useEffect(() => {
     getInOut();
+    const companies = {
+      'starship-entertainment': 'Starship Entertainment',
+      'outback-tech': 'Outback Technology',
+      'greenlife-consulting': 'Greenlife Consulting'
+    }
+    setCompany(companies[props.uri]);
   }, []);
 
   function handleSumbitNewPass() {
@@ -201,7 +208,7 @@ export default function Profile(props) {
 
       <AppBar position="sticky" elevation={0} className={classes.appBar}>
         <Toolbar>
-          <Typography variant="h6">Profile</Typography>
+          <Typography variant="h6">{company}</Typography>
         </Toolbar>
         <Divider variant="middle"/>
       </AppBar>
