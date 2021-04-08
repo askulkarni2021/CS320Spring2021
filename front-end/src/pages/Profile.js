@@ -44,7 +44,7 @@ export default function Profile(props) {
   const [employees, setEmployees] = useState();
   const [showSettingVerify, toggleShowSettingVerify] = useState(false);
   const [pass, setPass] = useState();
-  const [valid, setValid] = useState(false);
+  const [invalid, setInvalid] = useState(false);
   const [newPass, setNewPass] = useState();
   const [avatar, setAvatar] = useState('');
   const [isAvatarModalVisible, setIsAvatarModalVisible] = useState(false);
@@ -56,8 +56,6 @@ export default function Profile(props) {
   function handleSumbitNewPass() {
       console.log(newPass)
   }
-
-  
 
   function getInOut() {
     const uri = props.uri;
@@ -117,12 +115,15 @@ export default function Profile(props) {
     .then(response => response.json()).then(data => {
       if(data.found) {
         toggleShowSettingVerify(false)
-        setValid(false)
+        setInvalid(false)
+        setPass('');
+        setNewPass('');
       } else {
-        setValid(true)
-        console.log('WrongPass')
+        setInvalid(true)
+        setPass('')
       }
     });
+
   }
 
   const handleChange = (event, newValue) => {
@@ -142,7 +143,7 @@ export default function Profile(props) {
     <div className={classes.root}>
       <Modal
         open={showSettingVerify}
-        onClose={() => toggleShowSettingVerify(false)}
+        onClose={() => {toggleShowSettingVerify(false); setPass(''); setNewPass('');}}
         aria-labelledby="add-kudo-modal"
         aria-describedby="add-kudo"
       >
@@ -150,18 +151,37 @@ export default function Profile(props) {
           <Card style={{width: '600px', margin: '10px'}}>
               <CardContent>
                   <form onSubmit={(e) => {e.preventDefault(); handleSumbitVerify();}}>
+                    <Grid container direction={"column"} spacing={5}>
+                      <Grid item>
+                        <Typography>Enter Current Password:</Typography>
                       <TextField
-                          label='Password'
+                          label='Current Password'
                           variant='outlined'
-                          error={valid}
+                          error={invalid}
                           multiline
                           rows={1}
                           value={pass}
                           fullWidth
                           onChange={(e) => setPass(e.target.value)}
                       />
-                    <Button type="submit" variant="contained" color="primary">Verify Password</Button>
-                    {valid ? <Typography variant="caption" display="block" color="error"> password is incorrect </Typography> : null}
+                    </Grid>
+                    <Grid item>
+                      <Typography>Enter New Password:</Typography>
+                      <TextField
+                          label='Password'
+                          variant='outlined'
+                          multiline
+                          rows={1}
+                          value={newPass}
+                          fullWidth
+                          onChange={(e) => setNewPass(e.target.value)}
+                      />
+                  </Grid>
+                  <Grid item>
+                    <Button type="submit" variant="contained" color="primary">Change Password</Button>
+                    {invalid ? <Typography variant="caption" display="block" color="error"> password is incorrect </Typography> : null}
+                  </Grid>
+                </Grid>
                   </form>
               </CardContent>
           </Card>
@@ -186,39 +206,43 @@ export default function Profile(props) {
         <Divider variant="middle"/>
       </AppBar>
 
-      <Grid className={classes.header} container justify='flex-end'>
-        <Grid style={{marginTop: '70px', paddingRight: '20px',}}>
-          <Box textAlign="right" >
-            <Typography style={{fontSize: '12px', color: 'grey',}}>Name</Typography>
-          </Box>
-          <Box textAlign="right" >
-            <Typography style={{fontSize: '18px'}}>Kianna Westervelt</Typography>
-          </Box>
-          <Box textAlign="right" >
-            <Typography style={{fontSize: '12px', color: 'grey', marginTop: '13px',}}>Position</Typography>
-          </Box>
-          <Box textAlign="right" >
-            <Typography style={{fontSize: '18px'}}>Software Engineer</Typography>
-          </Box>
-          
-
+      <Grid container direction={"row"} justify='center' spacing={2}>
+        <Grid item style={{marginTop:'115px', paddingRight: '100px'}}>
+          <Button type="submit" variant="contained" color="primary" onClick={() => {toggleShowSettingVerify(true); setInvalid(false);}}>Change Password</Button>
         </Grid>
-        <Grid  style={{marginTop: '50px',}}>
-            <Avatar alt="Remy Sharp" 
-            style={{ height: '150px', width: '150px', marginLeft: '10px',}} 
-            src={avatar}
-            onClick={() => setIsAvatarModalVisible(true)} />
+        <Grid item className={classes.header} container >
+          <Grid style={{marginTop: '70px', paddingRight: '20px',}}>
+            <Box textAlign="right" >
+              <Typography style={{fontSize: '12px', color: 'grey',}}>Name</Typography>
+            </Box>
+            <Box textAlign="right" >
+              <Typography style={{fontSize: '18px'}}>Kianna Westervelt</Typography>
+            </Box>
+            <Box textAlign="right" >
+              <Typography style={{fontSize: '12px', color: 'grey', marginTop: '13px',}}>Position</Typography>
+            </Box>
+            <Box textAlign="right" >
+              <Typography style={{fontSize: '18px'}}>Software Engineer</Typography>
+            </Box>
+
+
+          </Grid>
+          <Grid  style={{marginTop: '50px',}}>
+              <Avatar alt="Remy Sharp"
+              style={{ height: '150px', width: '150px', marginLeft: '10px',}}
+              src={avatar}
+              onClick={() => setIsAvatarModalVisible(true)} />
+          </Grid>
         </Grid>
       </Grid>
 
-      
-      
+
       <Grid
         container
         spacing={0}
         alignItems="center"
         justify="center"
-        
+
       >
         <Grid item xs={10}>
       <Grid className={classes.list}>
@@ -228,7 +252,6 @@ export default function Profile(props) {
             <TabList onChange={handleChange} aria-label="simple tabs example" centered>
               <Tab label="Incoming" value="1" />
               <Tab label="Outgoing" value="2" />
-              <Tab label="Settings" value="3" onClick={() =>  toggleShowSettingVerify(true)}/>
             </TabList>
           </AppBar>
           <TabPanel value="1">{incoming && employees ? incoming.map((kudo, index) => {
@@ -237,28 +260,6 @@ export default function Profile(props) {
           <TabPanel value="2">{outgoing && employees ? outgoing.map((kudo, index) => {
                 return <Kudo to={employees[kudo.to].name} from={employees[kudo.from].name} message={kudo.kudo} tags={kudo.tags} key={kudo._id}/>
             }) : 'loading'  }</TabPanel>
-          <TabPanel value="3">
-            <Grid>
-              <Card style={{width: '600px', margin: '10px'}}>
-                  <CardContent>
-                      <Typography variant="h6">Enter New password:</Typography>
-                    <form onSubmit={(e) => {e.preventDefault(); handleSumbitNewPass();}}>
-                        <TextField
-                            label='Password'
-                            variant='outlined'
-                            multiline
-                            rows={1}
-                            value={newPass}
-                            fullWidth
-                            onChange={(e) => setNewPass(e.target.value)}
-                        />
-                      <Button type="submit" variant="contained" color="primary">Enter Password</Button>
-                    </form>
-                  </CardContent>
-                </Card>
-      
-            </Grid>
-          </TabPanel>
         </TabContext>
         </Box>
       </Grid>
