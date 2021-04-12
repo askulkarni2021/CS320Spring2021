@@ -125,7 +125,7 @@ app.post('/api/add_kudo', (req, res) => {
 
 // the request should contain the company name, the reaction (just an emoji) and the _id of the kudo
 // the front end should have the _id of the kudo from the all_kudos endpoint
-// req := {uri: "company name", kudoID: "id of kudo to be updated", reaction: "emoji that is chosen"
+// req := {uri: "company name", kudoID: "id of kudo to be updated", emoji: "emoji that is chosen", by: "the name of the person giving the reaction"}
 app.post('/api/add_kudo_reaction', (req, res) => {
 	const companyName = req.body.uri;
 	const uri = "mongodb+srv://user:cs320team1@cs320.t0mlm.mongodb.net/" + companyName + "?retryWrites=true&w=majority";
@@ -135,30 +135,43 @@ app.post('/api/add_kudo_reaction', (req, res) => {
 		assert.equal(err, null);
 		const db = client.db(companyName);
 		const kudosCollection = db.collection("Kudos");
-		findKudos(kudosCollection, {"_id": kudoID}).then(kudos => {console.log(kudos.reverse());});
 		const addReaction = async () => {
-			// first we have to actually insert the reaction field if it doesnt exist
-			const reactionField = `reactions.${req.body.reaction}`;
-			let query = {"_id": kudoID};
-			query[reactionField] = {"$exists" : false};
-			let update = { "$set" : {}};
-			update["$set"][reactionField] = 0;
-			// needs to be done this way so we can use a variable in the field name.
-			await kudosCollection.updateOne(query, update);
-			// then we can update the count of the reaction, whether or not it is new
-			query = {"_id": kudoID};
-			update = {"$inc" : {}};
-			update["$inc"][reactionField] = 1;
-			const updatedKudo = await kudosCollection.updateOne(query, update);
+			reactionObj = {emoji: req.body.emoji, by: req.body.by}
+			await kudosCollection.updateOne(
+				{ "_id" : kudoID },
+				{
+					$push : { reactions : reactionObj }
+				}
+			);
 			client.close(); // db operations no longer needed
-			return updatedKudo;
 		};
-		const updatedDocument = addReaction();
-		// this needs to be tested
-		updatedDocument.then(doc => {
-			res.send(true);
-		});
+		addReaction();
+		res.send(true);
 	});
+});
+
+// req := {uri: "company name", kudoID: "id of kudo to be updated", emoji: "emoji to be removed from kudo", by: "the name of the person giving the reaction"}
+app.post('/api/delete_kudo_reaction', (req, res) => {
+	const companyName = req.body.uri;
+	const uri = "mongodb+srv://user:cs320team1@cs320.t0mlm.mongodb.net/" + companyName + "?retryWrites=true&w=majority";
+	const client = new MongoClient(uri, { useNewUrlParser: true, useUnifiedTopology: true });
+	const kudoID = new ObjectId(req.body.kudoID);
+	client.connect(err => {
+		assert.equal(err, null);
+		const db = client.db(companyName);
+		const kudosCollection = db.collection("Kudos");
+		const deleteReaction = async () => {
+			await kudosCollection.updateOne(
+				{ "_id" : kudoID },
+				{
+					$pull : { reactions : { emoji : req.body.emoji , by : req.body.by } }
+				}
+			);
+			client.close()
+		};
+		deleteReaction();
+		res.send(true);
+	})
 });
 
 //Expects the company name(as uri field of the incoming query) and returns all kudos within that company as an array
