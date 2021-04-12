@@ -171,7 +171,28 @@ app.post('/api/delete_kudo_reaction', (req, res) => {
 		};
 		deleteReaction();
 		res.send(true);
-	})
+	});
+});
+
+// expects {uri: "companu name", kudoID: "id of kudo to get reactions from"}
+app.post('/api/get_kudo_reactions', (req, res) => {
+	const companyName = req.body.uri;
+	const uri = "mongodb+srv://user:cs320team1@cs320.t0mlm.mongodb.net/" + companyName + "?retryWrites=true&w=majority";
+	const client = new MongoClient(uri, { useNewUrlParser: true, useUnifiedTopology: true });
+	const kudoID = new ObjectId(req.body.kudoID);
+	client.connect(err => {
+		assert.equal(err, null);
+		const db = client.db(companyName);
+		const kudosCollection = db.collection("Kudos");
+		const kudo = findEmployees(kudosCollection, { "_id" : kudoID });
+		const sendReactions = async () => {
+			await kudo.then(kudoVal => {
+				// there is only going to be one kudo here because the query was filtered by ID
+				res.send(kudoVal[0].reactions);
+			});
+		};
+		sendReactions();
+	});
 });
 
 //Expects the company name(as uri field of the incoming query) and returns all kudos within that company as an array
