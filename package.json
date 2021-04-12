@@ -4,11 +4,13 @@
   "description": "package for Kudos CS320 project",
   "main": "cs320.js",
   "dependencies": {
+    "antd": "^4.15.0",
     "body-parser": "^1.19.0",
     "concurrently": "^6.0.0",
     "cors": "^2.8.5",
     "express": "^4.17.1",
     "mongodb": "^3.6.4",
+    "react-reactions": "^0.1.3",
     "xmlhttprequest": "^1.8.0"
   },
   "scripts": {
