@@ -13,7 +13,7 @@ export default function AddValue(props) {
     const [uid, setUid] = useState('');
     const [nameMapUid, setNameMapUid] = useState('');
     /* FAKE CORE VALUES, PRESET */
-    const [coreValues] = useState(['Test Value', 'Teamwork', 'Spirited']);
+    //const [coreValues] = useState(['Test Value', 'Teamwork', 'Spirited']);
     const [value, setVal] = useState('');
     const [color, setColor] = useState('');
 
@@ -71,6 +71,29 @@ export default function AddValue(props) {
             }
         });
         setVal('');
+    }
+
+    function getValues(){
+
+        fetch('http://localhost:5000/api/data/get_core_values',{
+            method: 'POST', 
+            headers: {
+                "Accept": "application/json",
+                "Content-Type": "application/json"
+              },
+              body: JSON.stringify({uri})
+        })
+        .then(response =>{
+            let arr = [];
+            if(response){
+                //response comes in an array of objects, traverse this to load into the values
+                response.forEach(val => {
+                    arr.push(val.value);
+                });
+            }
+            const [coreValues] = useState(arr);
+
+        })
     }
 
     return (
