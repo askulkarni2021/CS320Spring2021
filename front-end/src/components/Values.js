@@ -16,25 +16,37 @@ export default function AddValue(props) {
     //const [coreValues] = useState(['Test Value', 'Teamwork', 'Spirited']);
     const [value, setVal] = useState('');
     const [color, setColor] = useState('');
+    const [coreValues, setCoreValues] = useState(['loading']);
+    
 
     const handleClick = () => {
         console.info('You clicked the Chip.');
     };
 
-    const valueChips = coreValues.map((val) =>
-        <Chip
-        style={{marginBottom: "0.5rem"}} 
-        label={val} 
-        color="secondary"
-        onClick={handleClick} ></Chip>
-    )
+    
+    
+    function formChips() {
+        console.log(coreValues);
+
+        let ans = '';
+        if (coreValues){
+            coreValues.map((val) =>
+            <Chip
+                style={{marginBottom: "0.5rem"}} 
+                label={val} 
+                color="secondary"
+                onClick={handleClick} ></Chip>
+            )
+        }
+        return ans;
+    } 
 
     useEffect(() => {
         const uri = localStorage.getItem('uri');
         const uid = JSON.parse(localStorage.getItem('data')).uid;
         setUri(uri);
         setUid(uid);
-        fetch('http://localhost:5000/api/data/name_map_uid',
+        fetch('http://localhost:5000/api/data/get_core_values',
         {
             method: 'POST',
             headers: {
@@ -43,10 +55,20 @@ export default function AddValue(props) {
             },
             body: JSON.stringify({uri})
         })
-        .then(response => response.json())
+        .then((response) => response.json())
         .then(data => {
-            setNameMapUid(data);
+            let arr = [];
             console.log(data);
+            if(data){
+                //response comes in an array of objects, traverse this to load into the values
+                data.forEach(val => {
+                    arr.push(val.value);
+                });
+            }
+            console.log(`This is ${arr[1]}`);
+            setCoreValues(arr);
+
+            
         });
     }, []);
 
@@ -73,28 +95,8 @@ export default function AddValue(props) {
         setVal('');
     }
 
-    function getValues(){
 
-        fetch('http://localhost:5000/api/data/get_core_values',{
-            method: 'POST', 
-            headers: {
-                "Accept": "application/json",
-                "Content-Type": "application/json"
-              },
-              body: JSON.stringify({uri})
-        })
-        .then(response =>{
-            let arr = [];
-            if(response){
-                //response comes in an array of objects, traverse this to load into the values
-                response.forEach(val => {
-                    arr.push(val.value);
-                });
-            }
-            const [coreValues] = useState(arr);
 
-        })
-    }
 
     return (
         <Card style={{width: '300px', margin: '10px'}}>
@@ -102,8 +104,11 @@ export default function AddValue(props) {
                 <form onSubmit={(e) => {e.preventDefault(); handleSubmit();}}>
 
                     <Grid container direction="column" alignItems="flex-start">
-
-                         {valueChips} </Grid>
+                  
+                        {coreValues ? coreValues.map((tag, index) => {
+                                        return <Chip key={index} label={tag} style={{marginBottom: "15px"}}/>
+                        }) : null} 
+                    </Grid>
                    
                     {'\n'}
 
