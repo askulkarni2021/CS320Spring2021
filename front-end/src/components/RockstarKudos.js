@@ -62,6 +62,7 @@ const Accordion = withStyles({
     },
   }))(MuiAccordionDetails);
 
+//to, from, message, tags, kudoID, kudoReactions, compReactions
 export default function Kudo(props) {
     const classes = useStyles();
     const [expanded, setExpanded] = React.useState(false);
@@ -71,7 +72,7 @@ export default function Kudo(props) {
 
     return(
         <Card className={classes.root} style={{width: '180px', margin: '10px'}}>
-            <CardContent style={{padding:'5px'}}>
+            <CardContent style={{padding:'5px', maxWidth: '180px'}}>
                 <Accordion square expanded={expanded === 'panel'} onChange={handleChange('panel')}>
                     <AccordionSummary
                     aria-controls="panelbh-content"
@@ -89,16 +90,17 @@ export default function Kudo(props) {
                                     </Typography>
                                     {props.from}
                                 </div>
-                                <CardActions>
-                                    {props.tags ? props.tags.map((tag, index) => {
-                                        return <Chip key={index} label={tag.value} style={{backgroundColor: tag.color}}/>
-                                    }) : null}
-                                </CardActions>
+
                             </Grid>
                         </Grid>
                     </AccordionSummary>
                     <AccordionDetails>
                         <Grid>
+                            <CardActions style={{ display: 'flex', flexWrap:'wrap'}}>
+                                {props.tags ? props.tags.map((tag, index) => {
+                                    return <Chip key={index} label={tag.value} style={{backgroundColor: tag.color, margin: '2px'}}/>
+                                }) : null}
+                            </CardActions>
                             <Typography variant="body2" component="p">
                                 {props.message}
                             </Typography>

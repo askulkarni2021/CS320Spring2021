@@ -4,6 +4,7 @@
   "description": "package for Kudos CS320 project",
   "main": "cs320.js",
   "dependencies": {
+    "antd": "^4.15.0",
     "body-parser": "^1.19.0",
     "concurrently": "^6.0.0",
     "cors": "^2.8.5",
