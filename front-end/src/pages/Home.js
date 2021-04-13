@@ -33,8 +33,6 @@ export default function Home(props) {
   // runs on reload/first visit, calls getKudos() and
   // sets company name from uri
   useEffect(() => {
-    console.log(props.data);
-    console.log(props.uri);
     props.getKudos();
     const companies = {
       'starship-entertainment': 'Starship Entertainment',
