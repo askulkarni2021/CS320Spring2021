@@ -190,6 +190,7 @@ app.post('/api/get_kudo_reactions', (req, res) => {
 				// there is only going to be one kudo here because the query was filtered by ID
 				res.send(kudoVal[0].reactions);
 			});
+			client.close();
 		};
 		sendReactions();
 	});
