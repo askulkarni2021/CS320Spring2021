@@ -65,13 +65,9 @@ export default function Profile(props) {
   useEffect(() => {
     if(props.employees){
       setEmployeeName(props.employees[props.uid]['name']);
-      setEmployeePosition(props.employees[props.uid]['position']);  
+      setEmployeePosition(props.employees[props.uid]['position']);
     }
   }, [props.employees]);
-
-  function handleSumbitNewPass() {
-      console.log(newPass)
-  }
 
   function getInOut() {
     const uri = props.uri;
@@ -115,6 +111,25 @@ export default function Profile(props) {
     });
   }
 
+  function handleSumbitNewPass() {
+    const uri = props.uri;
+    const uid = props.data.uid;
+    const password = newPass;
+    const formData = {uid, password, uri};
+    fetch('http://localhost:5000/api/data/change_password',
+    {
+      method: 'POST',
+      headers: {
+        "Accept": "application/json",
+        "Content-Type": "application/json"
+      },
+      body: JSON.stringify(formData)
+    })
+    .then(response => response.json()).then(data => {
+      // console.log(newPass)
+    });
+  }
+
   function handleSumbitVerify() {
     const uri = props.uri;
     const uid = props.data.uid;
@@ -132,6 +147,7 @@ export default function Profile(props) {
       if(data.found) {
         toggleShowSettingVerify(false)
         setInvalid(false)
+        handleSumbitNewPass();
         setPass('');
         setNewPass('');
       } else {
