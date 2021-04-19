@@ -29,13 +29,13 @@ export default function AddKudo(props) {
         })
         .then(response => response.json())
         .then(data => {
-            const filterObject = (obj, filter, filterValue) => 
-                Object.keys(obj).reduce((acc, val) => 
+            const filterObject = (obj, filter, filterValue) =>
+                Object.keys(obj).reduce((acc, val) =>
                     (obj[val][filter] === filterValue ? acc : {
                         ...acc,
                         [val]: obj[val]
-                    }                                        
-                ), 
+                    }
+                ),
             {});
             setNameMapUid(filterObject(data, "id", uid));
         });
@@ -58,6 +58,7 @@ export default function AddKudo(props) {
     function handleSumbit() {
         const to = nameMapUid[name]['id'];
         const from = uid;
+        const timestamp = Date().getHours() + ':' + Date().getMinutes() + '  ' + (Date().getMonth() + 1) + '/' + Date().getDate() + '/' + Date().getYear();
         fetch('http://localhost:5000/api/add_kudo',
         {
             method: 'POST',
@@ -65,7 +66,7 @@ export default function AddKudo(props) {
               "Accept": "application/json",
               "Content-Type": "application/json"
             },
-            body: JSON.stringify({uri, to, from, kudo, tags})
+            body: JSON.stringify({uri, to, from, kudo, tags, timestamp})
         })
         .then(response => {
             props.getKudos();
@@ -102,10 +103,10 @@ export default function AddKudo(props) {
                             />
                         </Grid>
                         <Grid item>
-                            <TextField 
+                            <TextField
                                 required
-                                label='Message' 
-                                variant='outlined' 
+                                label='Message'
+                                variant='outlined'
                                 multiline
                                 rows={4}
                                 value={kudo}
