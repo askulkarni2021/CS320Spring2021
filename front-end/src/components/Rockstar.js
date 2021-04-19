@@ -176,12 +176,13 @@ export default function Rockstar(props) {
                       return <RockstarKudos
                                 to={employees[kudo.to].name}
                                 from={employees[kudo.from].name}
-                                message={kudo.kudo} 
+                                message={kudo.kudo}
                                 tags={kudo.tags}
                                 kudoID={kudo._id}
                                 kudoReactions={kudo.reactions}
                                 compReactions={props.reactions}
                                 key={index}
+                                timestamp={kudo.time}
                                 />
                   }) : 'loading'  }
                 </Grid>

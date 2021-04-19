@@ -20,7 +20,7 @@ kudo : {
 	emotes:{IDK yet how to do this}
 }
 
-Thought - This is a great schema as it includes everything that we thought of to be included in the kudos. 
+Thought - This is a great schema as it includes everything that we thought of to be included in the kudos.
 		  This can also be easily rendered into the feed when required by the frontend!
 
 Removed Kudos:
@@ -47,11 +47,11 @@ app.listen(port, () => console.log(`Listening on port ${port}`));
 app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({ extended: true }));
 
-const findEmployees = async (employeesCollection, filter_query = {}) => { 
+const findEmployees = async (employeesCollection, filter_query = {}) => {
 	const employees = await employeesCollection.find(filter_query).toArray();
 	return employees;
 };
-const findKudos = async (kudosCollection,filter_query) => { 
+const findKudos = async (kudosCollection,filter_query) => {
 	const kudos = await kudosCollection.find(filter_query).toArray();
 	return kudos;
 };
@@ -94,12 +94,14 @@ app.post('/api/add_kudo', (req, res) => {
 
   	client.connect(err => {
 		assert.equal(err, null);
-		
+
 		const add_kudo = async (query) => {
 			const db = client.db(companyName);
 			const kudos = db.collection("Kudos");
+			const curDate = new Date();
+			const timestamp = ((curDate.getHours() + 24) % 12 || 12) + ':' + (curDate.getMinutes() < 10 ? '0' : '') + curDate.getMinutes() + '      ' + (curDate.getMonth() + 1) + '/' + curDate.getDate() + '/' + curDate.getFullYear();
 			// dont insert the whole query because otherwise the company name would be inserted in each kudo, which is unnecessary
-			let resultDoc = await kudos.insertOne({from: query.from, to: query.to, kudo: query.kudo, reactions: {}, tags: query.tags, time: new Date().toDateString()});
+			let resultDoc = await kudos.insertOne({from: query.from, to: query.to, kudo: query.kudo, reactions: {}, tags: query.tags, time: timestamp});
 			addToIncomingAndOutgoing = (addedKudo) => {
 				// NOTE: to and from are strings, not ints
 				let to = req.body.to;
@@ -112,12 +114,12 @@ app.post('/api/add_kudo', (req, res) => {
 					);
 					// for some reason calling client.close() outside of addToIncomingAndOutgoing caused the client to close before numKudos was incremented
 					// putting client.close() still ensures the client is closed before the response is sent and is closed after any db operation is done
-					client.close(); 
+					client.close();
 				}
 				incrementNumKudos();
 			};
 			addToIncomingAndOutgoing(resultDoc);
-			res.send(true); 
+			res.send(true);
 		};
 		add_kudo(req.body);
 	});
@@ -170,9 +172,9 @@ app.post('/api/all_kudos', (req, res) => {
   	client.connect(err => {
 		assert.equal(err, null);
 		const db = client.db(companyName);
-		const kudosCollection = db.collection("Kudos");	
+		const kudosCollection = db.collection("Kudos");
 		const kudos = findKudos(kudosCollection,{});
-		const find_all = async (kudos) => { 
+		const find_all = async (kudos) => {
 			await kudos.then(value  => {
 				client.close();
 				res.send(value.reverse());
@@ -193,11 +195,11 @@ app.post('/api/profile_incoming', (req, res) => {
 	const uri = "mongodb+srv://user:cs320team1@cs320.t0mlm.mongodb.net/" + companyName + "?retryWrites=true&w=majority";
 	const client = new MongoClient(uri, { useNewUrlParser: true, useUnifiedTopology: true });
 	const employeeId = req.body.uid
-  	client.connect(err => {	
+  	client.connect(err => {
 		assert.equal(err, null);
 		const db = client.db(companyName);
 		const Kudos = db.collection("Kudos");
-		const findKudos = async () => { 
+		const findKudos = async () => {
 			const kudos = await Kudos.find({to: parseInt(employeeId)}).toArray();
 			client.close();
 			res.send(kudos.reverse());
@@ -211,7 +213,7 @@ app.post('/api/profile_incoming', (req, res) => {
 //Expects - {uri , uid(of user as a string)}
 //Returns - An array of all outgoing kudos for this user!
 
-app.post('/api/profile_outgoing', (req, res) => { 
+app.post('/api/profile_outgoing', (req, res) => {
 	const companyName = req.body.uri;
 	const uri = "mongodb+srv://user:cs320team1@cs320.t0mlm.mongodb.net/" + companyName + "?retryWrites=true&w=majority";
 	const client = new MongoClient(uri, { useNewUrlParser: true, useUnifiedTopology: true });
@@ -312,7 +314,7 @@ app.post('/api/get_rockstar', (req, res) => {
 			await rockStars.then(value => {
 				mostRecentROM = value[value.length - 1];
 				const ROMname = mostRecentROM.firstName + " " + mostRecentROM.lastName;
-				res.send({name: ROMname, position: mostRecentROM.positionTitle, numKudos: mostRecentROM.numKudos, 
+				res.send({name: ROMname, position: mostRecentROM.positionTitle, numKudos: mostRecentROM.numKudos,
 							employeeId: mostRecentROM.employeeId, month: mostRecentROM.month});
 			});
 		};
@@ -424,14 +426,14 @@ app.post('/api/data/get_emojis', (req, res) => {
 });
 
 
-//Expects uri and string for the value and the color of the value to be added 
+//Expects uri and string for the value and the color of the value to be added
 app.post('/api/data/add_value', (req, res) => {
 	console.log(req.body);
 	const companyName = req.body.uri;
 	const uri = "mongodb+srv://user:cs320team1@cs320.t0mlm.mongodb.net/" + companyName + "?retryWrites=true&w=majority";
 	const client = new MongoClient(uri, { useNewUrlParser: true, useUnifiedTopology: true });
 	const value = req.body.value;
-	const color = req.body.color; 
+	const color = req.body.color;
 
 	client.connect(err => {
 		assert.equal(err, null);
@@ -450,7 +452,7 @@ app.post('/api/data/add_value', (req, res) => {
 
 });
 
-//Expects uri and string for the emoji to be added 
+//Expects uri and string for the emoji to be added
 app.post('/api/data/add_emoji', (req, res) => {
 	console.log(req.body);
 	const companyName = req.body.uri;
@@ -462,7 +464,7 @@ app.post('/api/data/add_emoji', (req, res) => {
 		assert.equal(err, null);
 		const db = client.db(companyName);
 		const Collection = db.collection("Values-Emojis");
-		
+
 		const insertEmoji = async (emoji) => {
 			await Collection.updateOne(
 					{},
@@ -477,7 +479,7 @@ app.post('/api/data/add_emoji', (req, res) => {
 
 
 
-//Expects uri and string for the emoji to be deleted 
+//Expects uri and string for the emoji to be deleted
 app.post('/api/data/delete_emoji', (req, res) => {
 	console.log(req.body);
 	const companyName = req.body.uri;
@@ -489,7 +491,7 @@ app.post('/api/data/delete_emoji', (req, res) => {
 		assert.equal(err, null);
 		const db = client.db(companyName);
 		const Collection = db.collection("Values-Emojis");
-		
+
 		const removeEmoji = async (emoji) => {
 			await Collection.updateOne(
 					{},
@@ -502,14 +504,14 @@ app.post('/api/data/delete_emoji', (req, res) => {
 	});
 });
 
-//Expects uri and string for the value to be deleted  
+//Expects uri and string for the value to be deleted
 app.post('/api/data/delete_value', (req, res) => {
 	console.log(req.body);
 	const companyName = req.body.uri;
 	const uri = "mongodb+srv://user:cs320team1@cs320.t0mlm.mongodb.net/" + companyName + "?retryWrites=true&w=majority";
 	const client = new MongoClient(uri, { useNewUrlParser: true, useUnifiedTopology: true });
 	const value = req.body.value;
-	
+
 
 
 	client.connect(err => {
@@ -528,4 +530,3 @@ app.post('/api/data/delete_value', (req, res) => {
 	});
 
 });
-

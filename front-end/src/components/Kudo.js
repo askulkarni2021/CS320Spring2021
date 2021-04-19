@@ -104,11 +104,13 @@ export default function Kudo(props) {
                                 {props.message}
                             </Typography>
                         </Grid>
-                        <Grid justify='flex-end'>
-                          <Typography variant="body2" component="p">
-                              {'DATE'}
-                          </Typography>
-                        </Grid>
+                    </AccordionDetails>
+                    <AccordionDetails>
+                      <Grid container justify='flex-end'>
+                        <Typography variant="body2" component="p">
+                            {props.timestamp}
+                        </Typography>
+                      </Grid>
                     </AccordionDetails>
                 </Accordion>
             </CardContent>

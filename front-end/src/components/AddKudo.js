@@ -58,8 +58,6 @@ export default function AddKudo(props) {
     function handleSumbit() {
         const to = nameMapUid[name]['id'];
         const from = uid;
-        const curDate = new Date();
-        const timestamp = curDate.getHours() + ':' + curDate.getMinutes() + '  ' + (curDate.getMonth() + 1) + '/' + curDate.getDate() + '/' + curDate.getYear();
         fetch('http://localhost:5000/api/add_kudo',
         {
             method: 'POST',
@@ -67,7 +65,7 @@ export default function AddKudo(props) {
               "Accept": "application/json",
               "Content-Type": "application/json"
             },
-            body: JSON.stringify({uri, to, from, kudo, tags, timestamp})
+            body: JSON.stringify({uri, to, from, kudo, tags})
         })
         .then(response => {
             props.getKudos();
