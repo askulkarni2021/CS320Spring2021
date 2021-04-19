@@ -373,29 +373,31 @@ app.post('/api/verify_settings', (req, res) => {
 	});
 });
 
-// app.post('/api/data/change_password', (req, res) => {
-// 	console.log(req.body);
-// 	const companyName = req.body.uri;
-// 	const uri = "mongodb+srv://user:cs320team1@cs320.t0mlm.mongodb.net/" + companyName + "?retryWrites=true&w=majority";
-// 	const client = new MongoClient(uri, { useNewUrlParser: true, useUnifiedTopology: true });
+// "weaverol"
+app.post('/api/data/change_password', (req, res) => {
+	console.log(req.body);
+	const companyName = req.body.uri;
+	const uri = "mongodb+srv://user:cs320team1@cs320.t0mlm.mongodb.net/" + companyName + "?retryWrites=true&w=majority";
+	const client = new MongoClient(uri, { useNewUrlParser: true, useUnifiedTopology: true });
+	const password = req.body.password;
 
-//   	client.connect(err =>  {
-// 		assert.equal(err, null);
-// 		const db = client.db(companyName);
-// 		const Collection = db.collection("Employees Database");
+  	client.connect(err =>  {
+		assert.equal(err, null);
+		const db = client.db(companyName);
+		const employeesCollection = db.collection("Employees Database");
+		const employees = findEmployees(employeesCollection, {employeeId:req.body.uid});
 
-// 		const employees = findEmployees(Collection);
-
-// 		const change_password = async (req, employees) => {
-// 			await val_em.then(value  => {
-// 			console.log(value[0].values);
-// 			client.close();
-// 			res.send(value[0].values);
-// 		});
-// 		};
-// 		send_data(val_em);
-// 	});
-//   });
+		const change_password = async (employees) => {
+			await employeesCollection.updateOne(
+				{employeeId: req.body.uid},
+				{$set: {password: password}}
+			);
+			client.close();
+			res.send(true);
+		};
+		change_password(employees);
+	});
+  });
 
 app.post('/api/data/get_emojis', (req, res) => {
 	console.log(req.body);

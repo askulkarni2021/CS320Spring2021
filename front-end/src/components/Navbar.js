@@ -15,9 +15,10 @@ const useStyles = makeStyles((theme) => ({
   drawerPaper: {
     width: drawerWidth,
     backgroundColor: theme.palette.background.default,
-    paddingLeft: '100px',
+    paddingLeft: '80px',
   },
   menuItem: {
+    marginLeft: '0px',
     borderRadius: '50px',
     marginBottom: '10px',
     paddingTop: '13px',
@@ -32,12 +33,12 @@ const useStyles = makeStyles((theme) => ({
   logout: {
     borderRadius: '50px',
     padding: '1px 4px',
-    marginLeft: '6px',
+    marginLeft: '24px',
     marginTop: '10px',
   },
   dumb: {
     paddingLeft: '10px',
-    marginLeft: '0',
+    marginLeft: '23px',
   },
   modalCenter: {
     position: 'absolute',

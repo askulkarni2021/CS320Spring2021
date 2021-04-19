@@ -49,6 +49,8 @@ export default function Profile(props) {
   const [avatar, setAvatar] = useState('');
   const [isAvatarModalVisible, setIsAvatarModalVisible] = useState(false);
   const [company, setCompany] = useState('');
+  const [name, setEmployeeName] = useState('');
+  const [position, setEmployeePosition] = useState('');
 
   useEffect(() => {
     getInOut();
@@ -60,9 +62,12 @@ export default function Profile(props) {
     setCompany(companies[props.uri]);
   }, []);
 
-  function handleSumbitNewPass() {
-      console.log(newPass)
-  }
+  useEffect(() => {
+    if(props.employees){
+      setEmployeeName(props.employees[props.uid]['name']);
+      setEmployeePosition(props.employees[props.uid]['position']);
+    }
+  }, [props.employees]);
 
   function getInOut() {
     const uri = props.uri;
@@ -106,6 +111,25 @@ export default function Profile(props) {
     });
   }
 
+  function handleSumbitNewPass() {
+    const uri = props.uri;
+    const uid = props.data.uid;
+    const password = newPass;
+    const formData = {uid, password, uri};
+    fetch('http://localhost:5000/api/data/change_password',
+    {
+      method: 'POST',
+      headers: {
+        "Accept": "application/json",
+        "Content-Type": "application/json"
+      },
+      body: JSON.stringify(formData)
+    })
+    .then(response => response.json()).then(data => {
+      // console.log(newPass)
+    });
+  }
+
   function handleSumbitVerify() {
     const uri = props.uri;
     const uid = props.data.uid;
@@ -123,6 +147,7 @@ export default function Profile(props) {
       if(data.found) {
         toggleShowSettingVerify(false)
         setInvalid(false)
+        handleSumbitNewPass();
         setPass('');
         setNewPass('');
       } else {
@@ -221,13 +246,13 @@ export default function Profile(props) {
             <Typography style={{fontSize: '12px', color: 'grey',}}>Name</Typography>
           </Box>
           <Box textAlign="right" >
-            <Typography style={{fontSize: '18px'}}>Kianna Westervelt</Typography>
+            <Typography style={{fontSize: '18px'}}>{name}</Typography>
           </Box>
           <Box textAlign="right" >
             <Typography style={{fontSize: '12px', color: 'grey', marginTop: '13px',}}>Position</Typography>
           </Box>
           <Box textAlign="right" >
-            <Typography style={{fontSize: '18px'}}>Software Engineer</Typography>
+            <Typography style={{fontSize: '18px'}}>{position}</Typography>
           </Box>
 
 
