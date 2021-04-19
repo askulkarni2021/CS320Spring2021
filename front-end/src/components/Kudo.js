@@ -12,12 +12,11 @@ const useStyles = makeStyles({
       display: 'flex',
     },
     recv: {
-        display:'inline',
-        backgroundColor:'#F2F2F2', 
-        color:'#616161', 
-        marginRight:'5px', 
-        paddingLeft: '2px',
-        paddingRight: '2px',
+      display:'inline',
+      color:'#a1a1a1',
+      marginRight:'5px', 
+      paddingLeft: '2px',
+      paddingRight: '2px',
     },
 });
 
@@ -72,7 +71,7 @@ export default function Kudo(props) {
 
     return(
         <Card className={classes.root} style={{width: '600px', margin: '10px'}}>
-            <CardContent style={{padding:'5px'}}>
+            <CardContent style={{padding:'5px', width: '100%'}}>
                 <Accordion square expanded={expanded === 'panel'} onChange={handleChange('panel')}>
                     <AccordionSummary
                     aria-controls="panelbh-content"
@@ -88,7 +87,8 @@ export default function Kudo(props) {
                                     <Typography variant="subtitle1" className={classes.recv}>
                                         received kudos from
                                     </Typography>
-                                    {props.from}
+                                    <Typography style={{display:'inline'}}>{props.from}</Typography>
+                                    
                                 </div>
                                 <CardActions>
                                     {props.tags ? props.tags.map((tag, index) => {
