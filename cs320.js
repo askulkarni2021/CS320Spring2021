@@ -125,7 +125,7 @@ app.post('/api/add_kudo', (req, res) => {
 
 // the request should contain the company name, the reaction (just an emoji) and the _id of the kudo
 // the front end should have the _id of the kudo from the all_kudos endpoint
-// req := {uri: "company name", kudoID: "id of kudo to be updated", emoji: "emoji that is chosen", by: "the name of the person giving the reaction"}
+// req := {uri: "company name", kudoID: "id of kudo to be updated", emoji: "emoji that is chosen", by: "uid of the employee giving the reaction"}
 app.post('/api/add_kudo_reaction', (req, res) => {
 	const companyName = req.body.uri;
 	const uri = "mongodb+srv://user:cs320team1@cs320.t0mlm.mongodb.net/" + companyName + "?retryWrites=true&w=majority";
@@ -136,7 +136,7 @@ app.post('/api/add_kudo_reaction', (req, res) => {
 		const db = client.db(companyName);
 		const kudosCollection = db.collection("Kudos");
 		const addReaction = async () => {
-			reactionObj = {emoji: req.body.emoji, by: req.body.by}
+			reactionObj = {emoji: req.body.emoji, by: parseInt(req.body.by)}
 			await kudosCollection.updateOne(
 				{ "_id" : kudoID },
 				{
@@ -150,7 +150,7 @@ app.post('/api/add_kudo_reaction', (req, res) => {
 	});
 });
 
-// req := {uri: "company name", kudoID: "id of kudo to be updated", emoji: "emoji to be removed from kudo", by: "the name of the person giving the reaction"}
+// req := {uri: "company name", kudoID: "id of kudo to be updated", emoji: "emoji to be removed from kudo", by: "uid of the employee giving the reaction"}
 app.post('/api/delete_kudo_reaction', (req, res) => {
 	const companyName = req.body.uri;
 	const uri = "mongodb+srv://user:cs320team1@cs320.t0mlm.mongodb.net/" + companyName + "?retryWrites=true&w=majority";
@@ -164,7 +164,7 @@ app.post('/api/delete_kudo_reaction', (req, res) => {
 			await kudosCollection.updateOne(
 				{ "_id" : kudoID },
 				{
-					$pull : { reactions : { emoji : req.body.emoji , by : req.body.by } }
+					$pull : { reactions : { emoji : req.body.emoji , by : parseInt(req.body.by) } }
 				}
 			);
 			client.close()
@@ -190,6 +190,7 @@ app.post('/api/get_kudo_reactions', (req, res) => {
 				// there is only going to be one kudo here because the query was filtered by ID
 				res.send(kudoVal[0].reactions);
 			});
+			client.close();
 		};
 		sendReactions();
 	});
