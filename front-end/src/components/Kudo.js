@@ -13,9 +13,9 @@ const useStyles = makeStyles({
     },
     recv: {
         display:'inline',
-        backgroundColor:'#F2F2F2', 
-        color:'#616161', 
-        marginRight:'5px', 
+        backgroundColor:'#F2F2F2',
+        color:'#616161',
+        marginRight:'5px',
         paddingLeft: '2px',
         paddingRight: '2px',
     },
@@ -62,7 +62,7 @@ const Accordion = withStyles({
     },
   }))(MuiAccordionDetails);
 
-//to, from, message, tags, kudoID, kudoReactions, compReactions 
+//to, from, message, tags, kudoID, kudoReactions, compReactions
 export default function Kudo(props) {
     const classes = useStyles();
     const [expanded, setExpanded] = React.useState(false);
@@ -104,6 +104,13 @@ export default function Kudo(props) {
                                 {props.message}
                             </Typography>
                         </Grid>
+                    </AccordionDetails>
+                    <AccordionDetails>
+                      <Grid container justify='flex-end'>
+                        <Typography variant="body2" component="p">
+                            {props.timestamp}
+                        </Typography>
+                      </Grid>
                     </AccordionDetails>
                 </Accordion>
             </CardContent>

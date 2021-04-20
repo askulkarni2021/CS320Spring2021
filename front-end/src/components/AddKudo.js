@@ -29,13 +29,13 @@ export default function AddKudo(props) {
         })
         .then(response => response.json())
         .then(data => {
-            const filterObject = (obj, filter, filterValue) => 
-                Object.keys(obj).reduce((acc, val) => 
+            const filterObject = (obj, filter, filterValue) =>
+                Object.keys(obj).reduce((acc, val) =>
                     (obj[val][filter] === filterValue ? acc : {
                         ...acc,
                         [val]: obj[val]
-                    }                                        
-                ), 
+                    }
+                ),
             {});
             setNameMapUid(filterObject(data, "id", uid));
         });
@@ -102,10 +102,10 @@ export default function AddKudo(props) {
                             />
                         </Grid>
                         <Grid item>
-                            <TextField 
+                            <TextField
                                 required
-                                label='Message' 
-                                variant='outlined' 
+                                label='Message'
+                                variant='outlined'
                                 multiline
                                 rows={4}
                                 value={kudo}
