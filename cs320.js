@@ -530,3 +530,42 @@ app.post('/api/data/delete_value', (req, res) => {
 	});
 
 });
+
+app.post('/api/data/export_data',(req ,res) => {
+	console.log(req.body);
+	const companyName = req.body.uri;
+	const uri = "mongodb+srv://user:cs320team1@cs320.t0mlm.mongodb.net/" + companyName + "?retryWrites=true&w=majority";
+	const client = new MongoClient(uri, { useNewUrlParser: true, useUnifiedTopology: true });
+	const employeeId = req.body.uid;
+
+	client.connect(err => {
+		assert.equal(err,null);
+		const db = client.db(companyName);
+		const Kudos = db.collection("Kudos");
+		const findData = async () => {
+			const kudos_received = await Kudos.find({to: employeeId}).toArray();
+			const kudos_given = await Kudos.find({from: employeeId}).toArray();
+			
+			const k_given = [];
+			for (i = 0; i <kudos_given.length; i++){
+				k_given.push(kudos_given[i].kudo);
+			}
+
+			const k_received = [];
+			for (i = 0; i <kudos_received.length; i++){
+				k_received.push(kudos_received[i].kudo);
+			}
+
+			num_reaction = 0;
+			for (i = 0; i < kudos_received.length; i++){
+				num_reaction += kudos_received[i].reactions.length;
+			}
+
+			client.close();
+			result = {given: k_given, received: k_received, numreact: num_reaction};
+			res.send(result);
+			return result;
+		};
+		findData();
+	})
+})
