@@ -2,8 +2,10 @@ import { Button, Card, CardContent, TextField, Grid } from '@material-ui/core';
 import Autocomplete from '@material-ui/lab/Autocomplete';
 import React, { useState, useEffect, images } from 'react';
 import Chip from '@material-ui/core/Chip';
+
 import Plus from '../Plus_symbol.svg';
-import { makeStyles } from '@material-ui/core/styles';
+import {JsonToCsv, useJsonToCsv} from 'react-json-csv';
+
 
 export default function AddValue(props) {
     // need uri, to, from, message
@@ -17,19 +19,25 @@ export default function AddValue(props) {
     const [value, setVal] = useState('');
     const [color, setColor] = useState('');
     const [coreValues, setCoreValues] = useState(['loading']);
+    const {saveAsCsv} = useJsonToCsv();
 
-    const useStyles = makeStyles((theme) => ({
 
-        chip: {
-            '&:hover': {
-                backgroundColor: theme.palette.primary.main,
-                color: theme.palette.text.main
-              }
-        }
-
-    })
-    );
     
+
+    const filename = 'Csv-file5',
+    fields = {
+    "index": "Index",
+    "guid": "GUID"
+    },
+    style = {
+        padding: "5px"
+    },
+    data = [
+        { index: 0, guid: 'asdf231234'},
+        { index: 1, guid: 'wetr2343af'}
+    ],
+    text = "Convert Json to Csv";
+
 
     const handleClick = () => {
         console.info('You clicked the Chip.');
@@ -77,7 +85,7 @@ export default function AddValue(props) {
         const uid = JSON.parse(localStorage.getItem('data')).uid;
         setUri(uri);
         setUid(uid);
-        fetch('http://localhost:5000/api/data/get_core_values',
+        fetch('http://localhost:5000/api/data/name_map_uid',
         {
             method: 'POST',
             headers: {
@@ -86,20 +94,17 @@ export default function AddValue(props) {
             },
             body: JSON.stringify({uri})
         })
-        .then((response) => response.json())
+        .then(response => response.json())
         .then(data => {
-            let arr = [];
-            console.log(data);
-            if(data){
-                //response comes in an array of objects, traverse this to load into the values
-                data.forEach(val => {
-                    arr.push(val.value);
-                });
-            }
-            console.log(`This is ${arr[1]}`);
-            setCoreValues(arr);
-
-            
+            const filterObject = (obj, filter, filterValue) => 
+                Object.keys(obj).reduce((acc, val) => 
+                    (obj[val][filter] === filterValue ? acc : {
+                        ...acc,
+                        [val]: obj[val]
+                    }                                        
+                ), 
+            {});
+            setNameMapUid(filterObject(data, "id", uid));
         });
     }, []);
 
@@ -107,7 +112,7 @@ export default function AddValue(props) {
     //Proceeds to then empty the Val string so another value can be added.
     function handleSubmit() {
         console.log('uri', uri);
-        setColor("red");
+        
         fetch('http://localhost:5000/api/data/add_value',
         {
             method: 'POST',
@@ -115,7 +120,7 @@ export default function AddValue(props) {
               "Accept": "application/json",
               "Content-Type": "application/json"
             },
-            body: JSON.stringify({uri, value, color})
+            body: JSON.stringify({uri, uid})
         })
         .then(response => {
             
@@ -130,39 +135,40 @@ export default function AddValue(props) {
 
 
     return (
-        <Card style={{width: '300px', margin: '10px'}}>
+        <Card style={{width: '600px', margin: '10px'}}>
             <CardContent>
                 <form onSubmit={(e) => {e.preventDefault(); handleSubmit();}}>
 
                     <Grid container direction="column" alignItems="flex-start">
                   
-                        {coreValues ? coreValues.map((tag, index) => {
-                                        return <Chip key={index} label={tag} style={{marginBottom: "15px"}} onClick={handleClick}/>
-                        }) : null} 
+                    <Autocomplete
+                                id='toField'
+                                value={name !== '' ? name : null}
+                                options={Object.keys(nameMapUid)}
+                                getOptionLabel={(option) => option}
+                                onChange={(event, newValue) => {
+                                    setName(newValue);
+                                }}
+                                style={{
+                                    maxWidth: '400px',
+                                    minWidth: '400px'
+                                }}
+                                renderInput={(params) => <TextField {...params} required label="Select Employee" variant="outlined"/>}
+                            /> 
                     </Grid>
                    
                     {'\n'}
 
-                    <Button type="submit" variant="contained" color="primary" style={{maxWidth: '20px', minWidth: '20px'}}>+</Button>
-                    
-                    <TextField 
-                        label='Add Value' 
-                        variant='outlined' 
-                        rows={1}
-                        value={value}
-                        style={{
-                            flex:1,
-                            flexDirection: 'column',
-                            maxWidth: '150px',
-                            minWidth: '150px',
-                            maxHeight: '16px',
-                            minHeight: '16px',
-                            marginLeft: '0.5rem',
-                            marginBottom: '0.5rem'
-                        }}
-                        
-                        onChange={(e) => setVal(e.target.value)}
-                    />
+                    {/* /*<JsonToCsv
+                        data={data}
+                        filename={filename}
+                        fields={fields}
+                        style={style}
+                        text={text}
+                    /> */}
+
+                    <Button type="submit" variant="contained" color="primary" style={{maxWidth: '100px', minWidth: '100px', marginTop: '20px'}}>Export Data</Button>
+                    <Button onClick={()=> saveAsCsv({data, fields, filename})}>Test</Button>
 
 
                 </form>

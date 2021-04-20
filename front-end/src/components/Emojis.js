@@ -13,28 +13,21 @@ export default function AddEmoji(props) {
     const [uid, setUid] = useState('');
     const [nameMapUid, setNameMapUid] = useState('');
     /* FAKE CORE VALUES, PRESET */
-    const [emojis] = useState(['🤣', '🤝🏽', '🏆']);
+    const [rxn, setRxn] = useState(['loading']);
     const [emoji, setEmoji] = useState('');
 
     const handleClick = () => {
         console.info('You clicked the Chip.');
     };
     
-    const emojiChips = emojis.map((val) =>
-        <Chip
-        style={{marginBottom: "0.5rem"}} 
-        label={val} 
-        color="primary"
-        variant="outlined"
-        onClick={handleClick} ></Chip>
-    )
+
 
     useEffect(() => {
         const uri = localStorage.getItem('uri');
         const uid = JSON.parse(localStorage.getItem('data')).uid;
         setUri(uri);
         setUid(uid);
-        fetch('http://localhost:5000/api/data/name_map_uid',
+        fetch('http://localhost:5000/api/data/get_emojis',
         {
             method: 'POST',
             headers: {
@@ -45,8 +38,8 @@ export default function AddEmoji(props) {
         })
         .then(response => response.json())
         .then(data => {
-            setNameMapUid(data);
-            console.log(data);
+            setRxn(data);
+
         });
     }, []);
 
@@ -79,7 +72,11 @@ export default function AddEmoji(props) {
 
                     <Grid container direction="column" alignItems="flex-start">
 
-                         {emojiChips} </Grid>
+                    {rxn ? rxn.map((tag, index) => {
+                                        return <Chip key={index} label={tag} style={{marginBottom: "15px"}}/>
+                        }) : null} 
+                        
+                    </Grid>
                    
                     {'\n'}
 

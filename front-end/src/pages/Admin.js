@@ -12,6 +12,7 @@ import Rockstar from '../components/Rockstar';
 import Kudo from '../components/Kudo';
 import Values from "../components/Values";
 import Emojis from "../components/Emojis";
+import ExportData from "../components/ExportData";
 
 const useStyles = makeStyles(theme => ({
   kudos: {
@@ -64,6 +65,16 @@ export default function Home(props) {
         className={classes.kudos}>
           <Values getKudos={props.getKudos}/>
           <Emojis getKudos={props.getKudos}/>
+        </Grid>
+        <Grid
+        item xl={32}
+        container
+        direction="row"
+        alignItems="center"
+        justify="space-around"
+        className={classes.kudos}
+        >
+          <ExportData getKudos={props.getKudos}/>
         </Grid>
       </Grid>
     </div>
