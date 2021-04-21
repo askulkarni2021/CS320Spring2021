@@ -519,9 +519,9 @@ app.post('/api/data/delete_value', (req, res) => {
 		const db = client.db(companyName);
 		const Collection = db.collection("Values-Emojis");
 		const removeValue = async (value) => {
-			await Collection.updateOne(
-					{},
-					{$pull: {values: value}}
+			await Collection.findOneAndUpdate(
+					{"values.value": value},
+					{$set: {"values.$.active": 0}}
 				);
 			client.close();
 			res.send(true)
