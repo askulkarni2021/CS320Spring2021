@@ -20,14 +20,16 @@ export default function AddValue(props) {
     const [color, setColor] = useState('');
     const [coreValues, setCoreValues] = useState(['loading']);
     const {saveAsCsv} = useJsonToCsv();
-
+    const [expData, setExpData] = useState('');
+    const [expData2, setExpData2] = useState([{}]);
 
     
 
     const filename = 'Csv-file5',
     fields = {
-    "index": "Index",
-    "guid": "GUID"
+    "given": "Kudos Given",
+    "received": "Kudos Recieved",
+    "numreact": "Number of Rxns"
     },
     style = {
         padding: "5px"
@@ -35,7 +37,7 @@ export default function AddValue(props) {
     data = [
         { index: 0, guid: 'asdf231234'},
         { index: 1, guid: 'wetr2343af'}
-    ],
+      ],
     text = "Convert Json to Csv";
 
 
@@ -43,22 +45,7 @@ export default function AddValue(props) {
         console.info('You clicked the Chip.');
         //let value = label;
 
-        console.log('uri', uri);
-        fetch('http://localhost:5000/api/data/delete_value',
-        {
-            method: 'POST',
-            headers: {
-              "Accept": "application/json",
-              "Content-Type": "application/json"
-            },
-            body: JSON.stringify({uri, value})
-        })
-        .then(response => {
-            
-            if (response) {
-                console.log(response)
-            }
-        });
+        
 
     };
 
@@ -113,7 +100,7 @@ export default function AddValue(props) {
     function handleSubmit() {
         console.log('uri', uri);
         
-        fetch('http://localhost:5000/api/data/add_value',
+        fetch('http://localhost:5000/api/data/export_data',
         {
             method: 'POST',
             headers: {
@@ -122,13 +109,14 @@ export default function AddValue(props) {
             },
             body: JSON.stringify({uri, uid})
         })
-        .then(response => {
-            
-            if (response) {
-                console.log(response)
-            }
-        });
-        setVal('');
+        .then(response => response.json())
+        .then(data => {
+            setExpData(data);
+            setExpData2([
+                { index: 0, guid: 'asdf231234'},
+                { index: 1, guid: 'wetr2343af'}
+              ])
+        })
     }
 
 
@@ -166,9 +154,8 @@ export default function AddValue(props) {
                         style={style}
                         text={text}
                     /> */}
-
                     <Button type="submit" variant="contained" color="primary" style={{maxWidth: '100px', minWidth: '100px', marginTop: '20px'}}>Export Data</Button>
-                    <Button onClick={()=> saveAsCsv({data, fields, filename})}>Test</Button>
+                    <Button onClick={() => saveAsCsv({data, fields, filename})}>Download Data</Button>
 
 
                 </form>

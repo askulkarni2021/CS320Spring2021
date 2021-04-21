@@ -16,8 +16,27 @@ export default function AddEmoji(props) {
     const [rxn, setRxn] = useState(['loading']);
     const [emoji, setEmoji] = useState('');
 
-    const handleClick = () => {
+    const handleDelete = (emoji) => {
         console.info('You clicked the Chip.');
+        //let value = label;
+
+        
+        fetch('http://localhost:5000/api/data/delete_emoji',
+        {
+            method: 'POST',
+            headers: {
+              "Accept": "application/json",
+              "Content-Type": "application/json"
+            },
+            body: JSON.stringify({uri, emoji})
+        })
+        .then(response => {
+            
+            if (response) {
+                console.log(response)
+            }
+        });
+
     };
     
 
@@ -73,7 +92,7 @@ export default function AddEmoji(props) {
                     <Grid container direction="column" alignItems="flex-start">
 
                     {rxn ? rxn.map((tag, index) => {
-                                        return <Chip key={index} label={tag} style={{marginBottom: "15px"}}/>
+                                        return <Chip key={index} label={tag} style={{marginBottom: "15px"}} onDelete={() => handleDelete(tag)} />
                         }) : null} 
                         
                     </Grid>

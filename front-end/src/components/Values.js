@@ -18,6 +18,8 @@ export default function AddValue(props) {
     const [color, setColor] = useState('');
     const [coreValues, setCoreValues] = useState(['loading']);
 
+
+    //TODO: add hover styling over x's
     const useStyles = makeStyles((theme) => ({
 
         chip: {
@@ -31,7 +33,7 @@ export default function AddValue(props) {
     );
     
 
-    const handleClick = () => {
+    const handleDelete = (value) => {
         console.info('You clicked the Chip.');
         //let value = label;
 
@@ -56,21 +58,21 @@ export default function AddValue(props) {
 
     
     
-    function formChips() {
-        console.log(coreValues);
+    // function formChips() {
+    //     console.log(coreValues);
 
-        let ans = '';
-        if (coreValues){
-            coreValues.map((val) =>
-            <Chip
-                style={{marginBottom: "0.5rem"}} 
-                label={val} 
-                color="secondary"
-                onClick={handleClick} ></Chip>
-            )
-        }
-        return ans;
-    } 
+    //     let ans = '';
+    //     if (coreValues){
+    //         coreValues.map((val) =>
+    //         <Chip
+    //             style={{marginBottom: "0.5rem"}} 
+    //             label={val} 
+    //             color="secondary"
+    //             onClick={handleClick} ></Chip>
+    //         )
+    //     }
+    //     return ans;
+    // } 
 
     useEffect(() => {
         const uri = localStorage.getItem('uri');
@@ -137,7 +139,7 @@ export default function AddValue(props) {
                     <Grid container direction="column" alignItems="flex-start">
                   
                         {coreValues ? coreValues.map((tag, index) => {
-                                        return <Chip key={index} label={tag} style={{marginBottom: "15px"}} onClick={handleClick}/>
+                                        return <Chip key={index} label={tag} style={{marginBottom: "15px"}} onDelete={() => handleDelete(tag)}/>
                         }) : null} 
                     </Grid>
                    
