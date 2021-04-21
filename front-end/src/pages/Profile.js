@@ -285,10 +285,10 @@ export default function Profile(props) {
             </TabList>
           </AppBar>
           <TabPanel value="1">{incoming && employees ? incoming.map((kudo, index) => {
-              return <Kudo to={employees[kudo.to].name} from={employees[kudo.from].name} message={kudo.kudo} tags={kudo.tags} key={kudo._id}/>
+              return <Kudo to={employees[kudo.to].name} from={employees[kudo.from].name} message={kudo.kudo} tags={kudo.tags} key={kudo._id} timestamp={kudo.time}/>
           }) : 'loading'  }</TabPanel>
           <TabPanel value="2">{outgoing && employees ? outgoing.map((kudo, index) => {
-                return <Kudo to={employees[kudo.to].name} from={employees[kudo.from].name} message={kudo.kudo} tags={kudo.tags} key={kudo._id}/>
+                return <Kudo to={employees[kudo.to].name} from={employees[kudo.from].name} message={kudo.kudo} tags={kudo.tags} key={kudo._id} timestamp={kudo.time}/>
             }) : 'loading'  }</TabPanel>
         </TabContext>
         </Box>
