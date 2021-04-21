@@ -95,7 +95,9 @@ export default function AddValue(props) {
             if(data){
                 //response comes in an array of objects, traverse this to load into the values
                 data.forEach(val => {
-                    arr.push(val.value);
+                    if(val.active){
+                        arr.push(val.value);
+                    }
                 });
             }
             console.log(`This is ${arr[1]}`);
