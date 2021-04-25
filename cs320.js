@@ -608,4 +608,66 @@ app.post('/api/data/export_data',(req ,res) => {
 		};
 		findData();
 	})
-})
+});
+
+app.post('/api/data/reported_kudo', (req,res) => {
+	console.log(req.body);
+	const companyName = req.body.uri;
+	const uri = "mongodb+srv://user:cs320team1@cs320.t0mlm.mongodb.net/" + companyName + "?retryWrites=true&w=majority";
+	const client = new MongoClient(uri, { useNewUrlParser: true, useUnifiedTopology: true });
+
+	client.connect(err => {
+		assert.equal(err,null);
+		const db = client.db(companyName);
+		const Kudos = db.collection("Kudos");
+		const find_reported = async() => {
+			const reported = await Kudos.find({report: {$not: {$size: 0}}}).toArray();
+			client.close();
+			res.send(reported);
+			return reported
+		};
+		find_reported();
+	})
+});
+
+app.post('/api/data/report_kudo', (req,res) => {
+	console.log(req.body);
+	const companyName = req.body.uri;
+	const uri = "mongodb+srv://user:cs320team1@cs320.t0mlm.mongodb.net/" + companyName + "?retryWrites=true&w=majority";
+	const client = new MongoClient(uri, { useNewUrlParser: true, useUnifiedTopology: true });
+	const kudoID = req.body.kid;
+	const empID = req.body.uid;
+	const reas = req.body.reason;
+
+	client.connect(err => {
+		assert.equal(err,null);
+		const db = client.db(companyName);
+		const Kudos = db.collection("Kudos");
+		const report = async() => {
+			await Kudos.findOneAndUpdate({id:kudoID}, {$push: {report: {by: empID, reason: reas}}});
+			client.close();
+			res.send(true);
+		};
+		report();
+	});
+});
+
+app.post('/api/data/delete_kudo', (req,res) => {
+	console.log(req.body);
+	const companyName = req.body.uri;
+	const uri = "mongodb+srv://user:cs320team1@cs320.t0mlm.mongodb.net/" + companyName + "?retryWrites=true&w=majority";
+	const client = new MongoClient(uri, { useNewUrlParser: true, useUnifiedTopology: true });
+	const kudoID = req.body.kid;
+
+	client.connect(err => {
+		assert.equal(err,null);
+		const db = client.db(companyName);
+		const Kudos = db.collection("Kudos");
+		const del = async() => {
+			await Kudos.deleteOne({id:kudoID});
+			client.close();
+			res.send(true);
+		};
+		del();
+	});
+});
