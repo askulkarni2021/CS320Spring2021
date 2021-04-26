@@ -16,7 +16,7 @@ const useStyles = makeStyles({
     },
     recv: {
       display:'inline',
-      color:'#a1a1a1',
+      color:'#A1A1A1',
       marginRight:'5px', 
       paddingLeft: '2px',
       paddingRight: '2px',

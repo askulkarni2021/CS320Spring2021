@@ -51,7 +51,13 @@ export default function AddKudo(props) {
         .then(response => response.json())
         .then(data => {
             //[ {value: "Innovative", color: "hex", active: 1, numTags: 0}, {...}, ... ]
-            setCoreValues(data)
+            let active = []
+            data.forEach(el => {
+                if (el['active'] == 1) {
+                    active.push(el)
+                }
+            })
+            setCoreValues(active)
         })
     }, []);
 
