@@ -1,31 +1,32 @@
 import React from 'react'
-import {Grid, Card, CardContent, Typography, CardActions, Chip, Avatar} from '@material-ui/core'
+import {Grid, Card, CardContent, Typography, CardActions, Chip, Avatar, Modal, Icon} from '@material-ui/core'
 import { makeStyles } from '@material-ui/core/styles';
 import { withStyles } from '@material-ui/core/styles';
 import MuiAccordion from '@material-ui/core/Accordion';
 import MuiAccordionSummary from '@material-ui/core/AccordionSummary';
 import MuiAccordionDetails from '@material-ui/core/AccordionDetails';
 import Reactions from './Reactions';
+import ReportModal from './ReportModal';
+import { useState } from 'react'
+import MoreHorizIcon from '@material-ui/icons/MoreHoriz';
 
 const useStyles = makeStyles({
     root: {
       display: 'flex',
     },
     recv: {
-// <<<<<<< reactions
-//       display:'inline',
-//       color:'#a1a1a1',
-//       marginRight:'5px', 
-//       paddingLeft: '2px',
-//       paddingRight: '2px',
-// =======
-        display:'inline',
-        backgroundColor:'#F2F2F2',
-        color:'#616161',
-        marginRight:'5px',
-        paddingLeft: '2px',
-        paddingRight: '2px',
-// >>>>>>> main
+      display:'inline',
+      color:'#a1a1a1',
+      marginRight:'5px', 
+      paddingLeft: '2px',
+      paddingRight: '2px',
+    }, 
+    modalCenter: {
+      position: 'absolute',
+      top: '30%',
+      left: '50%',
+      transform: 'translate(-50%, -50%)',
+      outline: '0',
     },
 });
 
@@ -73,14 +74,28 @@ const Accordion = withStyles({
 //to, from, message, tags, kudoID, kudoReactions, compReactions
 export default function Kudo(props) {
     const classes = useStyles();
-    const [expanded, setExpanded] = React.useState(false);
+    const [expanded, setExpanded] = useState(false);
+    const [showReport, toggleShowReport] = useState(false);
+
     const handleChange = (panel) => (event, isExpanded) => {
         setExpanded(isExpanded ? panel : false);
     };
 
     return(
+      <div>
+        <Modal
+          open={showReport}
+          onClose={() => toggleShowReport(false)}
+          aria-labelledby="report-modal"
+          aria-describedby="report-kudo"
+        >
+          <div className={classes.modalCenter}>
+            <ReportModal kid={props.kudoID} toggleShowReport={toggleShowReport}/>
+          </div>
+        </Modal>
         <Card className={classes.root} style={{width: '600px', margin: '10px'}}>
             <CardContent style={{padding:'5px', width: '100%'}}>
+                <MoreHorizIcon onClick={() => toggleShowReport(true)}/>
                 <Accordion square expanded={expanded === 'panel'} onChange={handleChange('panel')}>
                     <AccordionSummary
                     aria-controls="panelbh-content"
@@ -125,5 +140,6 @@ export default function Kudo(props) {
                 <Reactions kudoID={props.kudoID} kudoReactions={props.kudoReactions} compReactions={props.compReactions}/>
             </CardContent>
         </Card>
+      </div>
     )
 }
