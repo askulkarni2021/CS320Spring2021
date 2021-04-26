@@ -1,5 +1,4 @@
 import { Button, Card, CardContent, TextField, Grid } from '@material-ui/core';
-import { makeStyles } from '@material-ui/core/styles';
 import React, { useState, useEffect } from 'react';
 
 // props: uir, uid, kudo_id
