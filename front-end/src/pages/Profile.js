@@ -227,7 +227,7 @@ export default function Profile(props) {
         aria-describedby="change-avatar"
       >
         <div className={classes.modalCenter}>
-          <ChangeAvatar handleSubmitAvatar={handleSubmitAvatar} pic1={pic1} pic2={pic2} closeAvatarModal={closeAvatarModal}/>
+          <ChangeAvatar handleSubmitAvatar={handleSubmitAvatar} pic1={pic1} pic2={pic2} closeAvatarModal={closeAvatarModal} uid={props.data.uid}/>
         </div>
       </Modal>
 
