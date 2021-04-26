@@ -54,11 +54,11 @@ export default function Navbar(props) {
   const [position, setEmployeePosition] = useState('');
   const [showAddKudo, toggleShowAddKudo] = useState(false);
   let history = useHistory();
-  
+
   useEffect(() => {
     if(props.employees){
       setEmployeeName(props.employees[props.uid]['name']);
-      setEmployeePosition(props.employees[props.uid]['position']);  
+      setEmployeePosition(props.employees[props.uid]['position']);
     }
   }, [props.employees]);
 
@@ -82,19 +82,19 @@ export default function Navbar(props) {
           paper: classes.drawerPaper,
         }}
         anchor="left"
-      >        
+      >
         <List>
           <Box textAlign="left" className={classes.dumb}>
             <Typography variant="h2">Kudos</Typography>
           </Box>
           <Grid container direction="column" alignItems="flex-start" justify="center" className={classes.dumb}>
-              <Avatar alt="Remy Sharp" style={{ height: '140px', width: '140px', marginTop: '10px', marginBottom: '10px' }} />
+              <Avatar alt="Remy Sharp" src={props.employees[props.uid]['avatar']} style={{ height: '140px', width: '140px', marginTop: '10px', marginBottom: '10px' }} />
           </Grid>
           <Box textAlign="left" className={classes.dumb}>
             <Typography variant="h5">{name}</Typography>
           </Box>
           <Box textAlign="left" className={classes.dumb}>
-            <Typography variant="subtitle1">{position}</Typography>  
+            <Typography variant="subtitle1">{position}</Typography>
           </Box>
           <MenuList>
               <Grid container direction="column" alignItems="flex-start" justify="center">
