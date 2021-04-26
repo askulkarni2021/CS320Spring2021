@@ -644,7 +644,7 @@ app.post('/api/data/report_kudo', (req,res) => {
 		const db = client.db(companyName);
 		const Kudos = db.collection("Kudos");
 		const report = async() => {
-			await Kudos.findOneAndUpdate({id:kudoID}, {$push: {report: {by: empID, reason: reas}}});
+			await Kudos.findOneAndUpdate({_id:ObjectId(kudoID)}, {$push: {report: {by: empID, reason: reas}}});
 			client.close();
 			res.send(true);
 		};
@@ -664,7 +664,7 @@ app.post('/api/data/delete_kudo', (req,res) => {
 		const db = client.db(companyName);
 		const Kudos = db.collection("Kudos");
 		const del = async() => {
-			await Kudos.deleteOne({id:kudoID});
+			await Kudos.deleteOne({_id:ObjectId(kudoID)});
 			client.close();
 			res.send(true);
 		};
