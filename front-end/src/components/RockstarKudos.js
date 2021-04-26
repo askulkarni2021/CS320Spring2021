@@ -80,7 +80,7 @@ export default function Kudo(props) {
                     >
                         <Grid container>
                             <Grid item>
-                                <Avatar alt="Remy Sharp" style={{ height: '40px', width: '40px', marginRight: '10px'}} />
+                                <Avatar alt="Remy Sharp" src={props.avatar} style={{ height: '40px', width: '40px', marginRight: '10px'}} />
                             </Grid>
                             <Grid item>
                                 <div>

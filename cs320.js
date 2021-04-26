@@ -324,7 +324,8 @@ app.post('/api/data/uid_map_name', (req, res) => {
 				employee = element.firstName+" "+element.lastName;
 				id = element.employeeId;
 				position = element.positionTitle
-				const data = {name:employee, position:position}
+				avatar = element.avatar
+				const data = {name:employee, position:position, avatar:avatar}
 				emp[id]=data;
 			})
 			client.close();
@@ -585,7 +586,7 @@ app.post('/api/data/export_data',(req ,res) => {
 		const findData = async () => {
 			const kudos_received = await Kudos.find({to: employeeId}).toArray();
 			const kudos_given = await Kudos.find({from: employeeId}).toArray();
-			
+
 			const k_given = [];
 			for (i = 0; i <kudos_given.length; i++){
 				k_given.push(kudos_given[i].kudo);
@@ -706,8 +707,8 @@ app.post('/api/change_avatar', (req, res) => {
 		const changeAvatar = async (employeesCollection) => {
 			await employeesCollection.updateOne(
 				{ employeeId : req.body.uid },
-				{ 
-					$set : { avatar : req.body.avatar } 
+				{
+					$set : { avatar : req.body.avatar }
 				}
 			);
 			client.close();

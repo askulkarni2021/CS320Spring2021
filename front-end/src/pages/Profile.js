@@ -66,6 +66,7 @@ export default function Profile(props) {
     if(props.employees){
       setEmployeeName(props.employees[props.uid]['name']);
       setEmployeePosition(props.employees[props.uid]['position']);
+      setAvatar(props.employees[props.uid]['avatar']);
     }
   }, [props.employees]);
 

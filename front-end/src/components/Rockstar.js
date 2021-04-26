@@ -39,6 +39,8 @@ export default function Rockstar(props) {
   const [month, setMonth] = useState();
   const [incoming, setIncoming] = useState();
   const [employees, setEmployees] = useState();
+  const [avatar, setAvatar] = useState();
+  const [curUid, setCurUid] = useState();
 
   const useStyles = makeStyles((theme) => ({
     drawerPaper: {
@@ -65,6 +67,8 @@ export default function Rockstar(props) {
 
   useEffect(() => {
     getRockstarAndIncoming();
+    // console.log(props);
+    // setAvatar(props.employees[curUid]['avatar']);
   }, []);
 
   // TODO: right now numKudos is the number of kudos the ROM recieved last month
@@ -89,6 +93,7 @@ export default function Rockstar(props) {
       setMonth(data.month)
 
   	  function getRockstarIncoming() {
+        setCurUid(data.employeeId);
 		    const uid = data.employeeId;
   	    const formData = {uri, uid}
   	    fetch('http://localhost:5000/api/data/uid_map_name',
@@ -138,7 +143,7 @@ export default function Rockstar(props) {
         <Card>
           <CardHeader
           avatar={
-            <Avatar aria-label="Rockstar" alt="Remy Sharp"/>
+            <Avatar aria-label="Rockstar" src={avatar} alt="Remy Sharp"/>
           }
           title={user}
           subheader={position}
@@ -175,6 +180,7 @@ export default function Rockstar(props) {
                   {incoming && employees ? incoming.map((kudo, index) => {
                       return <RockstarKudos
                                 to={employees[kudo.to].name}
+                                avatar={employees[kudo.to].avatar}
                                 from={employees[kudo.from].name}
                                 message={kudo.kudo}
                                 tags={kudo.tags}
