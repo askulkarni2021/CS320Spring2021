@@ -12,20 +12,11 @@ const useStyles = makeStyles({
       display: 'flex',
     },
     recv: {
-// <<<<<<< reactions
-//       display:'inline',
-//       color:'#a1a1a1',
-//       marginRight:'5px', 
-//       paddingLeft: '2px',
-//       paddingRight: '2px',
-// =======
-        display:'inline',
-        backgroundColor:'#F2F2F2',
-        color:'#616161',
-        marginRight:'5px',
-        paddingLeft: '2px',
-        paddingRight: '2px',
-// >>>>>>> main
+      display:'inline',
+      color:'#A1A1A1',
+      marginRight:'5px', 
+      paddingLeft: '2px',
+      paddingRight: '2px',
     },
 });
 
