@@ -106,7 +106,7 @@ app.post('/api/add_kudo', (req, res) => {
 // =======
 // 			let resultDoc = await kudos.insertOne({from: query.from, to: query.to, kudo: query.kudo, reactions: {}, tags: query.tags, time: timestamp});
 // >>>>>>> main
-      let resultDoc = await kudos.insertOne({from: query.from, to: query.to, kudo: query.kudo, reactions: [], tags: query.tags, time: timestamp});
+			let resultDoc = await kudos.insertOne({from: query.from, to: query.to, kudo: query.kudo, reactions: [], tags: query.tags, time: timestamp, report: []});
 			addToIncomingAndOutgoing = (addedKudo) => {
 				// NOTE: to and from are strings, not ints
 				let to = req.body.to;
@@ -559,9 +559,9 @@ app.post('/api/data/delete_value', (req, res) => {
 		const db = client.db(companyName);
 		const Collection = db.collection("Values-Emojis");
 		const removeValue = async (value) => {
-			await Collection.updateOne(
-					{},
-					{$pull: {values: value}}
+			await Collection.findOneAndUpdate(
+					{"values.value": value},
+					{$set: {"values.$.active": 0}}
 				);
 			client.close();
 			res.send(true)
@@ -608,4 +608,111 @@ app.post('/api/data/export_data',(req ,res) => {
 		};
 		findData();
 	})
-})
+});
+
+app.post('/api/data/reported_kudo', (req,res) => {
+	console.log(req.body);
+	const companyName = req.body.uri;
+	const uri = "mongodb+srv://user:cs320team1@cs320.t0mlm.mongodb.net/" + companyName + "?retryWrites=true&w=majority";
+	const client = new MongoClient(uri, { useNewUrlParser: true, useUnifiedTopology: true });
+
+	client.connect(err => {
+		assert.equal(err,null);
+		const db = client.db(companyName);
+		const Kudos = db.collection("Kudos");
+		const find_reported = async() => {
+			const reported = await Kudos.find({report: {$not: {$size: 0}}}).toArray();
+			client.close();
+			res.send(reported);
+			return reported
+		};
+		find_reported();
+	})
+});
+
+app.post('/api/data/report_kudo', (req,res) => {
+	console.log(req.body);
+	const companyName = req.body.uri;
+	const uri = "mongodb+srv://user:cs320team1@cs320.t0mlm.mongodb.net/" + companyName + "?retryWrites=true&w=majority";
+	const client = new MongoClient(uri, { useNewUrlParser: true, useUnifiedTopology: true });
+	const kudoID = req.body.kid;
+	const empID = req.body.uid;
+	const reas = req.body.reason;
+
+	client.connect(err => {
+		assert.equal(err,null);
+		const db = client.db(companyName);
+		const Kudos = db.collection("Kudos");
+		const report = async() => {
+			await Kudos.findOneAndUpdate({id:kudoID}, {$push: {report: {by: empID, reason: reas}}});
+			client.close();
+			res.send(true);
+		};
+		report();
+	});
+});
+
+app.post('/api/data/delete_kudo', (req,res) => {
+	console.log(req.body);
+	const companyName = req.body.uri;
+	const uri = "mongodb+srv://user:cs320team1@cs320.t0mlm.mongodb.net/" + companyName + "?retryWrites=true&w=majority";
+	const client = new MongoClient(uri, { useNewUrlParser: true, useUnifiedTopology: true });
+	const kudoID = req.body.kid;
+
+	client.connect(err => {
+		assert.equal(err,null);
+		const db = client.db(companyName);
+		const Kudos = db.collection("Kudos");
+		const del = async() => {
+			await Kudos.deleteOne({id:kudoID});
+			client.close();
+			res.send(true);
+		};
+		del();
+	});
+});
+
+// request contains company uri
+app.post('/api/get_all_avatars', (req, res) => {
+	const companyName = req.body.uri;
+	const uri = "mongodb+srv://user:cs320team1@cs320.t0mlm.mongodb.net/" + companyName + "?retryWrites=true&w=majority";
+	const client = new MongoClient(uri, { useNewUrlParser: true, useUnifiedTopology: true });
+	client.connect(err => {
+		assert.equal(err, null);
+		const db = client.db(companyName);
+		const Collection = db.collection("Values-Emojis");
+
+		const val_em = findEmployees(Collection);
+
+		const send_data = async (val_em) => {
+			await val_em.then(value  => {
+			client.close();
+			res.send(value[0].avatars);
+		});
+		};
+		send_data(val_em);
+	});
+});
+
+// request contains company uri and uid of user who is changing the avatar
+app.post('/api/change_avatar', (req, res) => {
+	const companyName = req.body.uri;
+	const uri = "mongodb+srv://user:cs320team1@cs320.t0mlm.mongodb.net/" + companyName + "?retryWrites=true&w=majority";
+	const client = new MongoClient(uri, { useNewUrlParser: true, useUnifiedTopology: true });
+	client.connect(err => {
+		assert.equal(err, null);
+		const db = client.db(companyName);
+		const employeesCollection = db.collection("Employees Database");
+		const changeAvatar = async (employeesCollection) => {
+			await employeesCollection.updateOne(
+				{ employeeId : req.body.uid },
+				{ 
+					$set : { avatar : req.body.avatar } 
+				}
+			);
+			client.close();
+			res.send(true)
+		};
+		changeAvatar(employeesCollection);
+	});
+});

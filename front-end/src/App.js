@@ -3,6 +3,7 @@ import './App.css';
 import Login from './pages/Login';
 import Home from './pages/Home';
 import Profile from './pages/Profile';
+import Admin from './pages/Admin';
 import Navbar from './components/Navbar';
 import { Route } from 'react-router-dom';
 import { createMuiTheme, CssBaseline, Fab, ThemeProvider } from '@material-ui/core';
@@ -179,6 +180,9 @@ export default function App() {
               )}/>
               <Route exact path="/profile" render={(props) => (
                 <Profile {...props} data={data} uri={uri} employees={uidEmployees} uid={data.uid}/>
+              )}/>
+              <Route exact path="/admin" render={(props) => (
+                <Admin data={data} uri={uri} employees={uidEmployees} kudos={kudos} getKudos={getKudos.bind(this)}/>
               )}/>
             </div>
         </div>
