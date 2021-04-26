@@ -4,10 +4,33 @@ import React, { useState, useEffect } from 'react';
 // props: getKudos, optional: toggleShowAddKudos
 export default function ChangeAvatar(props) {
     // need uri, to, from, message
-    const [avatar, setAvatar] = useState('');
-    const avatarArray = [props.pic1, props.pic2];
+    const [avatar, setAvatar] = useState([]);
+    // const avatarArray = [props.pic1, props.pic2];
     
-    const imageMapper = avatarArray.map((image, index) => {
+    function av_array(){
+        const uri = localStorage.getItem('uri');
+        console.log(uri)
+        fetch('http://localhost:5000/api/get_all_avatars',
+        {
+            method: 'POST',
+            headers: {
+              "Accept": "application/json",
+              "Content-Type": "application/json"
+            },
+            body: JSON.stringify({uri})
+        })
+        .then(response => response.json())
+        .then(data => {
+            console.log(data)
+            setAvatar(data);
+
+        });
+    }
+    useEffect(() => {
+        av_array()
+    }, []);
+    
+    const imageMapper = avatar.map((image, index) => {
         return (
             <img src={image}
                 onClick={() => props.handleSubmitAvatar(image)} 
