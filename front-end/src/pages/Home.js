@@ -69,6 +69,7 @@ export default function Home(props) {
                       kudoReactions={kudo.reactions}
                       compReactions={props.reactions}
                       key={kudo._id}
+                      timestamp={kudo.time}
                       />
           }) :
           <div style={{margin:'auto', marginTop: '50px'}}><CircularProgress/></div> }

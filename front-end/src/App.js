@@ -178,7 +178,7 @@ export default function App() {
                 <Home {...props} data={data} uri={uri} employees={uidEmployees} kudos={kudos} getKudos={getKudos.bind(this)} reactions={reactions}/>
               )}/>
               <Route exact path="/profile" render={(props) => (
-                <Profile {...props} data={data} uri={uri} employees={uidEmployees}/>
+                <Profile {...props} data={data} uri={uri} employees={uidEmployees} uid={data.uid}/>
               )}/>
             </div>
         </div>
