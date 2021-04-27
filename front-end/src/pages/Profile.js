@@ -66,6 +66,7 @@ export default function Profile(props) {
     if(props.employees){
       setEmployeeName(props.employees[props.uid]['name']);
       setEmployeePosition(props.employees[props.uid]['position']);
+      setAvatar(props.employees[props.uid]['avatar']);
     }
   }, [props.employees]);
 
@@ -227,7 +228,7 @@ export default function Profile(props) {
         aria-describedby="change-avatar"
       >
         <div className={classes.modalCenter}>
-          <ChangeAvatar handleSubmitAvatar={handleSubmitAvatar} pic1={pic1} pic2={pic2} closeAvatarModal={closeAvatarModal}/>
+          <ChangeAvatar handleSubmitAvatar={handleSubmitAvatar} pic1={pic1} pic2={pic2} closeAvatarModal={closeAvatarModal} uid={props.data.uid}/>
         </div>
       </Modal>
 
