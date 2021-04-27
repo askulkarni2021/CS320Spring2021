@@ -132,12 +132,12 @@ export default function Reactions(props) {
                 }}
             >
                {compReactions.map((emoji, index) => {
-                   let reacted = false
-                   kudoReactions.map((kRvalue) => {
-                       if(kRvalue.emoji === emoji && kRvalue.by === JSON.parse(localStorage.getItem('data')).uid) {
-                           reacted = true
-                       }
-                   })
+                    let reacted = false
+                    kudoReactions.map((kRvalue) => {
+                        if(kRvalue.emoji === emoji && kRvalue.by === JSON.parse(localStorage.getItem('data')).uid) {
+                            reacted = true
+                        }
+                    })
                     return <Chip
                             label={<Emoji symbol={emoji}/>}
                             onClick={() => updateReaction(emoji, reacted)}
