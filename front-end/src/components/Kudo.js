@@ -12,13 +12,6 @@ const useStyles = makeStyles({
       display: 'flex',
     },
     recv: {
-<<<<<<< HEAD
-      display:'inline',
-      color:'#A1A1A1',
-      marginRight:'5px', 
-      paddingLeft: '2px',
-      paddingRight: '2px',
-=======
 // <<<<<<< reactions
 //       display:'inline',
 //       color:'#a1a1a1',
@@ -33,7 +26,6 @@ const useStyles = makeStyles({
         paddingLeft: '2px',
         paddingRight: '2px',
 // >>>>>>> main
->>>>>>> cd39b8772f5556bae69c79f18c5a6e2eb1ee165b
     },
 });
 

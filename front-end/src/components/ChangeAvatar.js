@@ -20,6 +20,7 @@ export default function ChangeAvatar(props) {
         })
         .then(response => response.json())
         .then(data => {
+            console.log(data);
             setAvatars(data);
         });
     }
@@ -52,7 +53,7 @@ export default function ChangeAvatar(props) {
         return (
             <img src={image}
                 onClick={() => {props.handleSubmitAvatar(image); change_avatar(image);}}
-                style={{height: '60px', width: '60px', marginRight: '20px',}}
+                style={{height: '60px', width: '80px', marginRight: '20px',}}
             />
         );
     })

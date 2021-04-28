@@ -67,7 +67,7 @@ export default function Rockstar(props) {
 
   useEffect(() => {
     getRockstarAndIncoming();
-    // console.log(props);
+    console.log(props);
     // setAvatar(props.employees[curUid]['avatar']);
   }, []);
 
@@ -91,6 +91,8 @@ export default function Rockstar(props) {
       setPosition(data.position)
       setNumKudos(data.numKudos)
       setMonth(data.month)
+      console.log(data)
+      
 
   	  function getRockstarIncoming() {
         setCurUid(data.employeeId);
@@ -124,6 +126,7 @@ export default function Rockstar(props) {
 	  getRockstarIncoming();
     });
   }
+
 
   return (
     <div>
