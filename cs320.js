@@ -356,7 +356,7 @@ app.post('/api/get_rockstar', (req, res) => {
 				mostRecentROM = value[value.length - 1];
 				const ROMname = mostRecentROM.firstName + " " + mostRecentROM.lastName;
 				res.send({name: ROMname, position: mostRecentROM.positionTitle, numKudos: mostRecentROM.numKudos,
-							employeeId: mostRecentROM.employeeId, month: mostRecentROM.month});
+							employeeId: mostRecentROM.employeeId, month: mostRecentROM.month, avatar: mostRecentROM.avatar});
 			});
 		};
 		sendData(rockStarsPromise);
