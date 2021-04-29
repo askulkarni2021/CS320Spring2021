@@ -704,6 +704,7 @@ app.post('/api/change_avatar', (req, res) => {
 		assert.equal(err, null);
 		const db = client.db(companyName);
 		const employeesCollection = db.collection("Employees Database");
+		const rockStarsCollection = db.collection("Rockstars");
 		const changeAvatar = async (employeesCollection) => {
 			await employeesCollection.updateOne(
 				{ employeeId : req.body.uid },
@@ -711,6 +712,19 @@ app.post('/api/change_avatar', (req, res) => {
 					$set : { avatar : req.body.avatar }
 				}
 			);
+			// we also need to check if the employee in this request is the current rockstar, and if so, update the rockstar record as well
+			rockstarsPromise = findEmployees(rockStarsCollection, {});
+			await rockstarsPromise.then(async rockstars => {
+				let mostRecentRom = rockstars[rockstars.length - 1];
+				if (mostRecentRom.employeeId == req.body.uid) {
+					await rockStarsCollection.updateOne(
+						{ employeeId : req.body.uid },
+						{
+							$set : { avatar : req.body.avatar }
+						}
+					);
+				}
+			});
 			client.close();
 			res.send(true)
 		};
