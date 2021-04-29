@@ -296,6 +296,7 @@ export default function Profile(props) {
                       kudoReactions={kudo.reactions}
                       compReactions={props.reactions}
                       timestamp={kudo.time}
+                      avatar={employees[kudo.to].avatar} 
                       />
           }) : 'loading'  }</TabPanel>
           <TabPanel value="2">{outgoing && employees ? outgoing.map((kudo, index) => {
@@ -309,6 +310,7 @@ export default function Profile(props) {
                         compReactions={props.reactions}
                         key={kudo._id} 
                         timestamp={kudo.time}
+                        avatar={employees[kudo.to].avatar}
                         />
             }) : 'loading'  }</TabPanel>
         </TabContext>
