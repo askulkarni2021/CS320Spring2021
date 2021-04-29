@@ -91,8 +91,9 @@ export default function Rockstar(props) {
       setPosition(data.position)
       setNumKudos(data.numKudos)
       setMonth(data.month)
+      setAvatar(data.avatar)
       console.log(data)
-      
+
 
   	  function getRockstarIncoming() {
         setCurUid(data.employeeId);
