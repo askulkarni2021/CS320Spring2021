@@ -293,8 +293,9 @@ app.post('/api/data/name_map_uid', (req, res) => {
 			value.forEach(function(element){
 				employee = element.firstName+" "+element.lastName;
 				id = element.employeeId;
-				position = element.positionTitle
-				const data = {id:id, position:position}
+				position = element.positionTitle;
+				isAdmin = element.isAdmin;
+				const data = {id:id, position:position, isAdmin:isAdmin};
 				emp[employee]=data;
 			})
 			client.close();
@@ -323,8 +324,9 @@ app.post('/api/data/uid_map_name', (req, res) => {
 			value.forEach(function(element){
 				employee = element.firstName+" "+element.lastName;
 				id = element.employeeId;
-				position = element.positionTitle
-				const data = {name:employee, position:position}
+				position = element.positionTitle;
+				isAdmin = element.isAdmin;
+				const data = {name:employee, position:position, idAdmin:isAdmin}
 				emp[id]=data;
 			})
 			client.close();
