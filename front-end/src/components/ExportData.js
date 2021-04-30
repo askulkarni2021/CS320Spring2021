@@ -111,7 +111,7 @@ export default function ExportData(props) {
         })
         .then(response => response.json())
         .then(data => {
-            let expor = "text/json;charset=utf-8," + encodeURIComponent(JSON.stringify(data));
+            
         })
     }
 
