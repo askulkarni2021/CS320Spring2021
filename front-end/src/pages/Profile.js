@@ -163,9 +163,6 @@ export default function Profile(props) {
     setValue(newValue);
   };
 
-  const handleSubmitAvatar = (newAvatar) => {
-    setAvatar(newAvatar);
-  };
 
   const closeAvatarModal = () => {
     setIsAvatarModalVisible(false);
@@ -228,7 +225,7 @@ export default function Profile(props) {
         aria-describedby="change-avatar"
       >
         <div className={classes.modalCenter}>
-          <ChangeAvatar handleSubmitAvatar={handleSubmitAvatar} pic1={pic1} pic2={pic2} closeAvatarModal={closeAvatarModal} uid={props.data.uid}/>
+          <ChangeAvatar avatar={avatar} closeAvatarModal={closeAvatarModal} uid={props.data.uid}/>
         </div>
       </Modal>
 
