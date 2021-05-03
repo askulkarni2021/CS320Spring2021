@@ -5,20 +5,38 @@ import Chip from '@material-ui/core/Chip';
 import Plus from '../Plus_symbol.svg';
 
 // props: getKudos, optional: toggleShowAddKudos
-export default function AddEmoji(props) {
+class Emojis extends React.Component{
     // need uri, to, from, message
-    const [name, setName] = useState('');
-    const [kudo, updateKudo] = useState('');
-    const [uri, setUri] = useState('');
-    const [uid, setUid] = useState('');
-    const [nameMapUid, setNameMapUid] = useState('');
-    /* FAKE CORE VALUES, PRESET */
-    const [rxn, setRxn] = useState(['loading']);
-    const [emoji, setEmoji] = useState('');
 
-    const handleDelete = (emoji) => {
+    constructor(props){
+        super(props);
+
+        this.state = {
+            name: '',
+            kudo: '',
+            uri: '',
+            uid: '',
+            nameMapUid: '',
+            rxn: '',
+            emoji: '',
+            emojis: []
+        };
+
+        this.handleDelete = this.handleDelete.bind(this);
+        this.useEffect = this.useEffect.bind(this);
+        this.handleSubmit = this.handleSubmit.bind(this);
+
+        this.useEffect();
+    }
+
+    handleDelete(emoji){
         console.info('You clicked the Chip.');
         //let value = label;
+
+        const uri = this.state.uri;
+        this.state.emojis.pop(emoji);
+        const modEmoji = this.state.emojis;
+
 
         
         fetch('http://localhost:5000/api/data/delete_emoji',
@@ -37,15 +55,23 @@ export default function AddEmoji(props) {
             }
         });
 
+        this.setState(()=>{
+            return {
+                emojis: modEmoji
+            }
+        })
+
     };
     
 
 
-    useEffect(() => {
+    useEffect(){
         const uri = localStorage.getItem('uri');
         const uid = JSON.parse(localStorage.getItem('data')).uid;
-        setUri(uri);
-        setUid(uid);
+
+        let setEmojis = [];
+        
+ 
         fetch('http://localhost:5000/api/data/get_emojis',
         {
             method: 'POST',
@@ -57,15 +83,30 @@ export default function AddEmoji(props) {
         })
         .then(response => response.json())
         .then(data => {
-            setRxn(data);
 
+            this.setState(() =>{
+                return {
+                    emojis: data,
+                    uri: uri,
+                    uid: uid
+                }
+            })
         });
-    }, []);
+
+        
+    }
 
        //Passes the arguments from setUri, setVal, and setColor to the backend
     //Proceeds to then empty the Val string so another value can be added.
-    function handleSubmit() {
-        console.log('uri', uri);
+    handleSubmit() {
+        
+        const uri = this.state.uri;
+        const emoji = this.state.emoji;
+
+        const modArr = this.state.emojis;
+        modArr.push(this.state.emoji);
+
+
         fetch('http://localhost:5000/api/data/add_emoji',
         {
             method: 'POST',
@@ -81,18 +122,25 @@ export default function AddEmoji(props) {
                 console.log(response)
             }
         });
-        setEmoji('');
+        
+        this.setState(() =>{
+            return {
+                emojis: modArr,
+                emoji: ''
+            }
+        })
     }
 
-    return (
+    render (){
+        return(
         <Card style={{width: '300px', margin: '10px'}}>
             <CardContent>
-                <form onSubmit={(e) => {e.preventDefault(); handleSubmit();}}>
+                <form onSubmit={(e) => {e.preventDefault(); this.handleSubmit();}}>
 
                     <Grid container direction="column" alignItems="flex-start">
 
-                    {rxn ? rxn.map((tag, index) => {
-                                        return <Chip key={index} label={tag} style={{marginBottom: "15px"}} onDelete={() => handleDelete(tag)} />
+                    {this.state.emojis ? this.state.emojis.map((tag, index) => {
+                                        return <Chip key={index} label={tag} style={{marginBottom: "15px"}} onDelete={() => this.handleDelete(tag)} />
                         }) : null} 
                         
                     </Grid>
@@ -105,7 +153,7 @@ export default function AddEmoji(props) {
                         label='Add Emoji' 
                         variant='outlined' 
                         rows={1}
-                        value={emoji}
+                        value={this.emoji}
                         style={{
                             flex:1,
                             flexDirection: 'column',
@@ -117,12 +165,14 @@ export default function AddEmoji(props) {
                             marginBottom: '0.7rem'
                         }}
                         
-                        onChange={(e) => setEmoji(e.target.value)}
+                        onChange={(e) => this.state.emoji = (e.target.value)}
                     />
 
 
                 </form>
             </CardContent>
         </Card>
-    );
+        );
+    }
 }
+export default Emojis;

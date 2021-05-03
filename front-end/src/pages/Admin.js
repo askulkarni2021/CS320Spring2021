@@ -60,7 +60,7 @@ export default function Home(props) {
         container
         
         direction="row"
-        justify="space-around"
+        justify="space-evenly"
         alignItems="center"
         className={classes.kudos}>
           <Values getKudos={props.getKudos}/>
