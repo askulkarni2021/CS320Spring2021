@@ -1,7 +1,6 @@
-import React from 'react'
-import {Grid, Card, CardContent, Typography, CardActions, Chip, Avatar, Modal, Icon} from '@material-ui/core'
-import { makeStyles } from '@material-ui/core/styles';
-import { withStyles } from '@material-ui/core/styles';
+import React, { useEffect } from 'react'
+import {Grid, Card, CardContent, Typography, CardActions, Chip, Avatar, Modal, Menu, MenuItem, Fade} from '@material-ui/core'
+import { makeStyles, withStyles } from '@material-ui/core/styles';
 import MuiAccordion from '@material-ui/core/Accordion';
 import MuiAccordionSummary from '@material-ui/core/AccordionSummary';
 import MuiAccordionDetails from '@material-ui/core/AccordionDetails';
@@ -76,10 +75,50 @@ export default function Kudo(props) {
     const classes = useStyles();
     const [expanded, setExpanded] = useState(false);
     const [showReport, toggleShowReport] = useState(false);
+    const [anchorEl, setAnchorEl] = useState(null);
+    const [showSuccess, toggleShowSuccess] = useState(false);
+
+    useEffect(() => {
+      if(showSuccess) {
+        console.log('showSuccess', showSuccess)
+        setTimeout(() => toggleShowSuccess(false), 1500)
+      }
+    }, [showSuccess])
+
+    const handleClick = event => {
+      setAnchorEl(event.currentTarget);
+    };
+  
+    const handleClose = () => {
+      setAnchorEl(null);
+    };
 
     const handleChange = (panel) => (event, isExpanded) => {
         setExpanded(isExpanded ? panel : false);
     };
+
+    function deleteSelf() {
+      const kid = props.kudoID
+      const uri = localStorage.getItem('uri')
+      fetch('http://localhost:5000/api/data/delete_kudo',
+      {
+        method: 'POST',
+        headers: {
+          "Accept": "application/json",
+          "Content-Type": "application/json"
+        },
+        body: JSON.stringify({uri, kid})
+      })
+      .then(response => response.json()).then(data => {
+        if(data) {
+          props.getKudos();
+          handleClose();
+          if(props.getReportedKudos) {
+            props.getReportedKudos()
+          }
+        }
+      });
+    }
 
     return(
       <div>
@@ -89,13 +128,42 @@ export default function Kudo(props) {
           aria-labelledby="report-modal"
           aria-describedby="report-kudo"
         >
-          <div className={classes.modalCenter}>
-            <ReportModal kid={props.kudoID} toggleShowReport={toggleShowReport}/>
-          </div>
+          <Fade in={showReport}>
+            <div className={classes.modalCenter}>
+              <ReportModal kid={props.kudoID} toggleShowReport={toggleShowReport} toggleShowSuccess={toggleShowSuccess}/>
+            </div>
+          </Fade>
         </Modal>
+        <Modal
+          open={showSuccess}
+          onClose={() => toggleShowSuccess(false)}
+          aria-labelledby="report-confirmed"
+          aria-describedby="report-kudo"
+        >
+          <Fade in={showSuccess}>
+            <div className={classes.modalCenter}>
+              <Card style={{width: '600px', margin: '10px', backgroundColor: '#FF0000', textAlign: 'center'}} elevation={0}>
+                <h1>Kudo Reported Successfully</h1>
+              </Card>
+            </div>
+          </Fade>
+        </Modal>
+        <Menu
+          id="report-delete-menu"
+          anchorEl={anchorEl}
+          keepMounted
+          open={Boolean(anchorEl)}
+          onClose={handleClose}
+        >
+          <MenuItem onClick={() => { handleClose(); toggleShowReport(true)}}>Report</MenuItem>
+          {props.isAdmin ? <MenuItem onClick={() => deleteSelf()}>Delete</MenuItem>
+          : null}
+        </Menu>
         <Card className={classes.root} style={{width: '600px', margin: '10px'}}>
             <CardContent style={{padding:'5px', width: '100%'}}>
-                <MoreHorizIcon onClick={() => toggleShowReport(true)}/>
+                <div style={{width: '100%'}}>
+                  <MoreHorizIcon onClick={handleClick} style={{display: 'block', marginLeft: 'auto', marginRight: '0'}}/>
+                </div>
                 <Accordion square expanded={expanded === 'panel'} onChange={handleChange('panel')}>
                     <AccordionSummary
                     aria-controls="panelbh-content"
@@ -103,7 +171,7 @@ export default function Kudo(props) {
                     >
                         <Grid container>
                             <Grid item>
-                                <Avatar alt="Remy Sharp" style={{ height: '70px', width: '70px', marginRight: '10px'}} />
+                                <Avatar alt="Remy Sharp" src={props.avatar} style={{ height: '70px', width: '70px', marginRight: '10px'}} />
                             </Grid>
                             <Grid item>
                                 <div>
@@ -112,7 +180,7 @@ export default function Kudo(props) {
                                         received kudos from
                                     </Typography>
                                     <Typography style={{display:'inline'}}>{props.from}</Typography>
-                                    
+
                                 </div>
                                 <CardActions>
                                     {props.tags ? props.tags.map((tag, index) => {

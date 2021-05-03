@@ -66,6 +66,8 @@ export default function Profile(props) {
     if(props.employees){
       setEmployeeName(props.employees[props.uid]['name']);
       setEmployeePosition(props.employees[props.uid]['position']);
+      setAvatar(props.employees[props.uid]['avatar']);
+      setEmployees(props.employees)
     }
   }, [props.employees]);
 
@@ -73,18 +75,6 @@ export default function Profile(props) {
     const uri = props.uri;
     const uid = props.data.uid;
     const formData = {uri, uid}
-    fetch('http://localhost:5000/api/data/uid_map_name',
-    {
-      method: 'POST',
-      headers: {
-        "Accept": "application/json",
-        "Content-Type": "application/json"
-      },
-      body: JSON.stringify(formData)
-    })
-    .then(response => response.json()).then(data => {
-      setEmployees(data)
-    });
     fetch('http://localhost:5000/api/profile_incoming',
     {
       method: 'POST',
@@ -162,9 +152,6 @@ export default function Profile(props) {
     setValue(newValue);
   };
 
-  const handleSubmitAvatar = (newAvatar) => {
-    setAvatar(newAvatar);
-  };
 
   const closeAvatarModal = () => {
     setIsAvatarModalVisible(false);
@@ -227,7 +214,7 @@ export default function Profile(props) {
         aria-describedby="change-avatar"
       >
         <div className={classes.modalCenter}>
-          <ChangeAvatar handleSubmitAvatar={handleSubmitAvatar} pic1={pic1} pic2={pic2} closeAvatarModal={closeAvatarModal}/>
+          <ChangeAvatar avatar={avatar} closeAvatarModal={closeAvatarModal} uid={props.data.uid} reloadEmp={props.reloadEmp}/>
         </div>
       </Modal>
 
@@ -285,10 +272,36 @@ export default function Profile(props) {
             </TabList>
           </AppBar>
           <TabPanel value="1">{incoming && employees ? incoming.map((kudo, index) => {
-              return <Kudo to={employees[kudo.to].name} from={employees[kudo.from].name} message={kudo.kudo} tags={kudo.tags} key={kudo._id} timestamp={kudo.time}/>
+              return <Kudo 
+                      to={employees[kudo.to].name} 
+                      from={employees[kudo.from].name} 
+                      message={kudo.kudo} tags={kudo.tags} 
+                      tags={kudo.tags}
+                      key={kudo._id} 
+                      kudoID={kudo._id}
+                      kudoReactions={kudo.reactions}
+                      compReactions={props.reactions}
+                      timestamp={kudo.time}
+                      avatar={employees[kudo.to].avatar}
+                      getKudos={props.getKudos} 
+                      isAdmin={props.isAdmin}
+                      />
           }) : 'loading'  }</TabPanel>
           <TabPanel value="2">{outgoing && employees ? outgoing.map((kudo, index) => {
-                return <Kudo to={employees[kudo.to].name} from={employees[kudo.from].name} message={kudo.kudo} tags={kudo.tags} key={kudo._id} timestamp={kudo.time}/>
+                return <Kudo 
+                        to={employees[kudo.to].name} 
+                        from={employees[kudo.from].name} 
+                        message={kudo.kudo} 
+                        tags={kudo.tags} 
+                        kudoID={kudo._id}
+                        kudoReactions={kudo.reactions}
+                        compReactions={props.reactions}
+                        key={kudo._id} 
+                        timestamp={kudo.time}
+                        avatar={employees[kudo.to].avatar}
+                        getKudos={props.getKudos}
+                        isAdmin={props.isAdmin}
+                        />
             }) : 'loading'  }</TabPanel>
         </TabContext>
         </Box>

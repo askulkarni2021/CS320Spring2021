@@ -1,16 +1,29 @@
-import { Button, Card, CardContent, TextField, Grid } from '@material-ui/core';
+import { Button, Card, CardContent, TextField, Grid, withStyles } from '@material-ui/core';
 import React, { useState, useEffect } from 'react';
+import red from "@material-ui/core/colors/red"
+import PropTypes from 'prop-types'
 
-// props: uir, uid, kudo_id
-export default function ReportModal(props) {
-    // need uri, to, from, message
+const styles = theme => ({
+    contained: {
+        color: theme.palette.getContrastText(red[500]),
+        backgroundColor: red[500],
+        "&:hover": {
+            backgroundColor: red[700],
+            "@media (hover: none)": {
+                backgroundColor: red[500]
+            }
+        }
+    }
+})
+
+// props: classes, kid={props.kudoID}, toggleShowReport={toggleShowReport}
+function ReportModal(props) {
+    const { classes, kid, toggleShowReport, toggleShowSuccess } = props;
     const [reason, updateReason] = useState('')
     
-
     function handleSumbit() {
         const uri = localStorage.getItem('uri');
         const uid = JSON.parse(localStorage.getItem('data')).uid
-        const kid = props.kid
         fetch('http://localhost:5000/api/data/report_kudo',
         {
             method: 'POST',
@@ -21,8 +34,9 @@ export default function ReportModal(props) {
             body: JSON.stringify({uri, uid, kid, reason})
         })
         .then(response => {
-            if (props.toggleShowReport) {
-                props.toggleShowReport(false);
+            if (toggleShowReport) {
+                toggleShowReport(false);
+                toggleShowSuccess(true);
             }
         });
         updateReason('');
@@ -52,7 +66,7 @@ export default function ReportModal(props) {
                             />
                         </Grid>
                         <Grid item container justify='flex-end'>
-                            <Button type="submit" variant="contained" styles={{backgroundColor: '#FF0000'}}>Submit Report</Button>
+                            <Button type="submit" className={classes.contained}>Submit Report</Button>
                         </Grid>
                     </Grid>
                 </form>
@@ -60,3 +74,12 @@ export default function ReportModal(props) {
         </Card>
     );
 }
+
+ReportModal.propTypes = {
+    classes: PropTypes.object.isRequired,
+    kid: PropTypes.string.isRequired,
+    toggleShowReport: PropTypes.func.isRequired,
+    toggleShowSuccess: PropTypes.func.isRequired,
+};
+
+export default withStyles(styles)(ReportModal)

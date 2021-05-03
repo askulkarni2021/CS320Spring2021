@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from "react";
 import { makeStyles } from '@material-ui/core/styles';
-import {Drawer, CssBaseline, List, MenuList, MenuItem , Button, Avatar, Box, Grid, Typography, Modal} from '@material-ui/core'
+import {Drawer, CssBaseline, List, MenuList, MenuItem , Button, Avatar, Box, Grid, Typography, Modal, Card, Fade} from '@material-ui/core'
 import Emoji from '../components/Emoji';
 import AddKudo from "./AddKudo";
 import { useHistory } from "react-router-dom";
@@ -16,6 +16,7 @@ const useStyles = makeStyles((theme) => ({
     width: drawerWidth,
     backgroundColor: theme.palette.background.default,
     paddingLeft: '80px',
+    overflowX: 'hidden',
   },
   menuItem: {
     marginLeft: '0px',
@@ -52,15 +53,24 @@ export default function Navbar(props) {
   const classes = useStyles();
   const [name, setEmployeeName] = useState('');
   const [position, setEmployeePosition] = useState('');
+  const [avatar, setAvatar] = useState('');
   const [showAddKudo, toggleShowAddKudo] = useState(false);
+  const [showAddSuccess, toggleShowAddSuccess] = useState(false);
   let history = useHistory();
-  
+
   useEffect(() => {
     if(props.employees){
       setEmployeeName(props.employees[props.uid]['name']);
-      setEmployeePosition(props.employees[props.uid]['position']);  
+      setEmployeePosition(props.employees[props.uid]['position']);
+      setAvatar(props.employees[props.uid]['avatar']);
     }
   }, [props.employees]);
+
+  useEffect(() => {
+    if(showAddSuccess) {
+      setTimeout(() => toggleShowAddSuccess(false), 1500)
+    }
+  }, [showAddSuccess])
 
   return (
     <div>
@@ -71,9 +81,25 @@ export default function Navbar(props) {
         aria-labelledby="add-kudo-modal"
         aria-describedby="add-kudo"
       >
-        <div className={classes.modalCenter}>
-          <AddKudo getKudos={props.getKudos} toggleShowAddKudo={toggleShowAddKudo}/>
-        </div>
+        <Fade in={showAddKudo}>
+          <div className={classes.modalCenter}>
+            <AddKudo getKudos={props.getKudos} toggleShowAddKudo={toggleShowAddKudo} toggleShowAddSuccess={toggleShowAddSuccess}/>
+          </div>
+        </Fade>
+      </Modal>
+      <Modal
+        open={showAddSuccess}
+        onClose={() => toggleShowAddSuccess(false)}
+        aria-labelledby="report-confirmed"
+        aria-describedby="report-kudo"
+      >
+        <Fade in={showAddSuccess}>
+          <div className={classes.modalCenter}>
+            <Card style={{width: '600px', margin: '10px', backgroundColor: '#00FF00', textAlign: 'center'}} elevation={0}>
+              <h1>Kudo Submitted Succesfully</h1>
+            </Card>
+          </div>
+        </Fade>
       </Modal>
       <Drawer
         className={classes.drawer}
@@ -82,19 +108,19 @@ export default function Navbar(props) {
           paper: classes.drawerPaper,
         }}
         anchor="left"
-      >        
+      >
         <List>
           <Box textAlign="left" className={classes.dumb}>
             <Typography variant="h2">Kudos</Typography>
           </Box>
           <Grid container direction="column" alignItems="flex-start" justify="center" className={classes.dumb}>
-              <Avatar alt="Remy Sharp" style={{ height: '140px', width: '140px', marginTop: '10px', marginBottom: '10px' }} />
+              <Avatar alt="Remy Sharp" src={avatar} style={{ height: '140px', width: '140px', marginTop: '10px', marginBottom: '10px' }} />
           </Grid>
           <Box textAlign="left" className={classes.dumb}>
             <Typography variant="h5">{name}</Typography>
           </Box>
           <Box textAlign="left" className={classes.dumb}>
-            <Typography variant="subtitle1">{position}</Typography>  
+            <Typography variant="subtitle1">{position}</Typography>
           </Box>
           <MenuList>
               <Grid container direction="column" alignItems="flex-start" justify="center">
@@ -104,9 +130,11 @@ export default function Navbar(props) {
                   <MenuItem className={classes.menuItem} onClick={() => history.push('/profile')}>
                     <Typography variant="h4"><Emoji symbol="😺" label="cat"/>Profile</Typography>
                   </MenuItem>
-                  <MenuItem className={classes.menuItem} onClick={() => history.push('/admin')}>
-                    <Typography variant="h4"><Emoji symbol="📢" label="loudspeaker"/>Admin</Typography>
-                  </MenuItem>
+                  {props.isAdmin ? 
+                    <MenuItem className={classes.menuItem} onClick={() => history.push('/admin')}>
+                      <Typography variant="h4"><Emoji symbol="📢" label="loudspeaker"/>Admin</Typography>
+                    </MenuItem> 
+                  : null}
                   <Grid container direction="column" alignItems="flex-start" justify="center" className={classes.dumb}>
                     <Button variant="contained" size="large" color="primary" onClick={() => toggleShowAddKudo(true)}>+ Give Kudos</Button>
                   </Grid>
