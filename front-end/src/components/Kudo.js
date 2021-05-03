@@ -76,14 +76,26 @@ export default function Kudo(props) {
     const [expanded, setExpanded] = useState(false);
     const [showReport, toggleShowReport] = useState(false);
     const [anchorEl, setAnchorEl] = useState(null);
-    const [showSuccess, toggleShowSuccess] = useState(false);
+    const [showSuccessReport, toggleShowSuccessReport] = useState(false);
+    const [showSuccessDelete, toggleShowSuccessDelete] = useState(false);
 
     useEffect(() => {
-      if(showSuccess) {
-        console.log('showSuccess', showSuccess)
-        setTimeout(() => toggleShowSuccess(false), 1500)
+      if(showSuccessReport) {
+        setTimeout(() => toggleShowSuccessReport(false), 1500)
       }
-    }, [showSuccess])
+    }, [showSuccessReport])
+
+    useEffect(() => {
+      if(showSuccessDelete) {
+        setTimeout(() => {
+          props.getKudos();
+          toggleShowSuccessDelete(false);
+          if(props.getReportedKudos) {
+            props.getReportedKudos()
+          }
+        }, 1500)
+      }
+    }, [showSuccessDelete])
 
     const handleClick = event => {
       setAnchorEl(event.currentTarget);
@@ -111,11 +123,8 @@ export default function Kudo(props) {
       })
       .then(response => response.json()).then(data => {
         if(data) {
-          props.getKudos();
           handleClose();
-          if(props.getReportedKudos) {
-            props.getReportedKudos()
-          }
+          toggleShowSuccessDelete(true)
         }
       });
     }
@@ -130,20 +139,34 @@ export default function Kudo(props) {
         >
           <Fade in={showReport}>
             <div className={classes.modalCenter}>
-              <ReportModal kid={props.kudoID} toggleShowReport={toggleShowReport} toggleShowSuccess={toggleShowSuccess}/>
+              <ReportModal kid={props.kudoID} toggleShowReport={toggleShowReport} toggleShowSuccess={toggleShowSuccessReport}/>
             </div>
           </Fade>
         </Modal>
         <Modal
-          open={showSuccess}
-          onClose={() => toggleShowSuccess(false)}
+          open={showSuccessReport}
+          onClose={() => toggleShowSuccessReport(false)}
           aria-labelledby="report-confirmed"
           aria-describedby="report-kudo"
         >
-          <Fade in={showSuccess}>
+          <Fade in={showSuccessReport}>
             <div className={classes.modalCenter}>
               <Card style={{width: '600px', margin: '10px', backgroundColor: '#FF0000', textAlign: 'center'}} elevation={0}>
                 <h1>Kudo Reported Successfully</h1>
+              </Card>
+            </div>
+          </Fade>
+        </Modal>
+        <Modal
+          open={showSuccessDelete}
+          onClose={() => toggleShowSuccessDelete(false)}
+          aria-labelledby="delete-confirmed"
+          aria-describedby="delete-kudo"
+        >
+          <Fade in={showSuccessDelete}>
+            <div className={classes.modalCenter}>
+              <Card style={{width: '600px', margin: '10px', backgroundColor: '#FF0000', textAlign: 'center'}} elevation={0}>
+                <h1>Kudo Deleted Successfully</h1>
               </Card>
             </div>
           </Fade>
