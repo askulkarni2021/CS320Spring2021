@@ -85,6 +85,7 @@ class ReportedKudos extends React.Component {
     useEffect() {
         const uri = localStorage.getItem('uri');
         const uid = JSON.parse(localStorage.getItem('data')).uid;
+        const employees = this.state.uidEmployees;
         fetch('http://localhost:5000/api/data/reported_kudo',
         {
             method: 'POST',
@@ -98,17 +99,23 @@ class ReportedKudos extends React.Component {
         .then(data => {
             let arr = [];
             console.log(data);
-            if(data){
+            if(data && employees){
                 //response comes in an array of objects, traverse this to load into the values
                 data.forEach(val => {
-                    arr.push(val.value);
+                    arr.push({id: val._id,
+                        from: employees[val.from].name,
+                        to: employees[val.to].name, 
+                        message: val.kudo, 
+                        time: val.time, 
+                        reported: employees[val.report[0].by].name, 
+                        reason: val.report[0].reason});
                 });
             }
             console.log(`This is ${arr[0]}`);
 
             this.setState(() =>{
                 return {
-                    reports: data,
+                    rows: arr,
                     uri: uri,
                     uid: uid
                 }
