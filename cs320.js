@@ -327,7 +327,7 @@ app.post('/api/data/uid_map_name', (req, res) => {
 				position = element.positionTitle;
 				isAdmin = element.isAdmin;
 				avatar = element.avatar;
-				const data = {name:employee, position:position, idAdmin:isAdmin, avatar:avatar}
+				const data = {name:employee, position:position, isAdmin:isAdmin, avatar:avatar}
 				emp[id]=data;
 			})
 			client.close();

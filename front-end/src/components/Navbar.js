@@ -106,10 +106,11 @@ export default function Navbar(props) {
                   <MenuItem className={classes.menuItem} onClick={() => history.push('/profile')}>
                     <Typography variant="h4"><Emoji symbol="😺" label="cat"/>Profile</Typography>
                   </MenuItem>
-                  
-                  <MenuItem className={classes.menuItem} onClick={() => history.push('/admin')}>
-                    <Typography variant="h4"><Emoji symbol="📢" label="loudspeaker"/>Admin</Typography>
-                  </MenuItem>
+                  {props.isAdmin ? 
+                    <MenuItem className={classes.menuItem} onClick={() => history.push('/admin')}>
+                      <Typography variant="h4"><Emoji symbol="📢" label="loudspeaker"/>Admin</Typography>
+                    </MenuItem> 
+                  : null}
                   <Grid container direction="column" alignItems="flex-start" justify="center" className={classes.dumb}>
                     <Button variant="contained" size="large" color="primary" onClick={() => toggleShowAddKudo(true)}>+ Give Kudos</Button>
                   </Grid>

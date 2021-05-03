@@ -77,7 +77,7 @@ export default function Home(props) {
           <div style={{margin:'auto', marginTop: '50px'}}><CircularProgress/></div> }
         </Grid>
         <Grid item xs={4}>
-          {<Rockstar reactions={props.reactions} employees={props.employees} />}
+          <Rockstar reactions={props.reactions} employees={props.employees} />
         </Grid>
       </Grid>
     </div>
