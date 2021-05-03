@@ -22,13 +22,14 @@ class ReportedKudos extends React.Component {
             value: '',
             color: '',
             uidEmployees: props.employees,
+            selection: [],
             reports: [],
             columns: [
                 { field: 'from', headerName: 'From', width: 130 },
                 { field: 'to', headerName: 'To', width: 130 },
                 { field: 'message', headerName: 'Message', width: 200 },
-                { field: 'time', headerName: 'Time', width: 70 },
-                { field: 'reported', headerName: 'Reported By', width: 130 },
+                { field: 'time', headerName: 'Time', width: 100 },
+                { field: 'reported', headerName: 'Reported By', width: 170 },
                 { field: 'reason', headerName: 'Reason', width: 200 }
             ],
             rows: [
@@ -44,27 +45,28 @@ class ReportedKudos extends React.Component {
     }
     
 
-    handleDelete (value){
-        console.info('You clicked the Chip.');
+    handleDelete (){
+        console.info('You clicked the Delete Button for reported Kudos');
         //let value = label;
 
         let uri = this.state.uri;
+        let values = this.state.selection;
+        let kid = values[0];
 
-        this.state.coreValues.pop(value);
-
-        let modValues = this.state.coreValues;
+        values.forEach(val => {
+            this.state.rows.pop(val);
+        })
 
         console.log(uri);
-        console.log(value);
 
-        fetch('http://localhost:5000/api/data/delete_value',
+        fetch('http://localhost:5000/api/data/delete_kudo',
         {
             method: 'POST',
             headers: {
               "Accept": "application/json",
               "Content-Type": "application/json"
             },
-            body: JSON.stringify({uri, value})
+            body: JSON.stringify({uri, kid})//this needs to change to allow an array of kudos to be deleted
         })
         .then(response => {
             
@@ -75,7 +77,7 @@ class ReportedKudos extends React.Component {
 
         this.setState(() =>{
             return {
-                coreValues: modValues
+                selection: []
             }
         })
 
@@ -167,27 +169,22 @@ class ReportedKudos extends React.Component {
 
     render(){
     return (
-        <div style={{ height: 400, width: '100%'}}>
-            <DataGrid rows={this.state.rows} columns={this.state.columns} pageSize={5} checkboxSelection />
-                <form onSubmit={(e) => {e.preventDefault(); this.handleSubmit();}}>
+        <div style={{ height: 400, width: '90%', marginTop: '50px'}}>
+            <Button onClick={() => this.handleDelete()} variant="contained" color="secondary" style={{maxWidth: '100px', minWidth: '100px', marginBottom: '10px'}} >Delete</Button>
+            <DataGrid rows={this.state.rows} columns={this.state.columns} autoPageSize checkboxSelection onSelectionModelChange={(selects) => {
+                console.log(selects.selectionModel);
+                this.setState(() =>{
+                    return {
+                        selection: selects.selectionModel
+                    }
+                })
+            }}>
 
-                    
-                  
-                        {console.log(this.state.reports)}
+            
 
-                        {this.state.reports ? this.state.reports.map((tag, index) => {
-                                        console.log(tag);
-                        }) : null} 
-                    
-                    
-                        
+            </DataGrid>
+            
 
-                    {'\n'}
-
-                    {/* <Button type="submit" variant="contained" color="primary" style={{maxWidth: '20px', minWidth: '20px'}} >+</Button> */}
-
-
-                </form>
                 </div>
 
     );
