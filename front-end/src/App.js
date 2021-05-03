@@ -45,6 +45,7 @@ export default function App() {
   const [uidEmployees, setUidEmployees] = useState();
   const [kudos, setKudos] = useState();
   const [reactions, setReactions] = useState(); 
+  const [isAdmin, setIsAdmin] = useState(false);
   const classes = useStyles();
   let history = useHistory();
 
@@ -96,8 +97,11 @@ export default function App() {
         },
         body: JSON.stringify(formData)
       })
-      .then(response => response.json()).then(data => {
-        setUidEmployees(data)
+      .then(response => response.json()).then(employees => {
+        setUidEmployees(employees);
+        console.log('sdfsdf', employees[data.uid])
+        setIsAdmin(employees[data.uid]['isAdmin']);
+        console.log('isAdmin', isAdmin)
       });
     fetch('http://localhost:5000/api/all_kudos',
     {
@@ -123,6 +127,22 @@ export default function App() {
       .then(response => response.json())
       .then(data => {
           setReactions(data);
+      });
+  }
+
+  function reloadEmployees(){
+    fetch('http://localhost:5000/api/data/uid_map_name',
+      {
+        method: 'POST',
+        headers: {
+          "Accept": "application/json",
+          "Content-Type": "application/json"
+        },
+        body: JSON.stringify({uri})
+      })
+      .then(response => response.json()).then(data => {
+        setUidEmployees(data)
+
       });
   }
 
@@ -156,6 +176,12 @@ export default function App() {
     localStorage.setItem('mainPrimary', mainPrimary);
     localStorage.setItem('palleteType', palleteType);
     localStorage.setItem('darkState', 'false'); //original: darkState. proposing to make the default and on refresh white.
+    if(isLoggedIn && uri && data) {
+      console.log('check')
+      setDataFromLogin(data, uri);
+    } else {
+      logout();
+    }
   }, []);
 
   return (
@@ -173,17 +199,17 @@ export default function App() {
       )}/>
       { (isLoggedIn && uri && data) ?
         <div className={classes.root}>
-          <Navbar employees={uidEmployees} uid={data.uid} logout={logout.bind(this)} getKudos={getKudos.bind(this)}/>
+          <Navbar employees={uidEmployees} uid={data.uid} isAdmin={isAdmin} logout={logout.bind(this)} getKudos={getKudos.bind(this)}/>
             <div className={classes.content}>
               <Route exact path="/home" render={(props) => (
                 <Home {...props} data={data} uri={uri} employees={uidEmployees} kudos={kudos} getKudos={getKudos.bind(this)} reactions={reactions}/>
               )}/>
               <Route exact path="/profile" render={(props) => (
-                <Profile {...props} data={data} uri={uri} employees={uidEmployees} uid={data.uid} reactions={reactions}/>
+                <Profile {...props} data={data} uri={uri} employees={uidEmployees} uid={data.uid} reactions={reactions} reloadEmp={reloadEmployees.bind(this)}/>
               )}/>
-              <Route exact path="/admin" render={(props) => (
+              {isAdmin ? <Route exact path="/admin" render={(props) => (
                 <Admin data={data} uri={uri} employees={uidEmployees} kudos={kudos} getKudos={getKudos.bind(this)}/>
-              )}/>
+              )}/> : null}
             </div>
         </div>
       : null}

@@ -12,11 +12,20 @@ const useStyles = makeStyles({
       display: 'flex',
     },
     recv: {
-      display:'inline',
-      color:'#A1A1A1',
-      marginRight:'5px', 
-      paddingLeft: '2px',
-      paddingRight: '2px',
+// <<<<<<< reactions
+//       display:'inline',
+//       color:'#a1a1a1',
+//       marginRight:'5px',
+//       paddingLeft: '2px',
+//       paddingRight: '2px',
+// =======
+        display:'inline',
+        backgroundColor:'#F2F2F2',
+        color:'#616161',
+        marginRight:'5px',
+        paddingLeft: '2px',
+        paddingRight: '2px',
+// >>>>>>> main
     },
 });
 
@@ -79,7 +88,7 @@ export default function Kudo(props) {
                     >
                         <Grid container>
                             <Grid item>
-                                <Avatar alt="Remy Sharp" style={{ height: '70px', width: '70px', marginRight: '10px'}} />
+                                <Avatar alt="Remy Sharp" src={props.avatar} style={{ height: '70px', width: '70px', marginRight: '10px'}} />
                             </Grid>
                             <Grid item>
                                 <div>
@@ -88,7 +97,7 @@ export default function Kudo(props) {
                                         received kudos from
                                     </Typography>
                                     <Typography style={{display:'inline'}}>{props.from}</Typography>
-                                    
+
                                 </div>
                                 <CardActions>
                                     {props.tags ? props.tags.map((tag, index) => {

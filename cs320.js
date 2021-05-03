@@ -326,7 +326,8 @@ app.post('/api/data/uid_map_name', (req, res) => {
 				id = element.employeeId;
 				position = element.positionTitle;
 				isAdmin = element.isAdmin;
-				const data = {name:employee, position:position, idAdmin:isAdmin}
+				avatar = element.avatar;
+				const data = {name:employee, position:position, isAdmin:isAdmin, avatar:avatar}
 				emp[id]=data;
 			})
 			client.close();
@@ -357,7 +358,7 @@ app.post('/api/get_rockstar', (req, res) => {
 				mostRecentROM = value[value.length - 1];
 				const ROMname = mostRecentROM.firstName + " " + mostRecentROM.lastName;
 				res.send({name: ROMname, position: mostRecentROM.positionTitle, numKudos: mostRecentROM.numKudos,
-							employeeId: mostRecentROM.employeeId, month: mostRecentROM.month});
+							employeeId: mostRecentROM.employeeId, month: mostRecentROM.month, avatar: mostRecentROM.avatar});
 			});
 		};
 		sendData(rockStarsPromise);
@@ -587,7 +588,7 @@ app.post('/api/data/export_data',(req ,res) => {
 		const findData = async () => {
 			const kudos_received = await Kudos.find({to: employeeId}).toArray();
 			const kudos_given = await Kudos.find({from: employeeId}).toArray();
-			
+
 			const k_given = [];
 			for (i = 0; i <kudos_given.length; i++){
 				k_given.push(kudos_given[i].kudo);
@@ -705,13 +706,27 @@ app.post('/api/change_avatar', (req, res) => {
 		assert.equal(err, null);
 		const db = client.db(companyName);
 		const employeesCollection = db.collection("Employees Database");
+		const rockStarsCollection = db.collection("Rockstars");
 		const changeAvatar = async (employeesCollection) => {
 			await employeesCollection.updateOne(
 				{ employeeId : req.body.uid },
-				{ 
-					$set : { avatar : req.body.avatar } 
+				{
+					$set : { avatar : req.body.avatar }
 				}
 			);
+			// we also need to check if the employee in this request is the current rockstar, and if so, update the rockstar record as well
+			rockstarsPromise = findEmployees(rockStarsCollection, {});
+			await rockstarsPromise.then(async rockstars => {
+				let mostRecentRom = rockstars[rockstars.length - 1];
+				if (mostRecentRom.employeeId == req.body.uid) {
+					await rockStarsCollection.updateOne(
+						{ employeeId : req.body.uid },
+						{
+							$set : { avatar : req.body.avatar }
+						}
+					);
+				}
+			});
 			client.close();
 			res.send(true)
 		};

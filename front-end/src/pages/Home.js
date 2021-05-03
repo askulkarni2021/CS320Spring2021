@@ -40,6 +40,7 @@ export default function Home(props) {
       'greenlife-consulting': 'Greenlife Consulting'
     }
     setCompany(companies[props.uri]);
+    // console.log(props.employees);
   }, []);
 
   return (
@@ -62,6 +63,7 @@ export default function Home(props) {
           {props.kudos && props.employees ? props.kudos.map((kudo, index) => {
               return <Kudo
                       to={props.employees[kudo.to].name}
+                      avatar={props.employees[kudo.to].avatar}
                       from={props.employees[kudo.from].name}
                       message={kudo.kudo}
                       tags={kudo.tags}
@@ -75,7 +77,7 @@ export default function Home(props) {
           <div style={{margin:'auto', marginTop: '50px'}}><CircularProgress/></div> }
         </Grid>
         <Grid item xs={4}>
-          {<Rockstar reactions={props.reactions}/>}
+          <Rockstar reactions={props.reactions} employees={props.employees} />
         </Grid>
       </Grid>
     </div>
