@@ -126,6 +126,21 @@ export default function App() {
       });
   }
 
+  function reloadEmployees(){
+    fetch('http://localhost:5000/api/data/uid_map_name',
+      {
+        method: 'POST',
+        headers: {
+          "Accept": "application/json",
+          "Content-Type": "application/json"
+        },
+        body: JSON.stringify({uri})
+      })
+      .then(response => response.json()).then(data => {
+        setUidEmployees(data)
+      });
+  }
+
   // runs on isLoggedIn toggle, updates local storage to match
   useEffect(() => {
     localStorage.setItem('isLoggedIn', isLoggedIn);
@@ -179,7 +194,7 @@ export default function App() {
                 <Home {...props} data={data} uri={uri} employees={uidEmployees} kudos={kudos} getKudos={getKudos.bind(this)} reactions={reactions}/>
               )}/>
               <Route exact path="/profile" render={(props) => (
-                <Profile {...props} data={data} uri={uri} employees={uidEmployees} uid={data.uid} reactions={reactions}/>
+                <Profile {...props} data={data} uri={uri} employees={uidEmployees} uid={data.uid} reactions={reactions} reloadEmp={reloadEmployees.bind(this)}/>
               )}/>
               <Route exact path="/admin" render={(props) => (
                 <Admin data={data} uri={uri} employees={uidEmployees} kudos={kudos} getKudos={getKudos.bind(this)}/>
