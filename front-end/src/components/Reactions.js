@@ -1,7 +1,5 @@
 import React, { useEffect, useState } from 'react'
 import {Chip, Grid, Popover, makeStyles} from '@material-ui/core'
-import AddIcon from '@material-ui/icons/Add';
-import Autocomplete from '@material-ui/lab/Autocomplete';
 import Emoji from './Emoji';
 
 const useStyles = makeStyles(theme => ({
