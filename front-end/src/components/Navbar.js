@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from "react";
 import { makeStyles } from '@material-ui/core/styles';
-import {Drawer, CssBaseline, List, MenuList, MenuItem , Button, Avatar, Box, Grid, Typography, Modal} from '@material-ui/core'
+import {Drawer, CssBaseline, List, MenuList, MenuItem , Button, Avatar, Box, Grid, Typography, Modal, Card, Fade} from '@material-ui/core'
 import Emoji from '../components/Emoji';
 import AddKudo from "./AddKudo";
 import { useHistory } from "react-router-dom";
@@ -16,6 +16,7 @@ const useStyles = makeStyles((theme) => ({
     width: drawerWidth,
     backgroundColor: theme.palette.background.default,
     paddingLeft: '80px',
+    overflowX: 'hidden',
   },
   menuItem: {
     marginLeft: '0px',
@@ -54,6 +55,7 @@ export default function Navbar(props) {
   const [position, setEmployeePosition] = useState('');
   const [avatar, setAvatar] = useState('');
   const [showAddKudo, toggleShowAddKudo] = useState(false);
+  const [showAddSuccess, toggleShowAddSuccess] = useState(false);
   let history = useHistory();
 
   useEffect(() => {
@@ -64,6 +66,12 @@ export default function Navbar(props) {
     }
   }, [props.employees]);
 
+  useEffect(() => {
+    if(showAddSuccess) {
+      setTimeout(() => toggleShowAddSuccess(false), 1500)
+    }
+  }, [showAddSuccess])
+
   return (
     <div>
       <CssBaseline/>
@@ -73,9 +81,25 @@ export default function Navbar(props) {
         aria-labelledby="add-kudo-modal"
         aria-describedby="add-kudo"
       >
-        <div className={classes.modalCenter}>
-          <AddKudo getKudos={props.getKudos} toggleShowAddKudo={toggleShowAddKudo}/>
-        </div>
+        <Fade in={showAddKudo}>
+          <div className={classes.modalCenter}>
+            <AddKudo getKudos={props.getKudos} toggleShowAddKudo={toggleShowAddKudo} toggleShowAddSuccess={toggleShowAddSuccess}/>
+          </div>
+        </Fade>
+      </Modal>
+      <Modal
+        open={showAddSuccess}
+        onClose={() => toggleShowAddSuccess(false)}
+        aria-labelledby="report-confirmed"
+        aria-describedby="report-kudo"
+      >
+        <Fade in={showAddSuccess}>
+          <div className={classes.modalCenter}>
+            <Card style={{width: '600px', margin: '10px', backgroundColor: '#00FF00', textAlign: 'center'}} elevation={0}>
+              <h1>Kudo Submitted Succesfully</h1>
+            </Card>
+          </div>
+        </Fade>
       </Modal>
       <Drawer
         className={classes.drawer}

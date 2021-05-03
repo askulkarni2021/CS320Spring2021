@@ -40,7 +40,6 @@ export default function Home(props) {
       'greenlife-consulting': 'Greenlife Consulting'
     }
     setCompany(companies[props.uri]);
-    // console.log(props.employees);
   }, []);
 
   return (
@@ -72,6 +71,8 @@ export default function Home(props) {
                       compReactions={props.reactions}
                       key={kudo._id}
                       timestamp={kudo.time}
+                      getKudos={props.getKudos}
+                      isAdmin={props.isAdmin}
                       />
           }) :
           <div style={{margin:'auto', marginTop: '50px'}}><CircularProgress/></div> }

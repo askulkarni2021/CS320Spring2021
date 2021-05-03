@@ -1,6 +1,17 @@
-import { Button, Card, CardContent, Chip, TextField, Grid } from '@material-ui/core';
+import { Button, Card, CardContent, Chip, TextField, Grid, Modal, Fade } from '@material-ui/core';
 import Autocomplete from '@material-ui/lab/Autocomplete';
 import React, { useState, useEffect } from 'react';
+import { makeStyles } from '@material-ui/core/styles';
+
+const useStyles = makeStyles({
+    modalCenter: {
+      position: 'absolute',
+      top: '30%',
+      left: '50%',
+      transform: 'translate(-50%, -50%)',
+      outline: '0',
+    },
+});
 
 // props: getKudos, optional: toggleShowAddKudos
 export default function AddKudo(props) {
@@ -11,7 +22,15 @@ export default function AddKudo(props) {
     const [uid, setUid] = useState('');
     const [nameMapUid, setNameMapUid] = useState('');
     const [coreValues, setCoreValues] = useState(['loading']);
+    const [showAddSuccess, toggleShowAddSuccess] = useState(false);
     const [tags, updateTags] = useState('');
+    const classes = useStyles();
+    
+    useEffect(() => {
+        if(showAddSuccess) {
+          setTimeout(() => toggleShowAddSuccess(false), 1500)
+        }
+    }, [showAddSuccess])
 
     useEffect(() => {
         const uri = localStorage.getItem('uri');
@@ -78,6 +97,11 @@ export default function AddKudo(props) {
             if (props.toggleShowAddKudo) {
                 props.toggleShowAddKudo(false);
             }
+            if (props.toggleShowAddSuccess) {
+                props.toggleShowAddSuccess(true);
+            } else {
+                toggleShowAddSuccess(true)
+            }
         });
         setName('');
         updateKudo('');
@@ -85,75 +109,91 @@ export default function AddKudo(props) {
     }
 
     return (
-        <Card style={{width: '600px', margin: '10px'}} elevation={0}>
-            <CardContent>
-                <form onSubmit={(e) => {e.preventDefault(); handleSumbit();}}>
-                    <Grid
-                     container
-                     direction="column"
-                     justify="space-evenly"
-                     alignItems="stretch"
-                     spacing={1}
-                     >
-                        <Grid item>
-                            <Autocomplete
-                                id='toField'
-                                value={name !== '' ? name : null}
-                                options={Object.keys(nameMapUid)}
-                                getOptionLabel={(option) => option}
-                                onChange={(event, newValue) => {
-                                    setName(newValue);
-                                }}
-                                renderInput={(params) => <TextField {...params} required label="Send To..." variant="outlined"/>}
-                            />
+        <div>
+            <Modal
+            open={showAddSuccess}
+            onClose={() => toggleShowAddSuccess(false)}
+            aria-labelledby="report-confirmed"
+            aria-describedby="report-kudo"
+            >
+                <Fade in={showAddSuccess}>
+                    <div className={classes.modalCenter}>
+                        <Card style={{width: '600px', margin: '10px', backgroundColor: '#00FF00', textAlign: 'center'}} elevation={0}>
+                        <h1>Kudo Submitted Succesfully</h1>
+                        </Card>
+                    </div>
+                </Fade>
+            </Modal>
+            <Card style={{width: '600px', margin: '10px'}} elevation={0}>
+                <CardContent>
+                    <form onSubmit={(e) => {e.preventDefault(); handleSumbit();}}>
+                        <Grid
+                        container
+                        direction="column"
+                        justify="space-evenly"
+                        alignItems="stretch"
+                        spacing={1}
+                        >
+                            <Grid item>
+                                <Autocomplete
+                                    id='toField'
+                                    value={name !== '' ? name : null}
+                                    options={Object.keys(nameMapUid)}
+                                    getOptionLabel={(option) => option}
+                                    onChange={(event, newValue) => {
+                                        setName(newValue);
+                                    }}
+                                    renderInput={(params) => <TextField {...params} required label="Send To..." variant="outlined"/>}
+                                />
+                            </Grid>
+                            <Grid item>
+                                <TextField
+                                    required
+                                    label='Message'
+                                    variant='outlined'
+                                    multiline
+                                    rows={4}
+                                    value={kudo}
+                                    fullWidth
+                                    onChange={(e) => updateKudo(e.target.value)}
+                                />
+                            </Grid>
+                            <Grid item>
+                                <Autocomplete
+                                    multiple
+                                    id="tags-outlined"
+                                    options={coreValues}
+                                    getOptionLabel={(option) => option.value}
+                                    renderTags={() => (
+                                        tags.map((option, index) => (
+                                            <Chip
+                                            style={{backgroundColor: option.color}}
+                                            label={option.value}
+                                            key={index}
+                                        />
+                                        ))
+                                    )}
+                                    onChange={(event, newValue) => {
+                                        updateTags(newValue)
+                                    }}
+                                    renderInput={(params) => (
+                                        <TextField
+                                            {...params}
+                                            required={tags.length === 0}
+                                            variant="outlined"
+                                            label="Core Values"
+                                            placeholder="Core Values"
+                                        />
+                                    )}
+                                />
+                            </Grid>
+                            <Grid item container justify='flex-end'>
+                                <Button type="submit" variant="contained" color="primary">Submit Kudo</Button>
+                            </Grid>
                         </Grid>
-                        <Grid item>
-                            <TextField
-                                required
-                                label='Message'
-                                variant='outlined'
-                                multiline
-                                rows={4}
-                                value={kudo}
-                                fullWidth
-                                onChange={(e) => updateKudo(e.target.value)}
-                            />
-                        </Grid>
-                        <Grid item>
-                            <Autocomplete
-                                multiple
-                                id="tags-outlined"
-                                options={coreValues}
-                                getOptionLabel={(option) => option.value}
-                                renderTags={() => (
-                                    tags.map((option, index) => (
-                                        <Chip
-                                        style={{backgroundColor: option.color}}
-                                        label={option.value}
-                                        key={index}
-                                       />
-                                    ))
-                                )}
-                                onChange={(event, newValue) => {
-                                    updateTags(newValue)
-                                }}
-                                renderInput={(params) => (
-                                    <TextField
-                                        {...params}
-                                        required={tags.length === 0}
-                                        variant="outlined"
-                                        label="Core Values"
-                                        placeholder="Core Values"
-                                    />
-                                )}
-                            />
-                        </Grid>
-                        <Grid item container justify='flex-end'>
-                            <Button type="submit" variant="contained" color="primary">Submit Kudo</Button>
-                        </Grid>
-                    </Grid>
-                </form>
-            </CardContent>
-        </Card>
+                    </form>
+                </CardContent>
+            </Card>
+        </div>
     );
 }

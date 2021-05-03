@@ -1,5 +1,4 @@
 import React, { useState, useEffect } from 'react';
-import './App.css';
 import Login from './pages/Login';
 import Home from './pages/Home';
 import Profile from './pages/Profile';
@@ -202,13 +201,13 @@ export default function App() {
           <Navbar employees={uidEmployees} uid={data.uid} isAdmin={isAdmin} logout={logout.bind(this)} getKudos={getKudos.bind(this)}/>
             <div className={classes.content}>
               <Route exact path="/home" render={(props) => (
-                <Home {...props} data={data} uri={uri} employees={uidEmployees} kudos={kudos} getKudos={getKudos.bind(this)} reactions={reactions}/>
+                <Home {...props} data={data} uri={uri} employees={uidEmployees} kudos={kudos} isAdmin={isAdmin} getKudos={getKudos.bind(this)} reactions={reactions}/>
               )}/>
               <Route exact path="/profile" render={(props) => (
-                <Profile {...props} data={data} uri={uri} employees={uidEmployees} uid={data.uid} reactions={reactions} reloadEmp={reloadEmployees.bind(this)}/>
+                <Profile {...props} data={data} uri={uri} employees={uidEmployees} uid={data.uid} reactions={reactions} isAdmin={isAdmin} reloadEmp={reloadEmployees.bind(this)}/>
               )}/>
               {isAdmin ? <Route exact path="/admin" render={(props) => (
-                <Admin data={data} uri={uri} employees={uidEmployees} kudos={kudos} getKudos={getKudos.bind(this)}/>
+                <Admin data={data} uri={uri} employees={uidEmployees} kudos={kudos} isAdmin={isAdmin} reactions={reactions} getKudos={getKudos.bind(this)}/>
               )}/> : null}
             </div>
         </div>
