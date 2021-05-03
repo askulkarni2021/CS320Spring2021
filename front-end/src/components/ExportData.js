@@ -7,7 +7,7 @@ import Plus from '../Plus_symbol.svg';
 import {JsonToCsv, useJsonToCsv} from 'react-json-csv';
 
 
-export default function AddValue(props) {
+export default function ExportData(props) {
     // need uri, to, from, message
     const [name, setName] = useState('');
     const [kudo, updateKudo] = useState('');
@@ -111,11 +111,7 @@ export default function AddValue(props) {
         })
         .then(response => response.json())
         .then(data => {
-            setExpData(data);
-            setExpData2([
-                { index: 0, guid: 'asdf231234'},
-                { index: 1, guid: 'wetr2343af'}
-              ])
+            
         })
     }
 
@@ -154,9 +150,9 @@ export default function AddValue(props) {
                         style={style}
                         text={text}
                     /> */}
+                    {console.log(expData)}
                     <Button type="submit" variant="contained" color="primary" style={{maxWidth: '100px', minWidth: '100px', marginTop: '20px'}}>Export Data</Button>
-                    <Button onClick={() => saveAsCsv({data, fields, filename})}>Download Data</Button>
-
+                    <Button onClick={() => saveAsCsv({expData, fields, filename})}>Download Data</Button>
 
                 </form>
             </CardContent>

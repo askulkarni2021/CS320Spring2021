@@ -104,6 +104,7 @@ export default function Navbar(props) {
                   <MenuItem className={classes.menuItem} onClick={() => history.push('/profile')}>
                     <Typography variant="h4"><Emoji symbol="😺" label="cat"/>Profile</Typography>
                   </MenuItem>
+                  
                   <MenuItem className={classes.menuItem} onClick={() => history.push('/admin')}>
                     <Typography variant="h4"><Emoji symbol="📢" label="loudspeaker"/>Admin</Typography>
                   </MenuItem>

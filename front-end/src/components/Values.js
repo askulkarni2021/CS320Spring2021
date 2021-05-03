@@ -5,39 +5,44 @@ import Chip from '@material-ui/core/Chip';
 import Plus from '../Plus_symbol.svg';
 import { makeStyles } from '@material-ui/core/styles';
 
-export default function AddValue(props) {
+class Values extends React.Component {
     // need uri, to, from, message
-    const [name, setName] = useState('');
-    const [kudo, updateKudo] = useState('');
-    const [uri, setUri] = useState('');
-    const [uid, setUid] = useState('');
-    const [nameMapUid, setNameMapUid] = useState('');
-    /* FAKE CORE VALUES, PRESET */
-    //const [coreValues] = useState(['Test Value', 'Teamwork', 'Spirited']);
-    const [value, setVal] = useState('');
-    const [color, setColor] = useState('');
-    const [coreValues, setCoreValues] = useState(['loading']);
 
+    constructor(props){
+        super(props);
 
-    //TODO: add hover styling over x's
-    const useStyles = makeStyles((theme) => ({
+        this.state = {
+            name: '',
+            kudo: '',
+            uri: '',
+            uid: '',
+            nameMapUid: '',
+            value: '',
+            color: '',
+            coreValues: []
+        };
 
-        chip: {
-            '&:hover': {
-                backgroundColor: theme.palette.primary.main,
-                color: theme.palette.text.main
-              }
-        }
+        this.handleDelete = this.handleDelete.bind(this);
+        this.useEffect = this.useEffect.bind(this);
+        this.handleSubmit = this.handleSubmit.bind(this);
 
-    })
-    );
+        this.useEffect();
+    }
     
 
-    const handleDelete = (value) => {
+    handleDelete (value){
         console.info('You clicked the Chip.');
         //let value = label;
 
-        console.log('uri', uri);
+        let uri = this.state.uri;
+
+        this.state.coreValues.pop(value);
+
+        let modValues = this.state.coreValues;
+
+        console.log(uri);
+        console.log(value);
+
         fetch('http://localhost:5000/api/data/delete_value',
         {
             method: 'POST',
@@ -54,31 +59,18 @@ export default function AddValue(props) {
             }
         });
 
+        this.setState(() =>{
+            return {
+                coreValues: modValues
+            }
+        })
+
     };
 
-    
-    
-    // function formChips() {
-    //     console.log(coreValues);
 
-    //     let ans = '';
-    //     if (coreValues){
-    //         coreValues.map((val) =>
-    //         <Chip
-    //             style={{marginBottom: "0.5rem"}} 
-    //             label={val} 
-    //             color="secondary"
-    //             onClick={handleClick} ></Chip>
-    //         )
-    //     }
-    //     return ans;
-    // } 
-
-    useEffect(() => {
+    useEffect() {
         const uri = localStorage.getItem('uri');
         const uid = JSON.parse(localStorage.getItem('data')).uid;
-        setUri(uri);
-        setUid(uid);
         fetch('http://localhost:5000/api/data/get_core_values',
         {
             method: 'POST',
@@ -100,18 +92,34 @@ export default function AddValue(props) {
                     }
                 });
             }
-            console.log(`This is ${arr[1]}`);
-            setCoreValues(arr);
+            console.log(`This is ${arr[0]}`);
 
+            this.setState(() =>{
+                return {
+                    coreValues: arr,
+                    uri: uri,
+                    uid: uid
+                }
+            })
+            
             
         });
-    }, []);
+    }
+
 
        //Passes the arguments from setUri, setVal, and setColor to the backend
     //Proceeds to then empty the Val string so another value can be added.
-    function handleSubmit() {
-        console.log('uri', uri);
-        setColor("red");
+    handleSubmit() {
+
+        const uri = this.state.uri;
+        const value = this.state.value;
+        const color = this.state.color;
+
+        const modArr = this.state.coreValues;
+        modArr.push(this.state.value);
+
+        console.log("submit ran")
+
         fetch('http://localhost:5000/api/data/add_value',
         {
             method: 'POST',
@@ -127,33 +135,41 @@ export default function AddValue(props) {
                 console.log(response)
             }
         });
-        setVal('');
+
+        this.setState(() =>{
+            return {
+                coreValues: modArr,
+                value: ''
+            }
+        })
+        
     }
 
 
-
-
+    render(){
     return (
         <Card style={{width: '300px', margin: '10px'}}>
             <CardContent>
-                <form onSubmit={(e) => {e.preventDefault(); handleSubmit();}}>
+                <form onSubmit={(e) => {e.preventDefault(); this.handleSubmit();}}>
 
                     <Grid container direction="column" alignItems="flex-start">
                   
-                        {coreValues ? coreValues.map((tag, index) => {
-                                        return <Chip key={index} label={tag} style={{marginBottom: "15px"}} onDelete={() => handleDelete(tag)}/>
+                        {console.log(this.state.coreValues)}
+
+                        {this.state.coreValues ? this.state.coreValues.map((tag, index) => {
+                                        return <Chip key={index} label={tag} style={{marginBottom: "15px"}} onDelete={() => this.handleDelete(tag)}/>
                         }) : null} 
                     </Grid>
                    
                     {'\n'}
 
-                    <Button type="submit" variant="contained" color="primary" style={{maxWidth: '20px', minWidth: '20px'}}>+</Button>
+                    <Button type="submit" variant="contained" color="primary" style={{maxWidth: '20px', minWidth: '20px'}} >+</Button>
                     
                     <TextField 
                         label='Add Value' 
                         variant='outlined' 
                         rows={1}
-                        value={value}
+                        value={this.value}
                         style={{
                             flex:1,
                             flexDirection: 'column',
@@ -165,7 +181,7 @@ export default function AddValue(props) {
                             marginBottom: '0.5rem'
                         }}
                         
-                        onChange={(e) => setVal(e.target.value)}
+                        onChange={(e) => this.state.value = e.target.value}
                     />
 
 
@@ -173,4 +189,6 @@ export default function AddValue(props) {
             </CardContent>
         </Card>
     );
+    }
 }
+export default Values;
