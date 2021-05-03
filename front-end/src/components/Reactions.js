@@ -37,14 +37,16 @@ export default function Reactions(props) {
     const id = open ? 'simple-popover' : undefined;
 
     useEffect(() => {
-        let rc = {...reactionCounters};
-        compReactions.map((value) => {
-            rc[value] = 0;
-        })
-        kudoReactions.map((value) => {
-            rc[value.emoji] += 1;
-        })
-        setReactionCounters(rc);
+        if (compReactions) {
+            let rc = {...reactionCounters};
+            compReactions.map((value) => {
+                rc[value] = 0;
+            })
+            kudoReactions.map((value) => {
+                rc[value.emoji] += 1;
+            })
+            setReactionCounters(rc);
+        }
     }, [kudoReactions])
     
     //value = emoji that was reacted to
@@ -131,7 +133,7 @@ export default function Reactions(props) {
                     horizontal: 'center',
                 }}
             >
-               {compReactions.map((emoji, index) => {
+                {compReactions ? compReactions.map((emoji, index) => {
                     let reacted = false
                     kudoReactions.map((kRvalue) => {
                         if(kRvalue.emoji === emoji && kRvalue.by === JSON.parse(localStorage.getItem('data')).uid) {
@@ -144,7 +146,7 @@ export default function Reactions(props) {
                             key={index}
                             className={classes.popchips}
                           />
-               })}
+                }) : null}
             </Popover>
         </Grid>
     )
