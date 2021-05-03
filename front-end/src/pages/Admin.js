@@ -13,6 +13,7 @@ import Kudo from '../components/Kudo';
 import Values from "../components/Values";
 import Emojis from "../components/Emojis";
 import ExportData from "../components/ExportData";
+import ReportedKudos from "../components/ReportedKudos";
 
 const useStyles = makeStyles(theme => ({
   kudos: {
@@ -76,6 +77,19 @@ export default function Home(props) {
         >
           <ExportData getKudos={props.getKudos}/>
         </Grid>
+
+
+        <Grid
+        item xl={32}
+        container
+        direction="row"
+        alignItems="center"
+        justify="space-around"
+        className={classes.kudos}
+        >
+          <ReportedKudos employees={props.employees}/>
+        </Grid>
+
       </Grid>
     </div>
   );
