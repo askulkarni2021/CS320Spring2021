@@ -42,14 +42,16 @@ export default function ChangeAvatar(props) {
       })
       .then(response => response.json())
       .then(data => {
-          console.log(formData);
+          console.log(data);
+          if(data){
+            props.reloadEmp()
+          }
       });
     }
 
     function handleClickSubmit(newAvatar){
         change_avatar(newAvatar);
         props.closeAvatarModal();
-        window.location.reload(false);
     }
 
     const handleChangeAvatar = (newAvatar) => {
@@ -66,6 +68,7 @@ export default function ChangeAvatar(props) {
             <img src={image}
                 onClick={() => {handleChangeAvatar(image);}}
                 style={{height: '60px', width: '80px', marginRight: '20px',}}
+                key={index}
             />
         );
     })

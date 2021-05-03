@@ -324,15 +324,10 @@ app.post('/api/data/uid_map_name', (req, res) => {
 			value.forEach(function(element){
 				employee = element.firstName+" "+element.lastName;
 				id = element.employeeId;
-<<<<<<< HEAD
-				position = element.positionTitle
-				avatar = element.avatar
-				const data = {name:employee, position:position, avatar:avatar}
-=======
 				position = element.positionTitle;
 				isAdmin = element.isAdmin;
-				const data = {name:employee, position:position, idAdmin:isAdmin}
->>>>>>> 55c3d78c1853f05b1402ccb70068b6cad2997ac6
+				avatar = element.avatar;
+				const data = {name:employee, position:position, idAdmin:isAdmin, avatar:avatar}
 				emp[id]=data;
 			})
 			client.close();
